@@ -10,8 +10,10 @@ from   difi     import chk_exst_fi              as cef
 from   difi     import cpy                      as c
 from   difi     import crt                      as cr
 from   difi     import de                       as dele
+from   difi     import get_lst                  as gl
 from   difi     import mov                      as m
 from   difi     import ren                      as r
+from   pth      import get_ap_innermst          as gpi
 from   pth      import jo                       as j
 from   pth      import ncnp                     as n
 from   exc      import ExceptionNotAbsolutePath as EXC_NAP
@@ -45,6 +47,7 @@ e      = [dm, dc, dd, de, dmv1, dmv2, dr1, dr2, fc, fd, fe, fmv1, fmv2, fr1, fr2
 edf    = [dm, dc, dd, de, dmv1, dmv2, dr1, dr2]
 ed     = [dc, dd, de, dmv1, dmv2, dr1, dr2]
 ef     = [fc, fd, fe, fmv1, fmv2, fr1, fr2]
+edef   = [dc, dd, de, dmv1, dmv2, dr1, dr2, fc, fd, fe, fmv1, fmv2, fr1, fr2]
 
 dne    = j(dm, "dne")         # Test directory that is not exists.
 dni    = j(dm, "di\\")        # Illegal directory that is not exists.
@@ -134,6 +137,9 @@ class unit_test(TC):
         with self.assertRaises(EXC_NAP): dele(dnr)
         with self.assertRaises(EXC_NAP): dele(fnr)
 
+    def test_get_lst(self):
+        for i in edef: self.assertTrue(gpi(i) in gl(dm));
+
     def test_mov(self):
         dele(dmv2); dele(fmv2);                                                 # Delete the move directory 2 and
                                                                                 # move file 2.
@@ -169,6 +175,5 @@ class unit_test(TC):
         with self.assertWarns(W_E)     : self.assertFalse(r(fe, fren, False)) # Not replace.
         with self.assertWarns(W_NE)    : self.assertFalse(r(dne, dren))
         with self.assertWarns(W_NE)    : self.assertFalse(r(fne, fren))
-
 
 if __name__ == "__main__": unittest.main()

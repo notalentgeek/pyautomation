@@ -51,11 +51,11 @@ def cpy(
 
     """ Replace the target directory or folder or nor. """
     if _rep and chk_exst(_ap_trg): de(_ap_trg)
-    elif not _rep and chk_exst(_ap_trg): wrn.wrn_exst(); return False
+    elif not _rep and chk_exst(_ap_trg): wrn.wrn_exst(); return False;
 
     """ Copy! """
-    if   chk_exst_di(_ap): shutil.copytree(_ap, _ap_trg); return True
-    elif chk_exst_fi(_ap): shutil.copyfile(_ap, _ap_trg); return True
+    if   chk_exst_di(_ap): shutil.copytree(_ap, _ap_trg); return True;
+    elif chk_exst_fi(_ap): shutil.copyfile(_ap, _ap_trg); return True;
 
     return False
 
@@ -75,8 +75,8 @@ def crt(
         return False
 
     """ Create directory or create file. """
-    if   _is_di: os.makedirs(_ap);       return True
-    else       : open(_ap, "w").close(); return True
+    if   _is_di: os.makedirs(_ap);       return True;
+    else       : open(_ap, "w").close(); return True;
 
     return False
 
@@ -90,10 +90,18 @@ def de(_ap:str) -> bool:
     if not chk_exst(_ap): wrn.wrn_n_exst(); return False;
 
     """ Delete! """
-    if   chk_exst_di(_ap): shutil.rmtree(_ap); return True
-    elif chk_exst_fi(_ap): os.remove(_ap);     return True
+    if   chk_exst_di(_ap): shutil.rmtree(_ap); return True;
+    elif chk_exst_fi(_ap): os.remove(_ap);     return True;
 
     return False
+
+
+
+""" Function to get list of all items (non - recursive
+directories and files) from a provided absolute path.
+"""
+def get_lst(_ap:str) -> list:
+    return os.listdir(_ap)
 
 
 
@@ -114,7 +122,7 @@ def mov(
 
     """ Replace the target directory or folder or nor. """
     if _rep and chk_exst(_ap_trg): de(_ap_trg)
-    elif not _rep and chk_exst(_ap_trg): wrn.wrn_exst(); return False
+    elif not _rep and chk_exst(_ap_trg): wrn.wrn_exst(); return False;
 
     """ Move! """
     shutil.move(_ap, _ap_trg)
@@ -141,7 +149,7 @@ def ren(
 
     """ Replace the target directory or folder or nor. """
     if _rep and chk_exst(ap_trg): de(ap_trg)
-    elif not _rep and chk_exst(ap_trg): wrn.wrn_exst(); return False
+    elif not _rep and chk_exst(ap_trg): wrn.wrn_exst(); return False;
 
     shutil.move(_ap, ap_trg)
 

@@ -32,12 +32,6 @@ def chk_s_ap_x(_ap_1:str, _ap_2:str, _x:int) -> bool:
     return ncnp(get_ap_x(_ap_1, _x)) == ncnp(get_ap_x(_ap_2, _x))
 
 
-""" Get the innermost directory or file from the provided path. """
-def get_ap_innermst(_ap:str) -> str:
-    if not chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    return os.path.basename(_ap)
-
-
 
 """ Get one upped path from the provided path. n"""
 def get_ap_1(_ap:str) -> str:
@@ -72,6 +66,20 @@ def get_ap_x(
     """ Keep recursing if `c` is not yet equal `_x`. """
     if   _x == c: return di
     else        : return get_ap_x(di, _x, c)
+
+
+
+""" Get the innermost directory or file from the provided path. """
+def get_ap_innermst(_ap:str) -> str:
+    if not chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    return os.path.basename(_ap)
+
+
+
+""" Function to get file extension. """
+def get_ext(_p:str) -> str:
+    ext = os.path.splitext(_p)[1]
+    return ext[1:] if len(ext) > 1 else ""
 
 
 
