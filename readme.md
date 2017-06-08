@@ -7,7 +7,7 @@
 * Create function to recursively rename things.
 * Create function to take directory or file creation time.
 
-# Create function to initiate note if there is no .md exists.
+## Create function to initiate note if there is no .md exists.
 * [DONE] Create function to check if there are .md files exists.
 * [DONE] Create function to check if there is .md file exists.
 * [ONGOING] Create function to make and format date and time.
