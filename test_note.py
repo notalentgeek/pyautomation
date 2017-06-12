@@ -8,10 +8,13 @@ from   difi     import crt                      as cr
 from   difi     import de                       as dele
 from   note     import chk_m_md                 as cmm
 from   note     import chk_md                   as cm
+from   note     import get_md                   as gm
 from   note     import init                     as i
 from   pth      import jo                       as j
 from   pth      import ncnp                     as n
 from   exc      import ExceptionNotAbsolutePath as EX_NAP
+from   exc      import ExceptionNotDirectory    as EX_ND
+from   wrn      import WarningMultipleMDFiles   as W_MMD
 
 du = n("/home/{}".format(getpass.getuser()))
 dw = n("C:\\{}\\Documents and Settings\\My Documents".format(getpass.getuser()))
@@ -53,14 +56,25 @@ class unit_test(TC):
         self.assertFalse(cmm(dme))
         self.assertTrue(cmm(dmme))
         with self.assertRaises(EX_NAP): cmm(dre)
+        with self.assertRaises(EX_ND) : cmm(md)
 
     def test_chk_md(self):
         self.assertFalse(cm(dmne))
         self.assertTrue(cm(dme))
         self.assertTrue(cm(dmme))
         with self.assertRaises(EX_NAP): cm(dre)
+        with self.assertRaises(EX_ND) : cm(md)
+
+    def test_get_md(self):
+        self.assertEqual(gm(dme), md)
+        self.assertEqual(gm(dmme), md1)
+        self.assertNotEqual(gm(dmme), md2)
+        self.assertFalse(bool(gm(dmne)))
+        with self.assertRaises(EX_NAP): gm(dre)
+        with self.assertRaises(EX_ND) : gm(md)
 
     def test_init(self):
-        i(dmi, "md.md")
+        i(dme)
+        with self.assertWarns(W_MMD): self.assertFalse(i(dmme))
 
 if __name__ == "__main__": unittest.main()
