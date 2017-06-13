@@ -44,7 +44,7 @@ def cpy(
         raise exc.ExceptionNotAbsolutePath()
 
     """ Check if the source path is an existing directory or file or not. """
-    if not chk_exst(_ap): wrn.wrn_n_exst(); return False;
+    if not chk_exst(_ap): wrn.wrn_nt_exst(); return False;
 
     """ Check if both paths are the same. """
     if _ap == _ap_trg: raise exc.ExceptionSamePath()
@@ -87,7 +87,7 @@ def de(_ap:str) -> bool:
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
 
     """ Check if the source path is an existing directory or file or not. """
-    if not chk_exst(_ap): wrn.wrn_n_exst(); return False;
+    if not chk_exst(_ap): wrn.wrn_nt_exst(); return False;
 
     """ Delete! """
     if   chk_exst_di(_ap): shutil.rmtree(_ap); return True;
@@ -115,7 +115,7 @@ def mov(
         raise exc.ExceptionNotAbsolutePath()
 
     """ Check if the source path is an existing directory or file or not. """
-    if not chk_exst(_ap): wrn.wrn_n_exst(); return False;
+    if not chk_exst(_ap): wrn.wrn_nt_exst(); return False;
 
     """ Check if both paths are the same. """
     if _ap == _ap_trg: raise exc.ExceptionSamePath()
@@ -139,7 +139,7 @@ def ren(
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
 
     """ Check if the source path is an existing directory or file or not. """
-    if not chk_exst(_ap): wrn.wrn_n_exst(); return False;
+    if not chk_exst(_ap): wrn.wrn_nt_exst(); return False;
 
     ap_1   = pth.get_ap_1(_ap)
     ap_trg = pth.jo(ap_1, _nm)

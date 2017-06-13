@@ -6,35 +6,56 @@ import warnings
 
 from   difi     import crt                      as cr
 from   difi     import de                       as dele
-from   note     import chk_m_md                 as cmm
-from   note     import chk_md                   as cm
-from   note     import get_md                   as gm
-from   note     import init                     as i
-from   pth      import jo                       as j
-from   pth      import ncnp                     as n
 from   exc      import ExceptionNotAbsolutePath as EX_NAP
 from   exc      import ExceptionNotDirectory    as EX_ND
+from   note     import append_md                as am
+from   note     import chk_m_md                 as cmm
+from   note     import chk_md                   as cm
+from   note     import crt_md                   as crm
+from   note     import get_md                   as gm
+from   note     import init                     as i
+from   note     import read_md                  as r
+from   note     import write_md                 as wm
+from   note     import write_b_md               as wbm
+from   pth      import jo                       as j
+from   pth      import ncnp                     as n
 from   wrn      import WarningMultipleMDFiles   as W_MMD
+from   wrn      import WarningNotAllString      as W_NT_A_S
+from   wrn      import WarningNotMDFile         as W_NT_MD
+import var
 
 du = n("/home/{}".format(getpass.getuser()))
 dw = n("C:\\{}\\Documents and Settings\\My Documents".format(getpass.getuser()))
 d  = du                                  # Unix    platform.
 if p == "cygwin" or p == "win32": d = dw # Windows platform.
 
-dm   = j(d, "dm_test_md") # Main directory for this unit test.
+dm     = j(d, "dm_test_note")   # Main directory for this unit test.
 
-dme  = j(dm, "dme")       # Directory with .md file      exists.
-dmme = j(dm, "dmme")      # Directory with .md files     exist.
-dmne = j(dm, "dmne")      # Directory with .md file  not exists.
-dmi  = j(dm, "di")        # Directory for initiating note.
-dre  = n("./md.md")       # Relative directory.
-md   = j(dme, "md.md")    # .md file.
-md1  = j(dmme, "md1.md")  # First  .md file.
-md2  = j(dmme, "md2.md")  # Second .md file.
+dme    = j(dm, "dme")           # Directory with     .md file      exists.
+dmef   = j(dm, "dmef")          # Directory with     .md file      exists and is      filled with dummy text.
+dmewcf = j(dm, "dmewcf")        # Directory with     .md file  not exists but will be created and filled with dummy text.
+dmewf  = j(dm, "dmewf")         # Directory with     .md file      exists and will be filled with dummy text.
+dmme   = j(dm, "dmme")          # Directory with     .md files     exist.
+dmne   = j(dm, "dmne")          # Directory with     .md file  not exists.
+dnmd   = j(dm, "dnmd")          # Directory with non .md file exists.
 
-e    = [dm, dme, dmme, dmne, dmi, md, md1, md2]
-ed   = [dm, dme, dmme, dmne, dmi]
-ef   = [md, md1, md2]
+dmi    = j(dm, "di")            # Directory for initiating note.
+dre    = n("./md.md")           # Relative directory.
+md     = j(dme, "md.md")        # .md file.
+md1    = j(dmme, "md1.md")      # First  .md file.
+md2    = j(dmme, "md2.md")      # Second .md file.
+mdf    = j(dmef, "mdf.md")      # .md file that is filled with dummy text.
+mdwf   = j(dmewf, "mdwf.md")    # .md file that will be filled with dummy text.
+nmd    = j(dnmd, "not_md.fi")   # Non .md file that is exists.
+
+""" Do not create this in `setUp()`! """
+mdwcf  = j(dmewcf, "dmewcf.md") # .md file that is not exists but will be created and willed.
+mdo    = j(dm, "md.md")         # Creating .md file in the outermost of the directory.
+nmdo   = j(dm, "not_md.fi")     # Creating file that is not .md file.
+
+e      = [dm, dme, dmef, dmewcf, dmewf, dmme, dmne, dnmd, dmi, md, md1, md2, mdf, mdwf, nmd]
+ed     = [dm, dme, dmef, dmewcf, dmewf, dmme, dmne, dnmd, dmi]
+ef     = [md, md1, md2, mdf, mdwf, nmd]
 
 def su():
     for i in ed: cr(i, True)
@@ -46,10 +67,27 @@ class unit_test(TC):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             su()
+
     def tearDown(self):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             td()
+
+    def test_append_md(self):
+        self.assertTrue(am(mdwf, var.smpl_txt))
+        with self.assertWarns(W_NT_A_S): self.assertFalse(am(mdwf, ["a", "b", "c", 1]))
+        with self.assertWarns(W_NT_MD) : self.assertFalse(am(nmd, var.smpl_txt))
+
+    def test_write_md(self):
+        self.assertTrue(wm(mdwf, var.smpl_txt))
+        with self.assertWarns(W_NT_A_S): self.assertFalse(wm(mdwf, ["a", "b", "c", 1]))
+        with self.assertWarns(W_NT_MD) : self.assertFalse(wm(nmd, var.smpl_txt))
+
+    def test_write_b_md(self):
+        self.assertTrue(wbm(md))
+        self.assertTrue(wbm(md1))
+        self.assertTrue(wbm(md2))
+        with self.assertWarns(W_NT_MD): self.assertFalse(wbm(nmd))
 
     def test_chk_m_md(self):
         self.assertFalse(cmm(dmne))
@@ -65,6 +103,12 @@ class unit_test(TC):
         with self.assertRaises(EX_NAP): cm(dre)
         with self.assertRaises(EX_ND) : cm(md)
 
+    def test_crt_md(self):
+        self.assertTrue(crm(mdo))
+        with self.assertRaises(EX_NAP): crm(dre)
+        with self.assertRaises(EX_ND) : gm(mdo)
+        with self.assertWarns(W_NT_MD): self.assertFalse(crm(nmdo))
+
     def test_get_md(self):
         self.assertEqual(gm(dme), md)
         self.assertEqual(gm(dmme), md1)
@@ -76,5 +120,9 @@ class unit_test(TC):
     def test_init(self):
         i(dme)
         with self.assertWarns(W_MMD): self.assertFalse(i(dmme))
+
+    def test_read_md(self):
+        r(md)
+        r(mdf)
 
 if __name__ == "__main__": unittest.main()
