@@ -4,21 +4,24 @@ import getpass
 import unittest
 import warnings
 
+from   dbg      import print_ut                 as put
 from   difi     import crt                      as cr
 from   difi     import de                       as dele
-from   exc      import ExceptionNotAbsolutePath as EX_NAP
-from   exc      import ExceptionNotDirectory    as EX_ND
 from   note     import append_md                as am
 from   note     import chk_m_md                 as cmm
 from   note     import chk_md                   as cm
+from   note     import chk_md_b                 as cmb
 from   note     import crt_md                   as crm
 from   note     import get_md                   as gm
 from   note     import init                     as i
 from   note     import read_md                  as r
-from   note     import write_md                 as wm
 from   note     import write_b_md               as wbm
+from   note     import write_md                 as wm
 from   pth      import jo                       as j
 from   pth      import ncnp                     as n
+from   exc      import ExceptionNotAbsolutePath as EX_NAP
+from   exc      import ExceptionNotDirectory    as EX_ND
+from   exc      import ExceptionNotFile         as EX_NF
 from   wrn      import WarningMultipleMDFiles   as W_MMD
 from   wrn      import WarningNotAllString      as W_NT_A_S
 from   wrn      import WarningNotMDFile         as W_NT_MD
@@ -41,9 +44,9 @@ dnmd   = j(dm, "dnmd")          # Directory with non .md file exists.
 
 dmi    = j(dm, "di")            # Directory for initiating note.
 dre    = n("./md.md")           # Relative directory.
-md     = j(dme, "md.md")        # .md file.
-md1    = j(dmme, "md1.md")      # First  .md file.
-md2    = j(dmme, "md2.md")      # Second .md file.
+md     = j(dme, "md.md")        # Empty .md file.
+md1    = j(dmme, "md1.md")      # Empty first  .md file.
+md2    = j(dmme, "md2.md")      # Empty second .md file.
 mdf    = j(dmef, "mdf.md")      # .md file that is filled with dummy text.
 mdwf   = j(dmewf, "mdwf.md")    # .md file that will be filled with dummy text.
 nmd    = j(dnmd, "not_md.fi")   # Non .md file that is exists.
@@ -60,6 +63,7 @@ ef     = [md, md1, md2, mdf, mdwf, nmd]
 def su():
     for i in ed: cr(i, True)
     for i in ef: cr(i, False)
+    wm(mdf, var.smpl_txt)      # Create .md file that is filled with dummy text.
 def td(): dele(dm)
 
 class unit_test(TC):
@@ -103,6 +107,11 @@ class unit_test(TC):
         with self.assertRaises(EX_NAP): cm(dre)
         with self.assertRaises(EX_ND) : cm(md)
 
+    def test_chk_md_b(self):
+        self.assertTrue(cmb(md))
+        self.assertTrue(cmb(md1))
+        self.assertTrue(cmb(md2))
+
     def test_crt_md(self):
         self.assertTrue(crm(mdo))
         with self.assertRaises(EX_NAP): crm(dre)
@@ -122,7 +131,13 @@ class unit_test(TC):
         with self.assertWarns(W_MMD): self.assertFalse(i(dmme))
 
     def test_read_md(self):
-        r(md)
-        r(mdf)
+        put("read_md(mdf)", r(mdf))
+        self.assertEqual(len(r(mdf)), 5)
+        self.assertEqual(len(r(md)) , 0)
+        self.assertEqual(len(r(md1)), 0)
+        self.assertEqual(len(r(md2)), 0)
+        with self.assertRaises(EX_NAP): r(dre)
+        with self.assertRaises(EX_NF) : r(dm)
+        with self.assertWarns(W_NT_MD): self.assertFalse(r(nmd))
 
 if __name__ == "__main__": unittest.main()

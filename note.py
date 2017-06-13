@@ -48,11 +48,17 @@ def chk_md(_ap:str,) -> bool:
 
 
 
+""" Function to check if the .md file is empty or not. """
+def chk_md_b(_ap:str) -> bool: return True if len(read_md(_ap)) == 0 else False
+
+
+
 """ Function to create .md file. """
 def crt_md(_ap:str) -> bool:
     if not pth.chk_abs(_ap)                   : raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(pth.get_ap_1(_ap)): raise exc.ExceptionNotDirectory()
     if not pth.get_ext(_ap) == "md"           : wrn.wrn_nt_md(); return False
+
     difi.crt(_ap, False)
     return True
 
@@ -72,26 +78,28 @@ def get_md(_ap:str) -> str:
                                                           # files in `_ap` sort `l` alphabetically.
 
 
-""" Function to initiate note. """
+""" PENDING: Function to initiate note. """
 def init(_ap:str) -> bool:
     if not pth.chk_abs(_ap)     : raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotDirectory()
     if chk_m_md(_ap)            : wrn.wrn_m_md(); return False;
 
-    """ This function is split into when the .md file is exists and
-    when the .md file is not exists.
+    """ This function split into two big ways.
+    If the .md file not exist.
+    If the .md file is exists but blank.
     """
-    if chk_md(_ap): pass
-    else: pass
-
 
 
 """ Read lines in the .md file. In this case please make sure this
 function only able to read from an .md file.
 """
 def read_md(_ap:str) -> list:
-    md = open(_ap, "r")
-    md.readlines()
-    #print(md.readlines())
-    #print(type(md.readlines()))
+    if not pth.chk_abs(_ap)         : raise exc.ExceptionNotAbsolutePath()
+    if not difi.chk_exst_fi(_ap)    : raise exc.ExceptionNotFile()
+    if not pth.get_ext(_ap) == "md" : wrn.wrn_nt_md(); return False
+
+    md  = open(_ap, "r")
+    mdl = md.readlines() # Read the content of the .md file.
     md.close()
+
+    return mdl
