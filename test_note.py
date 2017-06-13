@@ -8,8 +8,8 @@ from   dbg      import print_ut                 as put
 from   difi     import crt                      as cr
 from   difi     import de                       as dele
 from   note     import append_md                as am
-from   note     import chk_m_md                 as cmm
-from   note     import chk_md                   as cm
+from   note     import chk_exst_m_md            as cmm
+from   note     import chk_exst_md              as cm
 from   note     import chk_md_b                 as cmb
 from   note     import crt_md                   as crm
 from   note     import get_md                   as gm
@@ -93,7 +93,7 @@ class unit_test(TC):
         self.assertTrue(wbm(md2))
         with self.assertWarns(W_NT_MD): self.assertFalse(wbm(nmd))
 
-    def test_chk_m_md(self):
+    def test_chk_exst_m_md(self):
         self.assertFalse(cmm(dmne))
         self.assertFalse(cmm(dme))
         self.assertTrue(cmm(dmme))
@@ -128,7 +128,8 @@ class unit_test(TC):
 
     def test_init(self):
         i(dme)
-        with self.assertWarns(W_MMD): self.assertFalse(i(dmme))
+        i(dmef)
+        i(dmne)
 
     def test_read_md(self):
         put("read_md(mdf)", r(mdf))

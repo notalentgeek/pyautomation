@@ -26,7 +26,7 @@ def write_md  (_ap:str, _sl:list): return ar_md_(_ap, _sl , "w") # Make the .md 
 def write_b_md(_ap:str)          : return write_md(_ap, [""])    # Make the .md file to be empty.
 
 """ Function to check if there are multiple .md files in `_ap`. """
-def chk_m_md(_ap:str) -> bool:
+def chk_exst_m_md(_ap:str) -> bool:
     if not pth.chk_abs(_ap)     : raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotDirectory()
 
@@ -38,7 +38,7 @@ def chk_m_md(_ap:str) -> bool:
 
 
 """ Function to check if there is an .md file in `_ap`. """
-def chk_md(_ap:str,) -> bool:
+def chk_exst_md(_ap:str,) -> bool:
     if not pth.chk_abs(_ap)     : raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotDirectory()
 
@@ -82,12 +82,43 @@ def get_md(_ap:str) -> str:
 def init(_ap:str) -> bool:
     if not pth.chk_abs(_ap)     : raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotDirectory()
-    if chk_m_md(_ap)            : wrn.wrn_m_md(); return False;
+    if chk_exst_m_md(_ap)       : wrn.wrn_m_md(); return False;
+
+    p  = dttz.create_prefix_n_ms()
+    md = get_md(_ap)
 
     """ This function split into two big ways.
     If the .md file not exist.
     If the .md file is exists but blank.
     """
+    if not chk_exst_md(_ap):
+        print("\n{}".format("="*50))
+        print(_ap)
+        print("there is no md file" if md == "" else md)
+        print("md file is not exist")
+        print("="*50)
+
+        crt_md(_ap)
+
+        return True
+
+    elif chk_exst_md(_ap) and chk_md_b(md):
+        print("\n{}".format("="*50))
+        print(_ap)
+        print("there is no md file" if md == "" else md)
+        print("md file is exist but blank")
+        print("="*50)
+
+        return True
+
+    else:
+        print("\n{}".format("="*50))
+        print(_ap)
+        print("there is no md file" if md == "" else md)
+        print("md file is exists but not blank")
+        print("="*50)
+
+        return False
 
 
 """ Read lines in the .md file. In this case please make sure this

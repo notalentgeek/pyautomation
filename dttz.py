@@ -47,3 +47,4 @@ def chk_prefix(_s:str) -> bool:
        not chk_mn(get_mn_p(_s)) or not chk_y(get_y_p(_s)) or not chk_sp_p(_s): return False
     return True
 def create_prefix(_n:str)               -> str : return "{1}{2}{3}{0}{4}{5}".format(var.note_sp, get_y_n(_n), get_m_n(_n), get_d_n(_n), get_h_n(_n), get_mn_n(_n))
+def create_prefix_n_ms()                -> str : return create_prefix(get_now_n_ms())
