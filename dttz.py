@@ -35,16 +35,32 @@ def get_p_(_in:str, _out:str) -> str:
     if _in == _out   : return ""
     try              : return _out
     except IndexError: return ""
-def get_d_p      (_p:str)               -> str : return get_p_(_p, _p.split("-")[0][6:])             # Get date from prefix.
-def get_h_p      (_p:str)               -> str : return get_p_(_p, _p.split("-")[1][:2])             # Get hour from prefix.
-def get_m_p      (_p:str)               -> str : return get_p_(_p, _p.split("-")[0][4:-2])           # Get month from prefix.
-def get_mn_p     (_p:str)               -> str : return get_p_(_p, _p.split("-")[1][2:])             # Get second from prefix.
+def get_d_p      (_p:str)               -> str : return get_p_(_p, _p.split("-")[0][6:8])            # Get date from prefix.
+def get_h_p      (_p:str)               -> str : return get_p_(_p, _p.split("-")[1][:2])             # Get hour from prefix
+def get_m_p      (_p:str)               -> str : return get_p_(_p, _p.split("-")[0][4:6])            # Get month from prefix.
+def get_mn_p     (_p:str)               -> str : return get_p_(_p, _p.split("-")[1][2:4])            # Get second from prefix
 def get_y_p      (_p:str)               -> str : return get_p_(_p, _p.split("-")[0][:4])             # Get year from prefix.
-def chk_sp_p     (_p:str)               -> bool: return True if _p[8:-4] == var.note_sp else False
+def chk_sp_p     (_p:str)               -> bool: return True if _p[8:9] == var.note_sp else False
 
 def chk_prefix(_s:str) -> bool:
-    if not chk_d(get_d_p(_s)) or not chk_h(get_h_p(_s)) or not chk_m(get_m_p(_s)) or\
-       not chk_mn(get_mn_p(_s)) or not chk_y(get_y_p(_s)) or not chk_sp_p(_s): return False
+    if not chk_d(get_d_p(_s)):
+        #print("chk_d: {}".format(_s))
+        return False
+    if not chk_h(get_h_p(_s)):
+        #print("chk_h: {}".format(_s))
+        return False
+    if not chk_m(get_m_p(_s)):
+        #print("chk_m: {}".format(_s))
+        return False
+    if not chk_mn(get_mn_p(_s)):
+        #print("chk_mn: {}".format(_s))
+        return False
+    if not chk_y(get_y_p(_s)):
+        #print("chk_y: {}".format(_s))
+        return False
+    if not chk_sp_p(_s):
+        #print("chk_sp_p: {}".format(_s))
+        return False
     return True
 def create_prefix(_n:str)               -> str : return "{1}{2}{3}{0}{4}{5}".format(var.note_sp, get_y_n(_n), get_m_n(_n), get_d_n(_n), get_h_n(_n), get_mn_n(_n))
 def create_prefix_n_ms()                -> str : return create_prefix(get_now_n_ms())

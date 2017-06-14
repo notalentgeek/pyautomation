@@ -27,10 +27,6 @@ from   dttz import get_y_p       as yp
 
 class unit_test(TC):
     def test_create_prefix(self): put("create_prefix(n())", crp(n()))
-    def test_chk_prefix   (self):
-        self.assertFalse(cp("19990101-0000"))
-        self.assertFalse(cp("asd"))
-        self.assertTrue(cp("20000101-0000"))
     def test_get_now      (self): put("get_now()", n())
     def test_get_now_n_ms (self): put("get_now_n_ms()", nnms())
     def test_get_tz       (self): put("get_tz(n())", gtz())
@@ -75,6 +71,11 @@ class unit_test(TC):
     def test_chk_mn(self):
         self.assertFalse(cs("60"))
         self.assertTrue(cs("0"))
-        self.assertTrue(cs(0))
+
+    def test_chk_prefix(self):
+        self.assertFalse(cp("19990101-0000"))
+        self.assertFalse(cp("asd"))
+        self.assertTrue(cp("20000101-0000"))
+        self.assertTrue(cp("20000101-0000-test-note"))
 
 if __name__ == "__main__": unittest.main()

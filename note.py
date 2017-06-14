@@ -102,23 +102,27 @@ def init(_ap:str) -> bool:
 
         return True
 
-    elif chk_exst_md(_ap) and chk_md_b(md):
-        print("\n{}".format("="*50))
-        print(_ap)
-        print("there is no md file" if md == "" else md)
-        print("md file is exist but blank")
-        print("="*50)
-
-        return True
-
     else:
-        print("\n{}".format("="*50))
-        print(_ap)
-        print("there is no md file" if md == "" else md)
-        print("md file is exists but not blank")
-        print("="*50)
+        """ First
 
-        return False
+        if chk_md_b(md):
+            print("\n{}".format("="*50))
+            print(_ap)
+            print("there is no md file" if md == "" else md)
+            print("md file is exist but blank")
+            print("="*50)
+
+            return True
+
+        else:
+            print("\n{}".format("="*50))
+            print(_ap)
+            print("there is no md file" if md == "" else md)
+            print("md file is exists but not blank")
+            print("="*50)
+
+            return False
+
 
 
 """ Read lines in the .md file. In this case please make sure this
