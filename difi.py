@@ -36,12 +36,11 @@ def chk_exst_fi(_ap:str) -> bool:
 
 """ Copy a directory or a file. """
 def cpy(
-    _ap:str,       # Source path or file directory.
-    _ap_trg:str,   # Target path or file directory.
+    _ap:str, # Source path or file directory.
+    _ap_trg:str, # Target path or file directory.
     _rep:bool=True # Replace (not merge) existing duplicate at target directory.
 ) -> bool:
-    if not pth.chk_abs(_ap) or not pth.chk_abs(_ap_trg):
-        raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_abs(_ap) or not pth.chk_abs(_ap_trg): raise exc.ExceptionNotAbsolutePath()
 
     """ Check if the source path is an existing directory or file or not. """
     if not chk_exst(_ap): wrn.wrn_nt_exst(); return False;
@@ -75,8 +74,8 @@ def crt(
         return False
 
     """ Create directory or create file. """
-    if   _is_di: os.makedirs(_ap);       return True;
-    else       : open(_ap, "w").close(); return True;
+    if _is_di: os.makedirs(_ap); return True;
+    else: open(_ap, "w").close(); return True;
 
     return False
 
@@ -90,8 +89,8 @@ def de(_ap:str) -> bool:
     if not chk_exst(_ap): wrn.wrn_nt_exst(); return False;
 
     """ Delete! """
-    if   chk_exst_di(_ap): shutil.rmtree(_ap); return True;
-    elif chk_exst_fi(_ap): os.remove(_ap);     return True;
+    if chk_exst_di(_ap): shutil.rmtree(_ap); return True;
+    elif chk_exst_fi(_ap): os.remove(_ap); return True;
 
     return False
 
@@ -107,12 +106,11 @@ def get_lst(_ap:str) -> list:
 
 """ Move a directory or a file. """
 def mov(
-    _ap:str,       # Source path or file directory.
-    _ap_trg:str,   # Target path or file directory.
+    _ap:str, # Source path or file directory.
+    _ap_trg:str, # Target path or file directory.
     _rep:bool=True # Replace (not merge) existing duplicate at target directory.
 ) -> bool:
-    if not pth.chk_abs(_ap) or not pth.chk_abs(_ap_trg):
-        raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_abs(_ap) or not pth.chk_abs(_ap_trg): raise exc.ExceptionNotAbsolutePath()
 
     """ Check if the source path is an existing directory or file or not. """
     if not chk_exst(_ap): wrn.wrn_nt_exst(); return False;
@@ -141,7 +139,7 @@ def ren(
     """ Check if the source path is an existing directory or file or not. """
     if not chk_exst(_ap): wrn.wrn_nt_exst(); return False;
 
-    ap_1   = pth.get_ap_1(_ap)
+    ap_1 = pth.get_ap_1(_ap)
     ap_trg = pth.jo(ap_1, _nm)
 
     """ Check if both paths are the same. """

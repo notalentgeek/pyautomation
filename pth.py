@@ -1,11 +1,11 @@
-from   sys import platform
+from sys import platform
 import os
 import exc
 
 """
 `chk` refers to "check".
-`ap`  refers to absolute path.
-`sp`  refers to system separator. "/" in Unix or "\" in Windows.
+`ap` refers to absolute path.
+`sp` refers to system separator. "/" in Unix or "\" in Windows.
 """
 
 """ This is a function to check if a provided path is an absolute path or a
@@ -37,11 +37,9 @@ def chk_s_ap_x(_ap_1:str, _ap_2:str, _x:int) -> bool:
 def get_ap_1(_ap:str) -> str:
     if not chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
 
-    if len(_ap) == 1: return get_sp()        # If `_ap` is the root directory then
-                                             # return the separator.
+    if len(_ap) == 1: return get_sp() # If `_ap` is the root directory then return the separator.
 
-    ap = rm_sp_lst(_ap)                      # Remove the last separator (for example,
-                                             # from `/home/user/` into `/home/user`).
+    ap = rm_sp_lst(_ap) # Remove the last separator (for example, from `/home/user/` into `/home/user`).
     ap = ap.replace(get_ap_innermst(ap), "") # Erase the innermost directory or file.
 
     return (get_sp() if len(rm_sp_lst(ap)) == 1 else rm_sp_lst(ap))
@@ -52,20 +50,19 @@ def get_ap_1(_ap:str) -> str:
 def get_ap_x(
     _ap:str,
     _x:int,
-    _c:int=0 # Counter parameter, but usually should
-             # never be provided and left 0.
+    _c:int=0 # Counter parameter, but usually should never be provided and left 0.
 ) -> str:
     if not chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
 
-    c  = _c + 1
+    c = _c + 1
     di = get_ap_1(_ap)
 
     """ If `di` is only a character then return `di` itself. """
     if len(di) == 1: return di
 
     """ Keep recursing if `c` is not yet equal `_x`. """
-    if   _x == c: return di
-    else        : return get_ap_x(di, _x, c)
+    if _x == c: return di
+    else: return get_ap_x(di, _x, c)
 
 
 
@@ -85,9 +82,9 @@ def get_ext(_p:str) -> str:
 
 """ Get the system separator. """
 def get_sp() -> str:
-    if   platform == "darwin" or platform == "linux" or platform == "linux2": return "/"
-    elif platform == "cygwin" or platform == "win32"                        : return "\\"
-    else                                                                    : return ""
+    if platform == "darwin" or platform == "linux" or platform == "linux2": return "/"
+    elif platform == "cygwin" or platform == "win32": return "\\"
+    else: return ""
 
 
 

@@ -12,11 +12,11 @@ This function operates `1` and `"01"` as the same.
 """
 def chk_limit_strint(_v, _limit_lower:int, _limit_upper:int) -> bool:
     iint = None; istr = None;
-    try: iint  = int(_v); istr  = str(_v)
+    try: iint= int(_v); istr= str(_v)
     except ValueError: return False
     listr = len(istr)
 
-    if iint  > _limit_upper or iint < _limit_lower: return False;
+    if iint > _limit_upper or iint < _limit_lower: return False;
 
     return True
 
