@@ -3,6 +3,7 @@ import dttz
 import exc
 import op
 import pth
+import var
 import wrn
 
 def ar_md_(
@@ -10,6 +11,7 @@ def ar_md_(
     _sl:list, # List of string.
     _m:str    # Writing mode (internal from Python's `open()`).
 ) -> bool:
+    _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap)                    : raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap)               : wrn.wrn_nt_exst();  return False;
     if not pth.get_ext(_ap) == "md"            : wrn.wrn_nt_md();    return False;
@@ -27,6 +29,7 @@ def write_b_md(_ap:str)          : return write_md(_ap, [""])    # Make the .md 
 
 """ Function to check if there are multiple .md files in `_ap`. """
 def chk_exst_m_md(_ap:str) -> bool:
+    _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap)     : raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotDirectory()
 
@@ -39,6 +42,7 @@ def chk_exst_m_md(_ap:str) -> bool:
 
 """ Function to check if there is an .md file in `_ap`. """
 def chk_exst_md(_ap:str,) -> bool:
+    _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap)     : raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotDirectory()
 
@@ -49,12 +53,13 @@ def chk_exst_md(_ap:str,) -> bool:
 
 
 """ Function to check if the .md file is empty or not. """
-def chk_md_b(_ap:str) -> bool: return True if len(read_md(_ap)) == 0 else False
+def chk_md_b(_ap:str) -> bool: _ap = pth.ncnp(_ap); return True if len(read_md(_ap)) == 0 else False
 
 
 
 """ Function to create .md file. """
 def crt_md(_ap:str) -> bool:
+    _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap)                   : raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(pth.get_ap_1(_ap)): raise exc.ExceptionNotDirectory()
     if not pth.get_ext(_ap) == "md"           : wrn.wrn_nt_md(); return False
@@ -64,8 +69,29 @@ def crt_md(_ap:str) -> bool:
 
 
 
+""" Function to create .md file name.
+Set `_ret_pth` to `True` for this function to
+return the path to the .md directory and file.
+
+PENDING: Use the directory/file creation name instead
+         of when this name is generated.
+"""
+def crt_nm(_ap:str) -> list:
+    _ap = pth.ncnp(_ap)
+    pre = dttz.crt_prefix_n_ms()                                     # Create prefix.
+    fod = pth.get_ap_innermst(_ap).lower().replace(" ", var.note_sp) # File or folder.
+    nm  = "{}{}{}".format(pre, var.note_sp, fod)
+    di  = pth.jo(pth.get_ap_1(_ap), nm)
+    fi  = pth.jo(di, "{}{}".format(nm, ".md"))
+
+    """ Return path to directory, path to .md file, and general note name. """
+    return [di, fi, nm]
+
+
+
 """ Get absolute path to the first .md file. """
 def get_md(_ap:str) -> str:
+    _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap)     : raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotDirectory()
 
@@ -78,35 +104,50 @@ def get_md(_ap:str) -> str:
                                                           # files in `_ap` sort `l` alphabetically.
 
 
+
 """ PENDING: Function to initiate note. """
 def init(_ap:str) -> bool:
+    _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap)     : raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotDirectory()
     if chk_exst_m_md(_ap)       : wrn.wrn_m_md(); return False;
 
-    p  = dttz.create_prefix_n_ms()
-    md = get_md(_ap)
+    nm = crt_nm(_ap)
 
-    """ This function split into two big ways.
-    If the .md file not exist.
-    If the .md file is exists but blank.
+    """ note directory processing.
+    If the note directory is not properly named.
+    If the note directory is     properly named.
+
+    PENDING: Update the `_ap` is the note directory is not properly named.
+    """
+
+    """ .md file processing.
+    If the .md file is not exist.
+    If the .md file is     exists but blank.
     """
     if not chk_exst_md(_ap):
+        """ Create the .md file. """
+        crt_md(pth.jo(_ap, nm[2]))
+        md = get_md(_ap)
+
         print("\n{}".format("="*50))
         print(_ap)
         print("there is no md file" if md == "" else md)
         print("md file is not exist")
         print("="*50)
 
-        crt_md(_ap)
-
         return True
 
     else:
-        """ First
+        """ Get the .md file. """
+        md = get_md(_ap)
+
+        """ Check of the note folder has correct naming convention. """
+        print("\n{}".format("="*50))
+        if not dttz.chk_prefix(md):
+            print("folder prefix convention is wrong")
 
         if chk_md_b(md):
-            print("\n{}".format("="*50))
             print(_ap)
             print("there is no md file" if md == "" else md)
             print("md file is exist but blank")
@@ -115,7 +156,6 @@ def init(_ap:str) -> bool:
             return True
 
         else:
-            print("\n{}".format("="*50))
             print(_ap)
             print("there is no md file" if md == "" else md)
             print("md file is exists but not blank")
@@ -129,6 +169,7 @@ def init(_ap:str) -> bool:
 function only able to read from an .md file.
 """
 def read_md(_ap:str) -> list:
+    _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap)         : raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap)    : raise exc.ExceptionNotFile()
     if not pth.get_ext(_ap) == "md" : wrn.wrn_nt_md(); return False

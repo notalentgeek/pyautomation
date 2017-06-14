@@ -12,6 +12,7 @@ from   note     import chk_exst_m_md            as cmm
 from   note     import chk_exst_md              as cm
 from   note     import chk_md_b                 as cmb
 from   note     import crt_md                   as crm
+from   note     import crt_nm                   as cn
 from   note     import get_md                   as gm
 from   note     import init                     as i
 from   note     import read_md                  as r
@@ -32,38 +33,48 @@ dw = n("C:\\{}\\Documents and Settings\\My Documents".format(getpass.getuser()))
 d  = du                                  # Unix    platform.
 if p == "cygwin" or p == "win32": d = dw # Windows platform.
 
-dm     = j(d, "dm_test_note")   # Main directory for this unit test.
+dm     = j(d, "dm_test_note")        # Main directory for this unit test.
 
-dme    = j(dm, "dme")           # Directory with     .md file      exists.
-dmef   = j(dm, "dmef")          # Directory with     .md file      exists and is      filled with dummy text.
-dmewcf = j(dm, "dmewcf")        # Directory with     .md file  not exists but will be created and filled with dummy text.
-dmewf  = j(dm, "dmewf")         # Directory with     .md file      exists and will be filled with dummy text.
-dmme   = j(dm, "dmme")          # Directory with     .md files     exist.
-dmne   = j(dm, "dmne")          # Directory with     .md file  not exists.
-dnmd   = j(dm, "dnmd")          # Directory with non .md file exists.
+dme    = j(dm, "dme")                # Directory with     .md file      exists.
+dmef   = j(dm, "dmef")               # Directory with     .md file      exists and is      filled with dummy text.
+dmewcf = j(dm, "dmewcf")             # Directory with     .md file  not exists but will be created and filled with dummy text.
+dmewf  = j(dm, "dmewf")              # Directory with     .md file      exists and will be filled with dummy text.
+dmme   = j(dm, "dmme")               # Directory with     .md files     exist.
+dmne   = j(dm, "dmne")               # Directory with     .md file  not exists.
+dnmd   = j(dm, "dnmd")               # Directory with non .md file exists.
 
-dmi    = j(dm, "di")            # Directory for initiating note.
-dre    = n("./md.md")           # Relative directory.
-md     = j(dme, "md.md")        # Empty .md file.
-md1    = j(dmme, "md1.md")      # Empty first  .md file.
-md2    = j(dmme, "md2.md")      # Empty second .md file.
-mdf    = j(dmef, "mdf.md")      # .md file that is filled with dummy text.
-mdwf   = j(dmewf, "mdwf.md")    # .md file that will be filled with dummy text.
-nmd    = j(dnmd, "not_md.fi")   # Non .md file that is exists.
+dmp    = j(dm, "20000101-0000-dmp")  # Directory with properly named .md file and folder.
+dmpn   = j(dm, "20000101-0000-dmpn") # Directory with proper name but different name between .md file and folder.
+
+dmi    = j(dm, "di")                 # Directory for initiating note.
+
+dre    = n("./md.md")                # Relative directory.
+md     = j(dme, "md.md")             # Empty .md file.
+md1    = j(dmme, "md1.md")           # Empty first  .md file.
+md2    = j(dmme, "md2.md")           # Empty second .md file.
+mdf    = j(dmef, "mdf.md")           # .md file that is filled with dummy text.
+mdp    = j(dmp, "20000101-0000-dmp") # .md file with prefix.
+mdpn   = j(dmpn, "md.md")            # .md file without prefix in folder with proper name.
+mdwf   = j(dmewf, "mdwf.md")         # .md file that will be filled with dummy text.
+nmd    = j(dnmd, "not_md.fi")        # Non .md file that is exists.
 
 """ Do not create this in `setUp()`! """
-mdwcf  = j(dmewcf, "dmewcf.md") # .md file that is not exists but will be created and willed.
-mdo    = j(dm, "md.md")         # Creating .md file in the outermost of the directory.
-nmdo   = j(dm, "not_md.fi")     # Creating file that is not .md file.
+mdwcf  = j(dmewcf, "dmewcf.md")      # .md file that is not exists but will be created and willed.
+mdo    = j(dm, "md.md")              # Creating .md file in the outermost of the directory.
+nmdo   = j(dm, "not_md.fi")          # Creating file that is not .md file.
 
-e      = [dm, dme, dmef, dmewcf, dmewf, dmme, dmne, dnmd, dmi, md, md1, md2, mdf, mdwf, nmd]
-ed     = [dm, dme, dmef, dmewcf, dmewf, dmme, dmne, dnmd, dmi]
-ef     = [md, md1, md2, mdf, mdwf, nmd]
+e      = [dm, dme, dmef, dmewcf, dmewf, dmme, dmne, dnmd, dmp, dmpn, dmi,\
+         md, md1, md2, mdf, mdp, mdpn, mdwf, nmd]
+ed     = [dm, dme, dmef, dmewcf, dmewf, dmme, dmne, dnmd, dmp, dmpn, dmi]
+ef     = [md, md1, md2, mdf, mdp, mdpn, mdwf, nmd]
 
 def su():
     for i in ed: cr(i, True)
     for i in ef: cr(i, False)
-    wm(mdf, var.smpl_txt)      # Create .md file that is filled with dummy text.
+
+    """ Create .md file that is filled with dummy text. """
+    wm(mdf, var.smpl_txt)
+
 def td(): dele(dm)
 
 class unit_test(TC):
@@ -118,6 +129,15 @@ class unit_test(TC):
         with self.assertRaises(EX_ND) : gm(mdo)
         with self.assertWarns(W_NT_MD): self.assertFalse(crm(nmdo))
 
+    def test_crt_nm(self):
+        put("cn(dme)"   , cn(dme)   , False)
+        put("cn(dmef)"  , cn(dmef)  , False)
+        put("cn(dmewcf)", cn(dmewcf), False)
+        put("cn(dmewf)" , cn(dmewf) , False)
+        put("cn(dmme)"  , cn(dmme)  , False)
+        put("cn(dmne)"  , cn(dmne)  , False)
+        put("cn(dnmd)"  , cn(dnmd))
+
     def test_get_md(self):
         self.assertEqual(gm(dme), md)
         self.assertEqual(gm(dmme), md1)
@@ -130,6 +150,8 @@ class unit_test(TC):
         i(dme)
         i(dmef)
         i(dmne)
+        i(dmp)
+        i(dmpn)
 
     def test_read_md(self):
         put("read_md(mdf)", r(mdf))

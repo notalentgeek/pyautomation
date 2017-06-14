@@ -9,7 +9,7 @@ from   dttz import chk_mn        as cmn
 from   dttz import chk_s         as cs
 from   dttz import chk_y         as cy
 from   dttz import chk_prefix    as cp
-from   dttz import create_prefix as crp
+from   dttz import crt_prefix    as crp
 from   dttz import get_d_n       as dn
 from   dttz import get_d_p       as dp
 from   dttz import get_h_n       as hn
@@ -26,7 +26,7 @@ from   dttz import get_y_n       as yn
 from   dttz import get_y_p       as yp
 
 class unit_test(TC):
-    def test_create_prefix(self): put("create_prefix(n())", crp(n()))
+    def test_create_prefix(self): put("crt_prefix(n())", crp(n()))
     def test_get_now      (self): put("get_now()", n())
     def test_get_now_n_ms (self): put("get_now_n_ms()", nnms())
     def test_get_tz       (self): put("get_tz(n())", gtz())
