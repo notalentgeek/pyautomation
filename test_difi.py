@@ -6,6 +6,7 @@ import warnings
 
 from difi import chk_exst as ce
 from difi import chk_exst_di as ced
+from difi import chk_exst_dnd as cd
 from difi import chk_exst_fi as cef
 from difi import cpy as c
 from difi import crt as cr
@@ -16,10 +17,11 @@ from difi import ren as r
 from pth import get_ap_innermst as gpi
 from pth import jo as j
 from pth import ncnp as n
-from exc import ExceptionNotAbsolutePath as EXC_NAP
-from exc import ExceptionSamePath as EXC_SP
-from wrn import WarningExists as W_E
-from wrn import WarningNotExists as W_NE
+from exc import ExceptionExistsDirectoryOrFile as EX_DF
+from exc import ExceptionNotAbsolutePath as EX_NAP
+from exc import ExceptionNotExistsDirectory as EX_ND
+from exc import ExceptionNotExistsDirectoryOrFile as EX_NDF
+from exc import ExceptionSamePath as EX_SP
 
 du = n("/home/{}".format(getpass.getuser()))
 dw = n("C:\\{}\\Documents and Settings\\My Documents".format(getpass.getuser()))
@@ -33,8 +35,6 @@ dd = j(dm, "dd") # Deleted test directory that is exists.
 de = j(dm, "de") # Test directory that is exists.
 dmv1 = j(dm, "dmv1") # Moved test directory 1 that is exists.
 dmv2 = j(dm, "dmv2") # Moved test directory 2 that is exists.
-dr1 = j(dm, "dr1") # Renamed test directory 1 that is exists.
-dr2 = j(dm, "dr2") # Renamed test directory 2 that is exists.
 fc = j(dm, "fc.fi") # Copied test file that is exists.
 fd = j(dm, "fd.fi") # Deleted test file that is exists.
 fe = j(dm, "fe.fi") # Test file that is exists.
@@ -43,11 +43,11 @@ fmv2 = j(dm, "fmv2.fi") # Moved test file 2 that is exists.
 fr1 = j(dm, "fr1.fi") # Renamed test file 1 that is exists.
 fr2 = j(dm, "fr2.fi") # Renamed test file 2 that is exists.
 
-e = [dm, dc, dd, de, dmv1, dmv2, dr1, dr2, fc, fd, fe, fmv1, fmv2, fr1, fr2]
-edf = [dm, dc, dd, de, dmv1, dmv2, dr1, dr2]
-ed = [dc, dd, de, dmv1, dmv2, dr1, dr2]
+e = [dm, dc, dd, de, dmv1, dmv2, fc, fd, fe, fmv1, fmv2, fr1, fr2]
+edf = [dm, dc, dd, de, dmv1, dmv2]
+ed = [dc, dd, de, dmv1, dmv2]
 ef = [fc, fd, fe, fmv1, fmv2, fr1, fr2]
-edef = [dc, dd, de, dmv1, dmv2, dr1, dr2, fc, fd, fe, fmv1, fmv2, fr1, fr2]
+edef = [dc, dd, de, dmv1, dmv2, fc, fd, fe, fmv1, fmv2, fr1, fr2]
 
 dne = j(dm, "dne") # Test directory that is not exists.
 dni = j(dm, "di\\") # Illegal directory that is not exists.
@@ -80,21 +80,28 @@ class unit_test(TC):
     def test_chk_exst(self):
         for i in e: self.assertTrue(ce(i))
         for i in ne: self.assertFalse(ce(i))
-        with self.assertRaises(EXC_NAP):
+        with self.assertRaises(EX_NAP):
             for i in ne_exc: ce(i)
 
     def test_chk_exst_di(self):
         for i in edf: self.assertTrue(ced(i))
         for i in ef: self.assertFalse(ced(i))
         for i in ne: self.assertFalse(ced(i))
-        with self.assertRaises(EXC_NAP):
+        with self.assertRaises(EX_NAP):
             for i in ne_exc: ced(i)
+
+    def test_chk_exst_dnd(self):
+        for i in ed: self.assertFalse(cd(i))
+        for i in ef:
+            with self.assertRaises(EX_ND): cd(i)
+        self.assertTrue(cd(dm))
+        with self.assertRaises(EX_NAP): cd(dnr)
 
     def test_chk_exst_fi(self):
         for i in edf: self.assertFalse(cef(i))
         for i in ef: self.assertTrue(cef(i))
         for i in ne: self.assertFalse(cef(i))
-        with self.assertRaises(EXC_NAP):
+        with self.assertRaises(EX_NAP):
             for i in ne_exc: cef(i)
 
     def test_cpy(self):
@@ -104,41 +111,40 @@ class unit_test(TC):
         self.assertTrue(c(de, dc)) # Old directory is replaced.
         self.assertTrue(c(fe, fc))
         self.assertTrue(c(fe, fc)) # Old file is replaced.
-        with self.assertRaises(EXC_NAP): c(dne, dnr)
-        with self.assertRaises(EXC_NAP): c(dnr, dne)
-        with self.assertRaises(EXC_NAP): c(dnr, dnr)
-        with self.assertRaises(EXC_NAP): c(fne, fnr)
-        with self.assertRaises(EXC_NAP): c(fnr, fne)
-        with self.assertRaises(EXC_NAP): c(fnr, fnr)
-        with self.assertRaises(EXC_SP): c(de, de)
-        with self.assertWarns(W_E): self.assertFalse(c(de, dc, False)) # Old directory is not replaced.
-        with self.assertWarns(W_E): self.assertFalse(c(fe, fc, False)) # Old file is not replaced.
-        with self.assertWarns(W_NE): self.assertFalse(c(dne, dc))
+        with self.assertRaises(EX_DF): c(de, dc, False) # Old directory is not replaced.
+        with self.assertRaises(EX_DF): c(fe, fc, False) # Old file is not replaced.
+        with self.assertRaises(EX_NAP): c(dne, dnr)
+        with self.assertRaises(EX_NAP): c(dnr, dne)
+        with self.assertRaises(EX_NAP): c(dnr, dnr)
+        with self.assertRaises(EX_NAP): c(fne, fnr)
+        with self.assertRaises(EX_NAP): c(fnr, fne)
+        with self.assertRaises(EX_NAP): c(fnr, fnr)
+        with self.assertRaises(EX_NDF): c(dne, dc)
+        with self.assertRaises(EX_SP): c(de, de)
 
     def test_crt(self):
         td() # Need to tear down the environment because this test meant to set up the environment.
         for i in edf: self.assertTrue(cr(i, True))
         for i in ef: self.assertTrue(cr(i, False))
         for i in edf:
-            with self.assertWarns(W_E): self.assertFalse(cr(i, True))
+            with self.assertRaises(EX_DF): cr(i, True)
         for i in ef:
-            with self.assertWarns(W_E): self.assertFalse(cr(i, False))
-        with self.assertRaises(EXC_NAP): cr(dnr, True)
-        with self.assertRaises(EXC_NAP): cr(fnr, False)
+            with self.assertRaises(EX_DF): cr(i, False)
+        with self.assertRaises(EX_NAP): cr(dnr, True)
+        with self.assertRaises(EX_NAP): cr(fnr, False)
 
     def test_de(self):
         for i in ed: self.assertTrue(dele(i))
         for i in ef: self.assertTrue(dele(i))
-        for i in ed:
-            with self.assertWarns(W_NE): self.assertFalse(dele(i))
-        for i in ef:
-            with self.assertWarns(W_NE): self.assertFalse(dele(i))
+        for i in ed: self.assertFalse(dele(i))
+        for i in ef: self.assertFalse(dele(i))
         self.assertTrue(dele(dm))
-        with self.assertRaises(EXC_NAP): dele(dnr)
-        with self.assertRaises(EXC_NAP): dele(fnr)
+        with self.assertRaises(EX_NAP): dele(dnr)
+        with self.assertRaises(EX_NAP): dele(fnr)
 
     def test_get_lst(self):
-        for i in edef: self.assertTrue(gpi(i) in gl(dm));
+        for i in edef: self.assertTrue(gpi(i) in gl(dm))
+        with self.assertRaises(EX_NAP): gl(dnr)
 
     def test_mov(self):
         dele(dmv2); dele(fmv2); # Delete the move directory 2 and move file 2.
@@ -146,16 +152,16 @@ class unit_test(TC):
         self.assertTrue(m(dmv1, dmv2)); cr(dmv1, True); # Re - create move directory 1 and move directory 1 is replaced.
         self.assertTrue(m(fmv1, fmv2)); cr(fmv1, False); # Re - create move file 1.
         self.assertTrue(m(fmv1, fmv2)); cr(fmv1, False); # Re - create move file 1 and move file 1 is replaced.
-        with self.assertRaises(EXC_NAP): m(dne, dnr)
-        with self.assertRaises(EXC_NAP): m(dnr, dne)
-        with self.assertRaises(EXC_NAP): m(fne, fnr)
-        with self.assertRaises(EXC_NAP): m(fnr, fne)
-        with self.assertRaises(EXC_SP): m(de, de)
-        with self.assertWarns(W_E): self.assertFalse(m(dmv1, dmv2, False)) # Old move directory 1 is not replaced.
-        with self.assertWarns(W_E): self.assertFalse(m(fmv1, fmv2, False)) # Old move file 1 is not replaced.
+        with self.assertRaises(EX_DF): m(dmv1, dmv2, False) # Old move directory 1 is not replaced.
+        with self.assertRaises(EX_DF): m(fmv1, fmv2, False) # Old move file 1 is not replaced.
+        with self.assertRaises(EX_NAP): m(dne, dnr)
+        with self.assertRaises(EX_NAP): m(dnr, dne)
+        with self.assertRaises(EX_NAP): m(fne, fnr)
+        with self.assertRaises(EX_NAP): m(fnr, fne)
+        with self.assertRaises(EX_SP): m(de, de)
         dele(dmv1); dele(fmv1); # Delete the move directory 1 and move file 1
-        with self.assertWarns(W_NE): self.assertFalse(m(dmv1, dmv2))
-        with self.assertWarns(W_NE): self.assertFalse(m(fmv1, fmv2))
+        with self.assertRaises(EX_NDF): m(dmv1, dmv2)
+        with self.assertRaises(EX_NDF): m(fmv1, fmv2)
 
     def test_ren(self):
         self.assertTrue(r(de, dren))
@@ -164,12 +170,12 @@ class unit_test(TC):
         self.assertTrue(r(de, dren)) # Replace.
         self.assertTrue(r(fe, fren)) # Replace.
         cr(de, True); cr(fe, False); # Re - create.
-        with self.assertRaises(EXC_NAP): self.assertFalse(r(dnr, dren))
-        with self.assertRaises(EXC_NAP): self.assertFalse(r(fnr, fren))
-        with self.assertRaises(EXC_SP): r(de, "de")
-        with self.assertWarns(W_E): self.assertFalse(r(de, dren, False)) # Not replace.
-        with self.assertWarns(W_E): self.assertFalse(r(fe, fren, False)) # Not replace.
-        with self.assertWarns(W_NE): self.assertFalse(r(dne, dren))
-        with self.assertWarns(W_NE): self.assertFalse(r(fne, fren))
+        with self.assertRaises(EX_NAP): r(dnr, dren)
+        with self.assertRaises(EX_NAP): r(fnr, fren)
+        with self.assertRaises(EX_SP): r(de, "de")
+        with self.assertRaises(EX_DF): r(de, dren, False)
+        with self.assertRaises(EX_DF): r(fe, fren, False)
+        with self.assertRaises(EX_NDF): r(dne, dren)
+        with self.assertRaises(EX_NDF): r(fne, fren)
 
 if __name__ == "__main__": unittest.main()

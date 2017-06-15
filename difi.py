@@ -6,13 +6,11 @@ import unittest
 
 import exc
 import pth
-import wrn
 
 """ `ap` refers to absolute path. """
 
 """ Check if path is exists. """
 def chk_exst(_ap:str) -> bool:
-    """ Make sure the argument is an absolute path. """
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
     return os.path.exists(_ap)
 
@@ -20,15 +18,27 @@ def chk_exst(_ap:str) -> bool:
 
 """ Check if path is exists and is a directory. """
 def chk_exst_di(_ap:str) -> bool:
-    """ Make sure the argument is an absolute path. """
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
     return os.path.isdir(_ap)
 
 
 
+""" Function to check if there is a directory inside a directory. """
+def chk_exst_dnd(_ap:str) -> bool:
+    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
+
+    l = get_lst(_ap)
+    for i in l:
+        j = pth.jo(_ap, i)
+        if chk_exst_di(j): return True
+
+    return False
+
+
+
 """ Check if path is exists and is a file. """
 def chk_exst_fi(_ap:str) -> bool:
-    """ Make sure the argument is an absolute path. """
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
     return os.path.isfile(_ap)
 
@@ -41,16 +51,10 @@ def cpy(
     _rep:bool=True # Replace (not merge) existing duplicate at target directory.
 ) -> bool:
     if not pth.chk_abs(_ap) or not pth.chk_abs(_ap_trg): raise exc.ExceptionNotAbsolutePath()
-
-    """ Check if the source path is an existing directory or file or not. """
-    if not chk_exst(_ap): wrn.wrn_nt_exst(); return False;
-
-    """ Check if both paths are the same. """
+    if not chk_exst(_ap): raise exc.ExceptionNotExistsDirectoryOrFile()
     if _ap == _ap_trg: raise exc.ExceptionSamePath()
-
-    """ Replace the target directory or folder or nor. """
     if _rep and chk_exst(_ap_trg): de(_ap_trg)
-    elif not _rep and chk_exst(_ap_trg): wrn.wrn_exst(); return False;
+    elif not _rep and chk_exst(_ap_trg): raise exc.ExceptionExistsDirectoryOrFile()
 
     """ Copy! """
     if   chk_exst_di(_ap): shutil.copytree(_ap, _ap_trg); return True;
@@ -66,12 +70,7 @@ def crt(
     _is_di:bool # Set `True` to create directory. Set `False` to create file.
 ) -> bool:
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-
-    """ If the soon - to - be create directory or file is already exists. """
-    if (_is_di and chk_exst_di(_ap)) or (not _is_di and chk_exst_fi(_ap)):
-        """ Give a warning and then return `False`. """
-        wrn.wrn_exst()
-        return False
+    if (_is_di and chk_exst_di(_ap)) or (not _is_di and chk_exst_fi(_ap)): raise exc.ExceptionExistsDirectoryOrFile()
 
     """ Create directory or create file. """
     if _is_di: os.makedirs(_ap); return True;
@@ -84,9 +83,7 @@ def crt(
 """ Delete a directory or a file. """
 def de(_ap:str) -> bool:
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-
-    """ Check if the source path is an existing directory or file or not. """
-    if not chk_exst(_ap): wrn.wrn_nt_exst(); return False;
+    if not chk_exst(_ap): return False
 
     """ Delete! """
     if chk_exst_di(_ap): shutil.rmtree(_ap); return True;
@@ -100,6 +97,8 @@ def de(_ap:str) -> bool:
 directories and files) from a provided absolute path.
 """
 def get_lst(_ap:str) -> list:
+    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+
     return os.listdir(_ap)
 
 
@@ -111,16 +110,10 @@ def mov(
     _rep:bool=True # Replace (not merge) existing duplicate at target directory.
 ) -> bool:
     if not pth.chk_abs(_ap) or not pth.chk_abs(_ap_trg): raise exc.ExceptionNotAbsolutePath()
-
-    """ Check if the source path is an existing directory or file or not. """
-    if not chk_exst(_ap): wrn.wrn_nt_exst(); return False;
-
-    """ Check if both paths are the same. """
+    if not chk_exst(_ap): raise exc.ExceptionNotExistsDirectoryOrFile()
     if _ap == _ap_trg: raise exc.ExceptionSamePath()
-
-    """ Replace the target directory or folder or nor. """
     if _rep and chk_exst(_ap_trg): de(_ap_trg)
-    elif not _rep and chk_exst(_ap_trg): wrn.wrn_exst(); return False;
+    elif not _rep and chk_exst(_ap_trg): raise exc.ExceptionExistsDirectoryOrFile()
 
     """ Move! """
     shutil.move(_ap, _ap_trg)
@@ -135,19 +128,11 @@ def ren(
     _rep:bool=True # Replace (not merge) existing duplicate at target directory.
 ) -> bool:
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-
-    """ Check if the source path is an existing directory or file or not. """
-    if not chk_exst(_ap): wrn.wrn_nt_exst(); return False;
-
-    ap_1 = pth.get_ap_1(_ap)
-    ap_trg = pth.jo(ap_1, _nm)
-
-    """ Check if both paths are the same. """
+    if not chk_exst(_ap): raise exc.ExceptionNotExistsDirectoryOrFile()
+    ap_1 = pth.get_ap_1(_ap); ap_trg = pth.jo(ap_1, _nm)
     if _ap == ap_trg: raise exc.ExceptionSamePath()
-
-    """ Replace the target directory or folder or nor. """
     if _rep and chk_exst(ap_trg): de(ap_trg)
-    elif not _rep and chk_exst(ap_trg): wrn.wrn_exst(); return False;
+    elif not _rep and chk_exst(ap_trg): raise exc.ExceptionExistsDirectoryOrFile()
 
     shutil.move(_ap, ap_trg)
 

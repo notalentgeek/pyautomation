@@ -6,6 +6,7 @@
 * Create function to recursively remove previous naming convention and its numbering. For example from "19900101-0000-gmt+2-project-log-1" into "19900101-0000-gmt+2".
 * Create function to recursively rename things.
 * Create function to take directory or file creation time.
+* Manage exceptions and warnings.
 
 ## Create function to initiate note if there is no .md exists.
 * [DONE] Create function to check if there are .md files exists.

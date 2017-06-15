@@ -4,7 +4,6 @@ import exc
 import op
 import pth
 import var
-import wrn
 
 def ar_md_(
     _ap:str,  # Absolute path to the .md file.
@@ -13,9 +12,9 @@ def ar_md_(
 ) -> bool:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.chk_exst_fi(_ap): wrn.wrn_nt_exst(); return False;
-    if not pth.get_ext(_ap) == "md": wrn.wrn_nt_md(); return False;
-    if not all(isinstance(i, str) for i in _sl): wrn.wrn_nt_a_str(); return False;
+    if not difi.chk_exst_fi(_ap): raise exc.ExceptionExistsFile()
+    if not pth.get_ext(_ap) == "md": raise exc.ExceptionNotExistsMDFile()
+    if not all(isinstance(i, str) for i in _sl): raise exc.ExceptionListIsNotAllString()
 
     md = open(_ap, _m)
     for i in _sl: print(i, end="", file=md)
@@ -31,7 +30,7 @@ def write_b_md(_ap:str): return write_md(_ap, [""]) # Make the .md file to be em
 def chk_exst_m_md(_ap:str) -> bool:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotDirectory()
+    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
 
     c = 0
     for i in difi.get_lst(_ap):
@@ -44,7 +43,7 @@ def chk_exst_m_md(_ap:str) -> bool:
 def chk_exst_md(_ap:str,) -> bool:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotDirectory()
+    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
 
     for i in difi.get_lst(_ap):
         if pth.get_ext(i) == "md": return True
@@ -61,8 +60,8 @@ def chk_md_b(_ap:str) -> bool: _ap = pth.ncnp(_ap); return True if len(read_md(_
 def crt_md(_ap:str) -> bool:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.chk_exst_di(pth.get_ap_1(_ap)): raise exc.ExceptionNotDirectory()
-    if not pth.get_ext(_ap) == "md": wrn.wrn_nt_md(); return False
+    if not difi.chk_exst_di(pth.get_ap_1(_ap)): raise exc.ExceptionNotExistsDirectory()
+    if not pth.get_ext(_ap) == "md": raise exc.ExceptionNotExistsMDFile()
 
     difi.crt(_ap, False)
     return True
@@ -89,11 +88,30 @@ def crt_nm(_ap:str) -> list:
 
 
 
+""" Function to list all available files in in the `_ap`.
+This function fails if there is at least a directory in `_ap`.
+This function fails if there are multiple .md files.
+"""
+def get_lst_n_md(_ap:str) -> list:
+    if not pth.chk_abs(_ap): exc.ExceptionNotAbsolutePath()
+    if difi.chk_exst_di(_ap): exc.ExceptionNotExistsDirectory()
+    if chk_exst_m_md(_ap): raise exc.ExceptionExistMultipleMDFiles()
+    if difi.chk_exst_dnd(_ap): raise exc.ExceptionExistsDirectory()
+
+    l = difi.get_lst(_ap)
+    for i in l:
+        if pth.get_ext(i) == "md": l.remove(i)
+
+    return l
+
+
+
+
 """ Get absolute path to the first .md file. """
 def get_md(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotDirectory()
+    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
 
     l = []
     for i in difi.get_lst(_ap):
@@ -103,21 +121,23 @@ def get_md(_ap:str) -> str:
 
 
 
-""" PENDING: Function to initiate note. """
+"""
+PENDING: Function to initiate note.
+PENDING: This function fails if there are multiple .md files.
+"""
 def init(_ap:str) -> bool:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotDirectory()
-    if chk_exst_m_md(_ap): wrn.wrn_m_md(); return False;
+    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
+    if chk_exst_m_md(_ap): raise exc.ExceptionExistsMultipleMDFiles()
 
+    inmst = pth.get_ap_innermst(_ap) # Get the note folder name.
     nm = crt_nm(_ap)
 
-    """ note directory processing.
-    If the note directory is not properly named.
-    If the note directory is properly named.
-
-    PENDING: Update the `_ap` is the note directory is not properly named.
-    """
+    """ Check if the note folder has proper naming (check the prefix). """
+    if not dttz.chk_prefix(inmst):
+        difi.ren(_ap, nm[2]) # Do not forget the second argument of `difi.ren()` is the directory/file name, not the full absolute path!
+        _ap =  nm[0] # Update the _ap.
 
     """ .md file processing.
     If the .md file is not exist.
@@ -125,8 +145,8 @@ def init(_ap:str) -> bool:
     """
     if not chk_exst_md(_ap):
         """ Create the .md file. """
-        crt_md(pth.jo(_ap, nm[2]))
-        md = get_md(_ap)
+        md = pth.jo(_ap, "{}{}".format(nm[2], ".md"))
+        crt_md(md)
 
         print("\n{}".format("="*50))
         print(_ap)
@@ -169,8 +189,8 @@ function only able to read from an .md file.
 def read_md(_ap:str) -> list:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotFile()
-    if not pth.get_ext(_ap) == "md": wrn.wrn_nt_md(); return False
+    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
+    if not pth.get_ext(_ap) == "md": raise exc.ExceptionNotExistsMDFile()
 
     md = open(_ap, "r")
     mdl = md.readlines() # Read the content of the .md file.
