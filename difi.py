@@ -54,7 +54,7 @@ def cpy(
     if not chk_exst(_ap): raise exc.ExceptionNotExistsDirectoryOrFile()
     if _ap == _ap_trg: raise exc.ExceptionSamePath()
     if _rep and chk_exst(_ap_trg): de(_ap_trg)
-    elif not _rep and chk_exst(_ap_trg): raise exc.ExceptionExistsDirectoryOrFile()
+    elif not _rep and chk_exst(_ap_trg): return False
 
     """ Copy! """
     if   chk_exst_di(_ap): shutil.copytree(_ap, _ap_trg); return True;
@@ -70,7 +70,7 @@ def crt(
     _is_di:bool # Set `True` to create directory. Set `False` to create file.
 ) -> bool:
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if (_is_di and chk_exst_di(_ap)) or (not _is_di and chk_exst_fi(_ap)): raise exc.ExceptionExistsDirectoryOrFile()
+    if (_is_di and chk_exst_di(_ap)) or (not _is_di and chk_exst_fi(_ap)): return False
 
     """ Create directory or create file. """
     if _is_di: os.makedirs(_ap); return True;
@@ -113,7 +113,7 @@ def mov(
     if not chk_exst(_ap): raise exc.ExceptionNotExistsDirectoryOrFile()
     if _ap == _ap_trg: raise exc.ExceptionSamePath()
     if _rep and chk_exst(_ap_trg): de(_ap_trg)
-    elif not _rep and chk_exst(_ap_trg): raise exc.ExceptionExistsDirectoryOrFile()
+    elif not _rep and chk_exst(_ap_trg): return False
 
     """ Move! """
     shutil.move(_ap, _ap_trg)
@@ -132,7 +132,7 @@ def ren(
     ap_1 = pth.get_ap_1(_ap); ap_trg = pth.jo(ap_1, _nm)
     if _ap == ap_trg: raise exc.ExceptionSamePath()
     if _rep and chk_exst(ap_trg): de(ap_trg)
-    elif not _rep and chk_exst(ap_trg): raise exc.ExceptionExistsDirectoryOrFile()
+    elif not _rep and chk_exst(ap_trg): return False
 
     shutil.move(_ap, ap_trg)
 

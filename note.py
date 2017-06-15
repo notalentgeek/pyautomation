@@ -148,11 +148,13 @@ def init(_ap:str) -> bool:
         md = pth.jo(_ap, "{}{}".format(nm[2], ".md"))
         crt_md(md)
 
-        print("\n{}".format("="*50))
+        li = get_lst_n_md(_ap)
+        print("\n{0}{1}{0}".format("="*20, "*"*10))
+        print(li)
         print(_ap)
         print("there is no md file" if md == "" else md)
         print("md file is not exist")
-        print("="*50)
+        print("{0}{1}{0}".format("="*20, "*"*10))
 
         return True
 

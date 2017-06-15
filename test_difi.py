@@ -72,6 +72,7 @@ class unit_test(TC):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             su()
+
     def tearDown(self):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -111,8 +112,8 @@ class unit_test(TC):
         self.assertTrue(c(de, dc)) # Old directory is replaced.
         self.assertTrue(c(fe, fc))
         self.assertTrue(c(fe, fc)) # Old file is replaced.
-        with self.assertRaises(EX_DF): c(de, dc, False) # Old directory is not replaced.
-        with self.assertRaises(EX_DF): c(fe, fc, False) # Old file is not replaced.
+        self.assertFalse(c(de, dc, False)) # Old directory is not replaced.
+        self.assertFalse(c(fe, fc, False)) # Old file is not replaced.
         with self.assertRaises(EX_NAP): c(dne, dnr)
         with self.assertRaises(EX_NAP): c(dnr, dne)
         with self.assertRaises(EX_NAP): c(dnr, dnr)
@@ -127,9 +128,9 @@ class unit_test(TC):
         for i in edf: self.assertTrue(cr(i, True))
         for i in ef: self.assertTrue(cr(i, False))
         for i in edf:
-            with self.assertRaises(EX_DF): cr(i, True)
+            self.assertFalse(cr(i, True))
         for i in ef:
-            with self.assertRaises(EX_DF): cr(i, False)
+            self.assertFalse(cr(i, False))
         with self.assertRaises(EX_NAP): cr(dnr, True)
         with self.assertRaises(EX_NAP): cr(fnr, False)
 
@@ -152,8 +153,8 @@ class unit_test(TC):
         self.assertTrue(m(dmv1, dmv2)); cr(dmv1, True); # Re - create move directory 1 and move directory 1 is replaced.
         self.assertTrue(m(fmv1, fmv2)); cr(fmv1, False); # Re - create move file 1.
         self.assertTrue(m(fmv1, fmv2)); cr(fmv1, False); # Re - create move file 1 and move file 1 is replaced.
-        with self.assertRaises(EX_DF): m(dmv1, dmv2, False) # Old move directory 1 is not replaced.
-        with self.assertRaises(EX_DF): m(fmv1, fmv2, False) # Old move file 1 is not replaced.
+        self.assertFalse(m(dmv1, dmv2, False)) # Old move directory 1 is not replaced.
+        self.assertFalse(m(fmv1, fmv2, False)) # Old move file 1 is not replaced.
         with self.assertRaises(EX_NAP): m(dne, dnr)
         with self.assertRaises(EX_NAP): m(dnr, dne)
         with self.assertRaises(EX_NAP): m(fne, fnr)
@@ -173,8 +174,8 @@ class unit_test(TC):
         with self.assertRaises(EX_NAP): r(dnr, dren)
         with self.assertRaises(EX_NAP): r(fnr, fren)
         with self.assertRaises(EX_SP): r(de, "de")
-        with self.assertRaises(EX_DF): r(de, dren, False)
-        with self.assertRaises(EX_DF): r(fe, fren, False)
+        self.assertFalse(r(de, dren, False))
+        self.assertFalse(r(fe, fren, False))
         with self.assertRaises(EX_NDF): r(dne, dren)
         with self.assertRaises(EX_NDF): r(fne, fren)
 

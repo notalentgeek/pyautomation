@@ -45,7 +45,7 @@ dmewf = j(dm, "dmewf") # Directory with .md file exists and will be filled with 
 dmme = j(dm, "dmme") # Directory with .md files exist.
 dmne = j(dm, "dmne") # Directory with .md file not exists.
 dnmd = j(dm, "dnmd") # Directory with non .md file exists.
-dnmdf = j(dm, "dwf") # Directory with .md file not exists and with several files exist.
+dnmdf = j(dm, "dnmdf") # Directory with .md file not exists and with several files exist.
 
 dmp = j(dm, "20000101-0000-dmp") # Directory with properly named .md file and folder.
 dmpn = j(dm, "20000101-0000-dmpn") # Directory with proper name but different name between .md file and folder.
@@ -55,14 +55,14 @@ dmi = j(dm, "di") # Directory for initiating note.
 dre = n("./md.md") # Relative directory.
 f1md = j(dmdf, "f1md.fi") # Sample file located in a directory where there is .md file.
 f1md_md = j(dmdf, "f1md_md.md") # Sample .md file located in a directory where there are multiple files.
-f1nmd = j(dnmdf, "f1nmd") # Sample file located in a directory where there is no .md file.
+f1nmd = j(dnmdf, "f1nmd.fi") # Sample file located in a directory where there is no .md file.
 f2md = j(dmdf, "f2md.fi") # Sample file located in a directory where there is .md file.
-f2nmd = j(dnmdf, "f2nmd") # Sample file located in a directory where there is no .md file.
+f2nmd = j(dnmdf, "f2nmd.fi") # Sample file located in a directory where there is no .md file.
 md = j(dme, "md.md") # Empty .md file.
 md1 = j(dmme, "md1.md") # Empty first  .md file.
 md2 = j(dmme, "md2.md") # Empty second .md file.
 mdf = j(dmef, "mdf.md") # .md file that is filled with dummy text.
-mdp = j(dmp, "20000101-0000-dmp") # .md file with prefix.
+mdp = j(dmp, "20000101-0000-dmp.md") # .md file with prefix.
 mdpn = j(dmpn, "md.md") # .md file without prefix in folder with proper name.
 mdwf = j(dmewf, "mdwf.md") # .md file that will be filled with dummy text.
 nmd = j(dnmd, "not_md.fi") # Non .md file that is exists.
@@ -164,11 +164,13 @@ class unit_test(TC):
         with self.assertRaises(EX_ND): gm(md)
 
     def test_init(self):
+        i(dmdf)
         i(dme)
         i(dmef)
         i(dmne)
         i(dmp)
         i(dmpn)
+        i(dnmdf)
 
     def test_read_md(self):
         put("read_md(mdf)", r(mdf))
