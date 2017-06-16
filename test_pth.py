@@ -4,29 +4,30 @@ import os
 import unittest
 
 from pth import chk_abs as ca
+from pth import chk_ext_img as cei
 from pth import chk_s_ap_1 as csp1
 from pth import chk_s_ap_x as cspx
 from pth import get_ap_1 as gp1
 from pth import get_ap_innermst as gpi
 from pth import get_ap_x as gpx
 from pth import get_ext as ge
+from pth import get_no_ext as gne
 from pth import get_sp as gsp
 from pth import jo as j
 from pth import ncnp as n
 from pth import rm_sp_lst as rsl
 from exc import ExceptionNotAbsolutePath as EX_NAP
-
-ext = "fi"
+from exc import ExceptionNotExistsFileExtension as EX_NFE
 
 p1 = n("/pth1/pth2/pth3")
 p1d = n("/pth1/./pth2")
 p2 = n("/pth4/pth5")
 p2d = n("/pth3/../pth4")
 pa = n("/pth1/pth2/pth3/pth4/pth5")
-pf = n("/pth1/pth2/pth3/pth4/pth5/fi.{}".format(ext))
+pf = n("/pth1/pth2/pth3/pth4/pth5/fi.fi")
 pfsp = n("pth1/pth2/pth3/pth4/pth5/")
 pi = n("/pth1/pth2/pth3/pth4/pth5\\")
-pjf = n("fi.{}".format(ext))
+pjf = n("fi.fi")
 plsp = n("/pth1/pth2/pth3/pth4/pth5/")
 pr = n("./pth1/pth2/pth3/pth4/pth5")
 
@@ -39,6 +40,14 @@ class unit_test(TC):
         self.assertTrue(ca(p2d))
         self.assertTrue(ca(pa))
 
+    def test_chk_ext_img(self):
+        self.assertFalse(cei("fi.fi"))
+        self.assertTrue(cei("fi.bmp"))
+        self.assertTrue(cei("fi.jpeg"))
+        self.assertTrue(cei("fi.jpg"))
+        self.assertTrue(cei("fi.png"))
+        with self.assertRaises(EX_NFE): cei("fi")
+
     def test_chk_s_ap_1(self):
         self.assertFalse(csp1(p1, p2))
         self.assertFalse(csp1(p1, pi))
@@ -50,7 +59,6 @@ class unit_test(TC):
         with self.assertRaises(EX_NAP): csp1(pr, pi)
         with self.assertRaises(EX_NAP): csp1(pr, pr)
         with self.assertRaises(EX_NAP): self.assertFalse(csp1(pi, pr))
-
 
     def test_chk_s_ap_x(self):
         self.assertFalse(cspx(p1, p2, 2))
@@ -118,8 +126,12 @@ class unit_test(TC):
 
     def test_get_ext(self):
         self.assertEqual(ge(pa), "")
-        self.assertEqual(ge(pf), ext)
-        self.assertEqual(ge(pjf), ext)
+        self.assertEqual(ge(pf), "fi")
+        self.assertEqual(ge(pjf), "fi")
+
+    def test_get_no_ext(self):
+        self.assertEqual(gne(pf), n("/pth1/pth2/pth3/pth4/pth5/fi"))
+        self.assertEqual(gne(pjf), "fi")
 
     def test_get_sp(self):
         if p == "darwin" or p == "linux": self.assertEqual(gsp(), "/")

@@ -1,3 +1,5 @@
+import subprocess
+
 import difi
 import dttz
 import exc
@@ -40,7 +42,7 @@ def chk_exst_m_md(_ap:str) -> bool:
 
 
 """ Function to check if there is an .md file in `_ap`. """
-def chk_exst_md(_ap:str,) -> bool:
+def chk_exst_md(_ap:str) -> bool:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
@@ -48,6 +50,36 @@ def chk_exst_md(_ap:str,) -> bool:
     for i in difi.get_lst(_ap):
         if pth.get_ext(i) == "md": return True
     return False
+
+
+
+""" Function to change an image file into 600 x 600 pixels .png file. """
+def cnvrt_img_600(_ap:str) -> bool:
+    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
+    if not pth.chk_ext_img(_ap): raise exc.ExceptionNotExistsImage()
+
+    """ Original image file. """
+    org_ap_1 = pth.get_ap_1(_ap)
+    org = pth.get_ap_innermst(_ap)
+    org_ext = pth.get_ext(org)
+    org_n_ext = org.replace(".{}".format(org_ext), "")
+
+    """ Backup image file. """
+    bnm = "{}.{}".format(org, var.bak)
+    bnm_ap = pth.jo(org_ap_1, bnm)
+
+    """ Converted image file. """
+    cnvrt = "{}.{}".format(org_n_ext, "png")
+    cnvrt_ap = pth.jo(org_ap_1, cnvrt)
+
+    """ Convert the image into .png file format with 600 pixels width. """
+    difi.cpy(_ap, bnm_ap) # Copy.
+    com = "convert \"{}[600x]\" {}".format(_ap, cnvrt_ap) # Convert terminal command.
+    subprocess.call([com], shell=True) # Call the command.
+    difi.de(_ap) # Delete the original file (the backup image file is still present).
+
+    return True
 
 
 
@@ -85,6 +117,14 @@ def crt_nm(_ap:str) -> list:
 
     """ Return path to directory, path to .md file, and general note name. """
     return [di, fi, nm]
+
+
+
+""" Function to make an inputted string comes out as an .md string attachment. """
+def crt_nm_fi(_s:str, _img:bool) -> str:
+    if not bool(pth.get_ext(_s)): raise exc.ExceptionNotExistsFileExtension()
+    if _img: return "![./{0}](./{0})".format(_s)
+    else: return "[./{0}](./{0})".format(_s)
 
 
 
@@ -145,43 +185,39 @@ def init(_ap:str) -> bool:
     """
     if not chk_exst_md(_ap):
         """ Create the .md file. """
-        md = pth.jo(_ap, "{}{}".format(nm[2], ".md"))
-        crt_md(md)
+        crt_md(nm[1]) # Create the .md file.
+        md = open(nm[1], "w") # Open the .md file.
 
         li = get_lst_n_md(_ap)
-        print("\n{0}{1}{0}".format("="*20, "*"*10))
-        print(li)
-        print(_ap)
-        print("there is no md file" if md == "" else md)
-        print("md file is not exist")
-        print("{0}{1}{0}".format("="*20, "*"*10))
+        li = op.sort_lst(li)
+
+        """ `inx` is the file index number within the `li` list. """
+        for inx, i in enumerate(li):
+            """ Input file into .md file.
+            `inx` starts at `0` so add it with `1` to get start at index `1`.
+            """
+            inew = "{1}{0}{2}{0}{3}".format(var.note_sp, nm[2], (inx + 1), i)
+            i = pth.jo(_ap, i)
+            img = pth.chk_ext_img(inew)
+            difi.ren(i, inew)
+            imd = crt_nm_fi(inew, img) # String formatted for .md file attachment.
+            print(imd, end="\n\n", file=md)
+
+            """ Change the image resolution using ImageMagic. """
+            if img:
+                inew = pth.jo(_ap, inew)
+                cnvrt_img_600(inew)
+
+        md.close()
+
+        # PENDING: Debug purpose only please delete later.
+        #md = open(nm[1], "r")
+        #print("="*50)
+        #print(md.readlines())
+        #print("="*50)
+        #md.close()
 
         return True
-
-    else:
-        """ Get the .md file. """
-        md = get_md(_ap)
-
-        """ Check of the note folder has correct naming convention. """
-        print("\n{}".format("="*50))
-        if not dttz.chk_prefix(md):
-            print("folder prefix convention is wrong")
-
-        if chk_md_b(md):
-            print(_ap)
-            print("there is no md file" if md == "" else md)
-            print("md file is exist but blank")
-            print("="*50)
-
-            return True
-
-        else:
-            print(_ap)
-            print("there is no md file" if md == "" else md)
-            print("md file is exists but not blank")
-            print("="*50)
-
-            return False
 
 
 

@@ -1,6 +1,7 @@
 from sys import platform
 import os
 import exc
+import var
 
 """
 `chk` refers to "check".
@@ -12,6 +13,15 @@ import exc
 relative path.
 """
 def chk_abs(_p:str) -> bool: return os.path.isabs(ncnp(_p))
+
+
+
+""" Function to check if a file name is an image file. """
+def chk_ext_img(_s:str) -> bool:
+    if not bool(get_ext(_s)): raise exc.ExceptionNotExistsFileExtension()
+    if get_ext(_s) in var.img_ext: return True
+
+    return False
 
 
 
@@ -77,6 +87,15 @@ def get_ap_innermst(_ap:str) -> str:
 def get_ext(_p:str) -> str:
     ext = os.path.splitext(_p)[1]
     return ext[1:] if len(ext) > 1 else ""
+
+
+
+""" Function to get filename without the extension. """
+def get_no_ext(_s:str):
+    if not bool(get_ext(_s)): return _s # If there is no extension then return `_s` back.
+    s_ext = get_ext(_s)
+
+    return _s.replace(".{}".format(s_ext), "")
 
 
 
