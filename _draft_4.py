@@ -57,11 +57,34 @@ def chk_exst_md(_ap:str, _m:bool=False) -> bool:
 
 
 
-""" PENDING: Function to do ImageMagick conversion into proper 600 pixels image. """
-def cnvrt_img_600(_ap:str) -> bool:
+""" A function to convert image in place. The `ip` in this function name
+stands for in position.
+
+`_w` parameter is used to determine height.
+`_h` parameter is used to determine width.
+One of these parameter can be set to `0` and the other parameter will
+adjust while the `0` - ed parameter will adjust in proportion.
+
+PENDING: If later necessary please move this function into
+specific ImageMagick Python file.
+"""
+def cnvrt_img_ip(_ap:str, _w:int=0, _h:int=0) -> bool:
     _ap = pth.ncnp(_ap)
+    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
+    if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
+
+    _w = 0 if _w <= 0 else _w
+    _h = 0 if _h <= 0 else _h
+    nm_fi = crt_nm_fi(_ap)
+    difi.ren(_ap, nm_fi.nm_bak)
+
+    com = "convert \"{}[{}x{}]\" \"{}\"".format(nm_fi.ap_bak, _w, _h, nm_fi.ap_cn) # This is the terminal command to convert image file with ImageMagick.
+    subprocess.call([com], shell=True) # Execute the terminal command.
 
     return True
+
+def cnvrt_img_ip_600(_ap:str) -> bool: cnvrt_img_ip(_ap, 600); return True;
 
 
 
@@ -108,11 +131,13 @@ def crt_nm(_ap:str) -> object:
     di = pth.jo(pth.get_ap_1(_ap), nm) # Absolute path into the note folder.
     fi = pth.jo(di, "{}.{}".format(nm, "md")) # Absolute path into the .md file in the note folder.
 
-    return struct(fi=fi , di=di, nm=nm)
+    return op.struct(fi=fi , di=di, nm=nm)
 
 
 
-""" Create naming convention for original, backup, and converted file name.
+""" Create naming convention for original, backup, and converted file name. With
+this note taking convention, the `_ap` provided here should be already be
+the renamed version of the file (with prefix).
 
 PENDING: This function is not yet unit tested.
 """
@@ -124,17 +149,18 @@ def crt_nm_fi(_ap:str) -> object:
     org_ap_1 = pth.get_ap_1(_ap)
     org = pth.get_ap_innermst(_ap)
     org_ext = pth.get_ext(org)
-    org_n_ext = org.replace(".{}".format(org_ext), "")
+    org_n_ext = pth.rm_ext(org, org_ext)
 
     """ Backup image file. """
-    bnm = "{}.{}".format(org, var.bak)
+
+    bnm = "{}_{}.{}".format(org, var.bak, org_ext)
     bnm_ap = pth.jo(org_ap_1, bnm)
 
     """ Converted image file. """
     cnvrt = "{}.{}".format(org_n_ext, "png")
     cnvrt_ap = pth.jo(org_ap_1, cnvrt)
 
-    return struct(bak_nm=bnm, bak_ap=bnm_ap, cn_nm=cnvrt, cn_ap=cnvrt_ap)
+    return op.struct(nm_bak=bnm, ap_bak=bnm_ap, nm_cn=cnvrt, ap_cn=cnvrt_ap)
 
 
 

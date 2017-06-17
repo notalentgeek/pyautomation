@@ -126,6 +126,21 @@ def ncnp(_ap:str) -> str:
 
 
 
+""" Function to remove file extension. Please put the extension
+without the ".". For example, please input ".jpg" as just "jpg".
+
+
+PENDING: This function is not yet unit tested.
+"""
+def rm_ext(_s:str, _ext:str) -> str:
+    if not bool(get_ext(_s)): raise exc.ExceptionNotExistsFileExtension()
+    return _s.replace(".{}".format(_ext), "")
+
+def rm_ext_bak(_s:str) -> str: return rm_ext(_s, "bak")
+def rm_ext_md(_s:str) -> str: return rm_ext(_s, "md")
+
+
+
 """ Remove the last appending system separator in a supplied path. """
 def rm_sp_fst(_ap:str) -> str:
     if _ap[:1] == get_sp() and len(_ap) > 1: return _ap[1:]

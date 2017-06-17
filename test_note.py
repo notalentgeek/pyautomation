@@ -7,19 +7,54 @@ import warnings
 from dbg import print_ut as put
 from difi import crt as cr
 from difi import de as dele
-from note import append_md as am
-from note import chk_exst_m_md as cmm
+
+from note import apnd_md as am
 from note import chk_exst_md as cm
 from note import chk_md_b as cmb
 from note import crt_md as crm
 from note import crt_nm as cn
 from note import crt_nm_fi as cnf
+from note import crt_nm_md as cnm
 from note import get_lst_n_md as glnm
 from note import get_md as gm
 from note import init as i
-from note import read_md as r
-from note import write_b_md as wbm
-from note import write_md as wm
+from note import rd_md as r
+from note import wrt_md as wm
+from note import wrt_md_b as wbm
+
+def test_apnd_md(self):
+    ExceptionNotAbsolutePath
+    ExceptionNotExistsFile
+    ExceptionNotExistsMDFile
+    ExceptionListNotAllString
+    ExceptionNotExistsOpenMode
+
+    am
+def test_chk_exst_md(self):
+    cm
+def test_chk_md_b(self):
+    cmb
+def test_crt_md(self):
+    crm
+def test_crt_nm(self):
+    cn
+def test_crt_nm_fi(self):
+    cnf
+def test_crt_nm_md(self):
+    cnm
+def test_get_lst_n_md(self):
+    glnm
+def test_get_md(self):
+    gm
+def test_init(self):
+    i
+def test_rd_md(self):
+    r
+def test_wrt_md(self):
+    wm
+def test_wrt_md_b(self):
+    wbm
+
 from pth import chk_ext_img as cei
 from pth import jo as j
 from pth import ncnp as n

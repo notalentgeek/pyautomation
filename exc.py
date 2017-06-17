@@ -1,5 +1,6 @@
 class ExceptionExistMultipleMDFiles(Exception): pass
 class ExceptionExistsDirectory(Exception): pass
+class ExceptionExistsDirectoryInDirectory(Exception): pass
 class ExceptionExistsDirectoryOrFile(Exception): pass
 class ExceptionExistsFile(Exception): pass
 class ExceptionListIsNotAllString(Exception): pass
@@ -9,8 +10,8 @@ class ExceptionNotExistsDirectoryOrFile(Exception): pass
 class ExceptionNotExistsFile(Exception): pass
 class ExceptionNotExistsFileExtension(Exception): pass
 class ExceptionNotExistsImage(Exception): pass
+class ExceptionNotExistsImageFile(Exception): pass
 class ExceptionNotExistsMDFile(Exception): pass
 class ExceptionNotExistsOpenMode(Exception): pass
 class ExceptionNotSamePath(Exception): pass
 class ExceptionSamePath(Exception): pass
-class ExceptionExistsDirectoryInDirectory(Exception): pass
