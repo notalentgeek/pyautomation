@@ -121,7 +121,7 @@ def crt_nm(_ap:str) -> list:
 
 
 """ Function to make an inputted string comes out as an .md string attachment. """
-def crt_nm_fi(_s:str, _img:bool) -> str:
+def crt_nm_md(_s:str, _img:bool) -> str:
     if not bool(pth.get_ext(_s)): raise exc.ExceptionNotExistsFileExtension()
     if _img: return "![./{0}](./{0})".format(_s)
     else: return "[./{0}](./{0})".format(_s)
@@ -200,8 +200,7 @@ def init(_ap:str) -> bool:
             i = pth.jo(_ap, i)
             img = pth.chk_ext_img(inew)
             difi.ren(i, inew)
-            imd = crt_nm_fi(inew, img) # String formatted for .md file attachment.
-            print(imd, end="\n\n", file=md)
+            print(crt_nm_md(inew, img), end="\n\n", file=md)
 
             """ Change the image resolution using ImageMagic. """
             if img:
@@ -209,13 +208,6 @@ def init(_ap:str) -> bool:
                 cnvrt_img_600(inew)
 
         md.close()
-
-        # PENDING: Debug purpose only please delete later.
-        #md = open(nm[1], "r")
-        #print("="*50)
-        #print(md.readlines())
-        #print("="*50)
-        #md.close()
 
         return True
 

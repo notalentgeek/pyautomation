@@ -10,5 +10,6 @@ class ExceptionNotExistsFile(Exception): pass
 class ExceptionNotExistsFileExtension(Exception): pass
 class ExceptionNotExistsImage(Exception): pass
 class ExceptionNotExistsMDFile(Exception): pass
+class ExceptionNotExistsOpenMode(Exception): pass
 class ExceptionNotSamePath(Exception): pass
 class ExceptionSamePath(Exception): pass
