@@ -13,3 +13,4 @@ class ExceptionNotExistsMDFile(Exception): pass
 class ExceptionNotExistsOpenMode(Exception): pass
 class ExceptionNotSamePath(Exception): pass
 class ExceptionSamePath(Exception): pass
+class ExceptionExistsDirectoryInDirectory(Exception): pass

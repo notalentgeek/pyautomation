@@ -22,7 +22,8 @@ def chk_mn(_v) -> bool: return chk_hmns_(_v, 59) # PENDING: Try to use 3rd party
 def chk_s(_v) -> bool: return chk_hmns_(_v, 59) # PENDING: Try to use 3rd party library.
 def get_now() -> str: return str(datetime.datetime.now())
 def get_now_n_ms() -> str: return str(get_now()).split(".")[0]
-def get_tz() -> str: return str(get_localzone())
+def get_tz() -> str: return str(time.tzname[0]) # Get the name of the time zone (for example: CET or CEST).
+def get_tz_loc() -> str: return str(get_localzone()) # Get the location of the time zone (for example: Amsterdam).
 def get_d_n(_n:str) -> str: return _n.split(" ")[0].split(var.d_sp)[2] # Get date from now.
 def get_h_n(_n:str) -> str: return _n.split(" ")[1].split(var.t_sp)[0] # Get hour from now.
 def get_m_n(_n:str) -> str: return _n.split(" ")[0].split(var.d_sp)[1] # Get month from now.
