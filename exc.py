@@ -3,7 +3,7 @@ class ExceptionExistsDirectory(Exception): pass
 class ExceptionExistsDirectoryInDirectory(Exception): pass
 class ExceptionExistsDirectoryOrFile(Exception): pass
 class ExceptionExistsFile(Exception): pass
-class ExceptionListIsNotAllString(Exception): pass
+class ExceptionListNotAllString(Exception): pass
 class ExceptionNotAbsolutePath(Exception): pass
 class ExceptionNotExistsDirectory(Exception): pass
 class ExceptionNotExistsDirectoryOrFile(Exception): pass
