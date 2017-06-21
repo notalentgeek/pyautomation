@@ -50,7 +50,9 @@ def get_ap_1(_ap:str) -> str:
     if len(_ap) == 1: return get_sp() # If `_ap` is the root directory then return the separator.
 
     ap = rm_sp_lst(_ap) # Remove the last separator (for example, from `/home/user/` into `/home/user`).
-    ap = ap.replace(get_ap_innermst(ap), "") # Erase the innermost directory or file.
+    el = get_ap_innermst(ap)
+    el = len(el) + 1 # Determine how long we need to erase the characters from behind.
+    ap = ap[:-el] # Erase the innermost directory or file.
 
     return (get_sp() if len(rm_sp_lst(ap)) == 1 else rm_sp_lst(ap))
 

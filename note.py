@@ -75,13 +75,16 @@ def cnvrt_img_ip(_ap:str, _w:int=0, _h:int=0) -> bool:
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
 
-    _w = 0 if _w <= 0 else _w
-    _h = 0 if _h <= 0 else _h
+    _w = "" if _w <= 0 else _w
+    _h = "" if _h <= 0 else _h
     nm_fi = crt_nm_img(_ap)
     difi.ren(_ap, nm_fi.nm_bak)
 
     com = "convert \"{}[{}x{}]\" \"{}\"".format(nm_fi.ap_bak, _w, _h, nm_fi.ap_cn) # This is the terminal command to
                                                                                    # convert image file with ImageMagick.
+    print("*"*50)
+    print(com)
+    print("*"*50)
     subprocess.call([com], shell=True) # Execute the terminal command.
 
     return True
@@ -217,13 +220,14 @@ def get_md(_ap:str) -> str:
 General note:
 * Check if an .md file is exists or not.
 """
-def init(_ap:str) -> bool:
+def init(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
 
     print("\n")
+    print(_ap)
 
     ap1 = pth.get_ap_1(_ap)
     innermst = fix_su(pth.get_ap_innermst(_ap))
@@ -234,27 +238,36 @@ def init(_ap:str) -> bool:
     nm_fi = "{}.{}".format(nm_di, "md")
     ap_di = pth.jo(ap1, nm_di)
     ap_fi = pth.jo(ap_di, nm_fi)
+
     print(prefix)
     print(innermst)
     print(nm_di)
     print(nm_fi)
     print(ap_di)
     print(ap_fi)
+    print(_ap)
 
     if not dttz.chk_prefix(innermst):
         print("the note folder is not properly named")
 
-    if chk_exst_md(_ap):
-        md = get_md(_ap)
+        difi.ren(_ap, nm_di)
+        _ap = ap_di
 
-        if chk_md_b(md):
-            print("there is one blank .md file")
-        else:
-            print("there is one filled .md file")
-    else:
+    if not chk_exst_md(_ap):
         print("there is no .md file exists.")
 
-    return True
+        crt_md(ap_fi)
+
+    md = get_md(_ap)
+    lsnmd = get_lst_n_md(_ap) # List of all files without the.md file.
+    print(md)
+    print(lsnmd)
+    for i in lsnmd:
+        iap = pth.jo(_ap, i)
+        if pth.get_ext(i) in var.img_ext:
+            cnvrt_img_ip_600(iap)
+
+    return _ap
 
 
 
