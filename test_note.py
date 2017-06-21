@@ -12,7 +12,7 @@ from note import chk_exst_md as cm
 from note import chk_md_b as cmb
 from note import crt_md as crm
 from note import crt_nm as cn
-from note import crt_nm_fi as cnf
+from note import crt_nm_img as cni
 from note import crt_nm_md as cnm
 from note import get_lst_n_md as glnm
 from note import get_md as gm
@@ -36,6 +36,8 @@ from exc import ExceptionNotExistsMDFile as EX_NEMD
 from exc import ExceptionNotExistsOpenMode as EX_NEOM
 import var
 
+""" It is important to have separate folder for each unit test Python file. """
+
 # This unit test home directory.
 du = n("/home/{}").format(getpass.getuser()) # Unix.
 dw = "C:\\Users\\{}\\Documents".format(getpass.getuser()) # Windows.
@@ -44,145 +46,386 @@ d = du # The used directory.
 if p == "cygwin" or p == "win32": d = dw # Check if this program runs in Windows platform.
 dm = j(d, "dm_test_note") # Main directory for this unit test.
 
-deme = j(dm, "deme") # Directory exists with an .md file.
-deme_m = j(deme, "deme_m.md")
-dememie = j(dm, "dememie") # Directory exists with an .md file and with multiple images.
-dememie_i1 = j(dememie, "dememie_i1.bmp")
-dememie_i2 = j(dememie, "dememie_i2.jpeg")
-dememie_i3 = j(dememie, "dememie_i3.jpg")
-dememie_i4 = j(dememie, "dememie_i4.png")
-dememie_m = j(dememie, "dememie_m.md")
-demie = j(dm, "demie") # Directory exists with multiple images.
-demie_i1 = j(demie, "demie_i1.bmp")
-demie_i2 = j(demie, "demie_i2.jpeg")
-demie_i3 = j(demie, "demie_i3.jpg")
-demie_i4 = j(demie, "demie_i4.png")
-demme = j(dm, "demme") # Directory exists with multiple .md files.
-demme_m1 = j(demme, "demme_m1.md")
-demme_m2 = j(demme, "demme_m2.md")
-den = j(dm, "den") # Directory without any .md file.
-den_m = j(den, "den_m.md")
-denme = j(dm, "denme") # Directory exists but with non - .md file.
-denme_nm = j(denme, "denme_nm.fi")
-dne = j(dm, "dne") # A directory that is not exists.
+""" The ideal case scenario is to only have one upper classification. This note
+is not relevant anymore since I put everything locally into the test function
+itself. But I can use this practice for future project.
 
-lns = [1, "two", "three"]
-ls = ["one", "two", "three"]
+Wrong and current example:
+file_img_jpg = ["jpg1", "jpg2"]
+file_img_png = ["png1", "png2"]
+file_md = ["file1", "file2", "file3"]
+file_img = file_img_jpg + file_img_png
+file_all = file_img + file_md # Multiple classification from `file_img` to this `file_all`.
 
-fim = [dememie_i1, dememie_i2, dememie_i3, dememie_i4, demie_i1, demie_i2, demie_i3, demie_i4]
-fmd = [deme_m, dememie_m, demme_m1, demme_m2]
-fo = [denme_nm]
-
-dmd = [deme, dememie, demme]
-dnmd = [demie, den, denme]
-
-d = dmd + dnmd # All directories that should be created.
-f = fim + fmd + fo # All files that should be created.
-a = d + f # Both directories and files that should be created.
-
-dn = [dne] # Not exists.
-fn = [den_m] # Not exists.
-dner = n("./") # Relative directory.
+The proper example:
+file_img_jpg = ["jpg1", "jpg2"]
+file_img_png = ["png1", "png2"]
+file_md = ["file1", "file2", "file3"]
+file_img = file_img_jpg + file_img_png
+file_all = file_img + file_img_jpg + file_img_png # Only one upper classification.
+"""
 
 class unit_test(TC):
     def setUp(self):
-        for i in d: cr(i, True)
-        for i in f: cr(i, False)
+        cr(dm, True)
 
     def tearDown(self):
         dele(dm)
 
     def test_apnd_md(self):
-        for i in fmd: self.assertTrue(am(i, ls))
-        for i in d:
-            with self.assertRaises(EX_NEF): am(i, ls)
-        for i in fim:
-            with self.assertRaises(EX_NEMD): am(i, ls)
-        for i in fmd:
-            with self.assertRaises(EX_LNAS): am(i, lns)
-        for i in fn:
-            with self.assertRaises(EX_NEF): am(i, ls)
-        with self.assertRaises(EX_NAP): am(dner, ls)
+        f = j(dm, "f.md")
+        cr(f, False)
+        ls = ["1", "2", "3"]
+        self.assertTrue(am(f, ls))
+        dele(f)
+
+        f = j(dm, "f.md")
+        cr(f, False)
+        lns = [1, "2", "3"]
+        with self.assertRaises(EX_LNAS):
+            am(f, lns)
+        dele(f)
+
+        f = n("./f.f")
+        ls = ["1", "2", "3"]
+        with self.assertRaises(EX_NAP):
+            am(f, ls)
+
+        f = j(dm, "f.md")
+        ls = ["1", "2", "3"]
+        with self.assertRaises(EX_NEF):
+            am(f, ls)
+
+        f = j(dm, "f.f")
+        ls = ["1", "2", "3"]
+        cr(f, False)
+        with self.assertRaises(EX_NEMD):
+            am(f, ls)
+        dele(f)
 
     def test_chk_exst_md(self):
-        ExceptionNotAbsolutePath
-        ExceptionNotExistsDirectory
+        self.assertFalse(cm(dm))
 
-        for i in f:
-            with self.assertRaises(EX_NED): cm(i)
-        for i in d
+        f = j(dm, "f.f")
+        cr(f, False)
+        self.assertFalse(cm(dm))
+        dele(f)
 
-        cm
+        f = j(dm, "j.md")
+        cr(f, False)
+        self.assertTrue(cm(dm))
+        dele(f)
 
-    """
+        d = n("./")
+        with self.assertRaises(EX_NAP):
+            cm(d)
+
+        d = j(dm, "d")
+        with self.assertRaises(EX_NED):
+            cm(d)
+
     def test_chk_md_b(self):
-        ExceptionNotAbsolutePath
-        ExceptionNotExistsFile
-        ExceptionNotExistsImageFile
+        f = j(dm, "f.md")
+        cr(f, False)
+        ls = ["1", "2", "3"]
+        am(f, ls)
+        self.assertFalse(cmb(f))
+        dele(f)
 
-        cmb
+        f = j(dm, "f.md")
+        cr(f, False)
+        self.assertTrue(cmb(f))
+        dele(f)
+
+        f = n("./f.f")
+        with self.assertRaises(EX_NAP):
+            cmb(f)
+
+        f = j(dm, "f.md")
+        with self.assertRaises(EX_NEF):
+            cmb(f)
+
+        f = j(dm, "f.f")
+        cr(f, False)
+        with self.assertRaises(EX_NEMD):
+            cmb(f)
+        dele(f)
+
     def test_crt_md(self):
-        ExceptionNotAbsolutePath
-        ExceptionNotExistsMDFile
-        ExceptionNotExistsDirectory
+        f = j(dm, "f.md")
+        self.assertTrue(crm(f))
+        dele(f)
 
-        crm
+        f = n("./f.md")
+        with self.assertRaises(EX_NAP):
+            crm(f)
+
+        f = j(dm, "f.f")
+        cr(f, False)
+        with self.assertRaises(EX_NEMD):
+            crm(f)
+        dele(f)
+
     def test_crt_nm(self):
-        ExceptionNotAbsolutePath
-        ExceptionNotExistsDirectory
-        ExceptionExistsDirectoryInDirectory
+        cn_ = cn(dm)
+        put("cn(dm).di", cn_.di)
+        put("cn(dm).fi", cn_.fi)
+        put("cn(dm).nm", cn_.nm)
 
-        cn
-    def test_crt_nm_fi(self):
-        ExceptionNotAbsolutePath
-        ExceptionNotExistsFile
+        d = j(dm, "d")
+        cr(d, True)
+        with self.assertRaises(EX_DND):
+            cn(dm)
+        dele(d)
 
-        cnf
+        d = j(dm, "d")
+        with self.assertRaises(EX_NED):
+            cn(d)
+
+        d = n("./")
+        with self.assertRaises(EX_NAP):
+            cn(d)
+
+    def test_crt_nm_img(self):
+        f = j(dm, "f.bmp")
+        cr(f, False)
+        cni_ = cni(f)
+        put("cni(f).ap_bak", cni_.ap_bak)
+        put("cni(f).ap_cn", cni_.ap_cn)
+        put("cni(f).nm_bak", cni_.nm_bak)
+        put("cni(f).nm_cn", cni_.nm_cn)
+        dele(f)
+
+        f = j(dm, "f.jpeg")
+        cr(f, False)
+        cni_ = cni(f)
+        put("cni(f).ap_bak", cni_.ap_bak)
+        put("cni(f).ap_cn", cni_.ap_cn)
+        put("cni(f).nm_bak", cni_.nm_bak)
+        put("cni(f).nm_cn", cni_.nm_cn)
+        dele(f)
+
+        f = j(dm, "f.jpg")
+        cr(f, False)
+        cni_ = cni(f)
+        put("cni(f).ap_bak", cni_.ap_bak)
+        put("cni(f).ap_cn", cni_.ap_cn)
+        put("cni(f).nm_bak", cni_.nm_bak)
+        put("cni(f).nm_cn", cni_.nm_cn)
+        dele(f)
+
+        f = j(dm, "f.png")
+        cr(f, False)
+        cni_ = cni(f)
+        put("cni(f).ap_bak", cni_.ap_bak)
+        put("cni(f).ap_cn", cni_.ap_cn)
+        put("cni(f).nm_bak", cni_.nm_bak)
+        put("cni(f).nm_cn", cni_.nm_cn)
+        dele(f)
+
+        f = n("./f.f")
+        with self.assertRaises(EX_NAP):
+            cni(f)
+
+        f = j(dm, "f.bmp")
+        with self.assertRaises(EX_NEF):
+            cni(f)
+
+        f = j(dm, "f.jpeg")
+        with self.assertRaises(EX_NEF):
+            cni(f)
+
+        f = j(dm, "f.jpg")
+        with self.assertRaises(EX_NEF):
+            cni(f)
+
+        f = j(dm, "f.png")
+        with self.assertRaises(EX_NEF):
+            cni(f)
+
+        f = j(dm, "f.f")
+        cr(f, False)
+        with self.assertRaises(EX_NIMG):
+            cni(f)
+        dele(f)
+
     def test_crt_nm_md(self):
-        ExceptionNotExistsFileExtension
+        f = j(dm, "f.bmp")
+        cr(f, False)
+        put("cnm(f)", cnm(f, True))
+        dele(f)
 
-        cnm
+        f = j(dm, "f.f")
+        cr(f, False)
+        put("cnm(f)", cnm(f, False))
+        dele(f)
+
+        f = j(dm, "f.jpeg")
+        cr(f, False)
+        put("cnm(f)", cnm(f, True))
+        dele(f)
+
+        f = j(dm, "f.jpg")
+        cr(f, False)
+        put("cnm(f)", cnm(f, True))
+        dele(f)
+
+        f = j(dm, "f.png")
+        cr(f, False)
+        put("cnm(f)", cnm(f, True))
+        dele(f)
+
+
+        f = j(dm, "f")
+        cr(f, False)
+        with self.assertRaises(EX_NFE):
+            cnm(f, False)
+        dele(f)
+
     def test_get_lst_n_md(self):
-        ExceptionNotAbsolutePath
-        ExceptionNotExistsDirectory
-        ExceptionExistMultipleMDFiles
-        ExceptionExistsDirectoryInDirectory
+        f1 = j(dm, "f1.md")
+        cr(f1, False)
+        f2 = j(dm, "f2.f")
+        cr(f2, False)
+        f3 = j(dm, "f3.f")
+        cr(f3, False)
+        put("glnm(dm)", glnm(dm))
+        dele(f1)
+        dele(f2)
+        dele(f3)
 
-        glnm
+        d = j(dm, "d")
+        cr(d, True)
+        with self.assertRaises(EX_DND):
+            glnm(dm)
+        dele(d)
+
+        f1 = j(dm, "f1.md")
+        cr(f1, False)
+        f2 = j(dm, "f2.md")
+        cr(f2, False)
+        with self.assertRaises(EX_EMMD):
+            glnm(dm)
+        dele(f1)
+        dele(f2)
+
+        d = n("./")
+        with self.assertRaises(EX_NAP):
+            glnm(d)
+
+        d = j(dm, "d")
+        with self.assertRaises(EX_NED):
+            glnm(d)
+
     def test_get_md(self):
-        ExceptionNotAbsolutePath
-        ExceptionNotExistsDirectory
-        ExceptionNotExistsMDFile
-        ExceptionExistMultipleMDFiles
+        f = j(dm, "f.md")
+        cr(f, False)
+        put("gm(dm)", gm(dm))
+        dele(f)
 
-        gm
+        f1 = j(dm, "f1.md")
+        f2 = j(dm, "f2.md")
+        cr(f1, False)
+        cr(f2, False)
+        with self.assertRaises(EX_EMMD):
+            gm(dm)
+        dele(f1)
+        dele(f2)
+       
+        d = n("./")
+        with self.assertRaises(EX_NAP):
+            gm(d)
+
+        d = j(dm, "d")
+        with self.assertRaises(EX_NED):
+            gm(d)
+
+        with self.assertRaises(EX_NEMD):
+            gm(dm)
+    
     def test_init(self):
-        ExceptionNotAbsolutePath
-        ExceptionNotExistsDirectory
+        i_ = i(dm)
+        put("i(dm)", i_)
 
-        i
+        d = n("./")
+        with self.assertRaises(EX_NAP):
+            i(d)
+
+        d = j(dm, "d")
+        with self.assertRaises(EX_NED):
+            i(d)
+    
     def test_rd_md(self):
-        ExceptionNotAbsolutePath
-        ExceptionNotExistsFile
-        ExceptionNotExistsMDFile
+        f = j(dm, "f.md")
+        cr(f, False)
+        ls = ["1", "2", "3"]
+        am(f, ls)
+        put("r(f)", r(f))
+        dele(f)
 
-        r
+        f = n("./f.f")
+        with self.assertRaises(EX_NAP):
+            r(f)
+
+        f = j(dm, "f.f")
+        with self.assertRaises(EX_NEF):
+            r(f)
+
+        f = j(dm, "f.f")
+        cr(f, False)
+        with self.assertRaises(EX_NEMD):
+            r(f)
+        dele(f)
+
     def test_wrt_md(self):
-        ExceptionNotAbsolutePath
-        ExceptionNotExistsFile
-        ExceptionNotExistsMDFile
-        ExceptionListNotAllString
-        ExceptionNotExistsOpenMode
+        f = j(dm, "f.md")
+        cr(f, False)
+        ls = ["1", "2", "3"]
+        self.assertTrue(wm(f, ls))
+        dele(f)
 
-        wm
+        f = j(dm, "f.md")
+        cr(f, False)
+        lns = [1, "2", "3"]
+        with self.assertRaises(EX_LNAS):
+            wm(f, lns)
+        dele(f)
+
+        f = n("./f.f")
+        ls = ["1", "2", "3"]
+        with self.assertRaises(EX_NAP):
+            wm(f, ls)
+
+        f = j(dm, "f.md")
+        ls = ["1", "2", "3"]
+        with self.assertRaises(EX_NEF):
+            wm(f, ls)
+
+        f = j(dm, "f.f")
+        ls = ["1", "2", "3"]
+        cr(f, False)
+        with self.assertRaises(EX_NEMD):
+            wm(f, ls)
+        dele(f)
+    
     def test_wrt_md_b(self):
-        ExceptionNotAbsolutePath
-        ExceptionNotExistsFile
-        ExceptionNotExistsMDFile
-        ExceptionListNotAllString
-        ExceptionNotExistsOpenMode
+        f = j(dm, "f.md")
+        cr(f, False)
+        self.assertTrue(wbm(f))
+        dele(f)
 
-        wbm
-    """
+        f = n("./f.f")
+        with self.assertRaises(EX_NAP):
+            wbm(f)
+
+        f = j(dm, "f.md")
+        with self.assertRaises(EX_NEF):
+            wbm(f)
+
+        f = j(dm, "f.f")
+        cr(f, False)
+        with self.assertRaises(EX_NEMD):
+            wbm(f)
+        dele(f)
 
 if __name__ == "__main__": unittest.main()

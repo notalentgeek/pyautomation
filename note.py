@@ -22,7 +22,7 @@ def aw_md_(_ap:str, _ls:list, _m:str) -> bool:
     if not _m in var.opn_mode: raise exc.ExceptionNotExistsOpenMode()
 
     md = open(_ap, _m)
-    for i in _ls: print(i, end="", file=md)
+    for i in _ls: print(i, file=md)
     md.close()
 
     return True
@@ -44,7 +44,7 @@ than one .md files (basically to check if there are multiple .md file).
 def chk_exst_md(_ap:str, _m:bool=False) -> bool:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.chk_exst(_ap): raise exc.ExceptionNotExistsDirectory()
+    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
 
     m_cntr = 0 # Counter to check for multiple .md files in `_ap`.
 
@@ -77,7 +77,7 @@ def cnvrt_img_ip(_ap:str, _w:int=0, _h:int=0) -> bool:
 
     _w = 0 if _w <= 0 else _w
     _h = 0 if _h <= 0 else _h
-    nm_fi = crt_nm_fi(_ap)
+    nm_fi = crt_nm_img(_ap)
     difi.ren(_ap, nm_fi.nm_bak)
 
     com = "convert \"{}[{}x{}]\" \"{}\"".format(nm_fi.ap_bak, _w, _h, nm_fi.ap_cn) # This is the terminal command to convert image file with ImageMagick.
@@ -103,12 +103,13 @@ def chk_md_b(_ap:str):
 
 
 
-""" Function to create an .md file at `_ap`. """
+""" Function to create an .md file at `_ap`. There could be a check if the
+.md file is alredy exists or not.
+"""
 def crt_md(_ap:str) -> bool:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
     if not pth.get_ext(_ap) == "md": raise exc.ExceptionNotExistsMDFile()
-    if not difi.chk_exst_di(pth.get_ap_1(_ap)): raise exc.ExceptionNotExistsDirectory()
 
     return difi.crt(_ap, False)
 
@@ -142,26 +143,26 @@ the renamed version of the file (with prefix).
 
 PENDING: This function is not yet unit tested.
 """
-def crt_nm_fi(_ap:str) -> object:
+def crt_nm_img(_ap:str) -> object:
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
+    if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
 
     """ Original image file. """
-    org_ap_1 = pth.get_ap_1(_ap)
+    org_ap1 = pth.get_ap_1(_ap)
     org = pth.get_ap_innermst(_ap)
-    org_ext = pth.get_ext(org)
-    org_n_ext = pth.rm_ext(org, org_ext)
+    orge = pth.get_ext(org)
+    orgne = pth.rm_ext(org, orge)
 
     """ Backup image file. """
-
-    bnm = "{}_{}.{}".format(org, var.bak, org_ext)
-    bnm_ap = pth.jo(org_ap_1, bnm)
+    bnm = "{}_{}.{}".format(orgne, var.bak, orge)
+    bnm_ap = pth.jo(org_ap1, bnm)
 
     """ Converted image file. """
-    cnvrt = "{}.{}".format(org_n_ext, "png")
-    cnvrt_ap = pth.jo(org_ap_1, cnvrt)
+    cnvrt = "{}.{}".format(orgne, "png")
+    cnvrt_ap = pth.jo(org_ap1, cnvrt)
 
-    return op.struct(nm_bak=bnm, ap_bak=bnm_ap, nm_cn=cnvrt, ap_cn=cnvrt_ap)
+    return op.struct(ap_bak=bnm_ap, ap_cn=cnvrt_ap, nm_bak=bnm, nm_cn=cnvrt)
 
 
 
@@ -182,7 +183,7 @@ def crt_nm_md(_nm_fi:str, _img:bool) -> str:
 def get_lst_n_md(_ap:str) -> list:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.get_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
+    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
     if difi.chk_exst_dnd(_ap): raise exc.ExceptionExistsDirectoryInDirectory()
 
@@ -200,7 +201,7 @@ def get_lst_n_md(_ap:str) -> list:
 def get_md(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.get_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
+    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if not chk_exst_md(_ap): raise exc.ExceptionNotExistsMDFile()
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
 
@@ -214,7 +215,7 @@ def get_md(_ap:str) -> str:
 def init(_ap:str) -> bool:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.get_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
+    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
 
     return True
 
@@ -224,7 +225,7 @@ def init(_ap:str) -> bool:
 def rd_md(_ap:str) -> list:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.get_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
+    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not pth.get_ext(_ap) == "md": raise exc.ExceptionNotExistsMDFile()
 
     md = open(_ap, "r")

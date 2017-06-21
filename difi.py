@@ -97,7 +97,9 @@ def de(_ap:str) -> bool:
 directories and files) from a provided absolute path.
 """
 def get_lst(_ap:str) -> list:
+    _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
 
     return os.listdir(_ap)
 
