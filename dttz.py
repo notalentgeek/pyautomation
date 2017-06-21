@@ -44,6 +44,7 @@ def get_mn_p(_p:str) -> str: return get_p_(_p, _p.split(var.d_sp)[1][2:4]) # Get
 def get_y_p(_p:str) -> str: return get_p_(_p, _p.split(var.d_sp)[0][:4]) # Get year from prefix.
 def chk_sp_p(_p:str) -> bool: return True if _p[8:9] == var.note_sp else False
 
+""" PENDING: A function to check if time zone exists in the directory/file name. """
 def chk_prefix(_s:str) -> bool:
     if not chk_d(get_d_p(_s)):
         #print("chk_d: {}".format(_s))
@@ -64,5 +65,5 @@ def chk_prefix(_s:str) -> bool:
         #print("chk_sp_p: {}".format(_s))
         return False
     return True
-def crt_prefix(_n:str) -> str: return "{1}{2}{3}{0}{4}{5}".format(var.note_sp, get_y_n(_n), get_m_n(_n), get_d_n(_n), get_h_n(_n), get_mn_n(_n))
-def crt_prefix_n_ms() -> str: return crt_prefix(get_now_n_ms())
+def crt_prefix(_n:str, _tz:str) -> str: return "{1}{2}{3}{0}{4}{5}{0}{6}".format(var.note_sp, get_y_n(_n), get_m_n(_n), get_d_n(_n), get_h_n(_n), get_mn_n(_n), _tz)
+def crt_prefix_n_ms(_tz:str) -> str: return crt_prefix(get_now_n_ms(), _tz)

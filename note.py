@@ -80,7 +80,8 @@ def cnvrt_img_ip(_ap:str, _w:int=0, _h:int=0) -> bool:
     nm_fi = crt_nm_img(_ap)
     difi.ren(_ap, nm_fi.nm_bak)
 
-    com = "convert \"{}[{}x{}]\" \"{}\"".format(nm_fi.ap_bak, _w, _h, nm_fi.ap_cn) # This is the terminal command to convert image file with ImageMagick.
+    com = "convert \"{}[{}x{}]\" \"{}\"".format(nm_fi.ap_bak, _w, _h, nm_fi.ap_cn) # This is the terminal command to
+                                                                                   # convert image file with ImageMagick.
     subprocess.call([com], shell=True) # Execute the terminal command.
 
     return True
@@ -124,7 +125,7 @@ def crt_nm(_ap:str) -> object:
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if difi.chk_exst_dnd(_ap): raise exc.ExceptionExistsDirectoryInDirectory()
 
-    pre = dttz.crt_prefix_n_ms() # Create prefix name without millisecond.
+    pre = dttz.crt_prefix_n_ms("cet") # Create prefix name without millisecond.
     """ For the file name, make sure to have everything in lower letter and
     to replace space with the separator.
     """
@@ -211,13 +212,55 @@ def get_md(_ap:str) -> str:
     return ""
 
 
-""" PENDING: Function to initiate the note file. """
+""" PENDING: Function to initiate the note file.
+
+General note:
+* Check if an .md file is exists or not.
+"""
 def init(_ap:str) -> bool:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
+    if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
+
+    print("\n")
+
+    ap1 = pth.get_ap_1(_ap)
+    innermst = fix_su(pth.get_ap_innermst(_ap))
+    prefix = dttz.crt_prefix_n_ms("cet")
+
+    """ PENDING: Make a function to construct note directory and note .md file name. """
+    nm_di = "{}-{}".format(prefix, innermst)
+    nm_fi = "{}.{}".format(nm_di, "md")
+    ap_di = pth.jo(ap1, nm_di)
+    ap_fi = pth.jo(ap_di, nm_fi)
+    print(prefix)
+    print(innermst)
+    print(nm_di)
+    print(nm_fi)
+    print(ap_di)
+    print(ap_fi)
+
+    if not dttz.chk_prefix(innermst):
+        print("the note folder is not properly named")
+
+    if chk_exst_md(_ap):
+        md = get_md(_ap)
+
+        if chk_md_b(md):
+            print("there is one blank .md file")
+        else:
+            print("there is one filled .md file")
+    else:
+        print("there is no .md file exists.")
 
     return True
+
+
+
+""" Function to fix space and underscore in directory/file name. """
+def fix_su(_s:str) -> str:
+    return _s.replace(" ", "-").replace("_", "-")
 
 
 

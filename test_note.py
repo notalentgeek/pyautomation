@@ -344,8 +344,18 @@ class unit_test(TC):
             gm(dm)
     
     def test_init(self):
-        i_ = i(dm)
-        put("i(dm)", i_)
+        self.assertTrue(i(dm))
+        dele(dm)
+        cr(dm, True)
+
+        f1 = j(dm, "f1.md")
+        cr(f1, False)
+        f2 = j(dm, "f2.md")
+        cr(f2, False)
+        with self.assertRaises(EX_EMMD):
+            i(dm)
+        dele(f1)
+        dele(f2)
 
         d = n("./")
         with self.assertRaises(EX_NAP):

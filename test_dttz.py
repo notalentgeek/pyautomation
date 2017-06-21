@@ -26,21 +26,21 @@ from dttz import get_y_n as yn
 from dttz import get_y_p as yp
 
 class unit_test(TC):
-    def test_create_prefix(self): put("crt_prefix(n())", crp(n()))
+    def test_create_prefix(self): put("crt_prefix(n())", crp(n(), "cet"))
     def test_get_now(self): put("get_now()", n())
     def test_get_now_n_ms (self): put("get_now_n_ms()", nnms())
     def test_get_tz(self): put("get_tz(n())", gtz())
     def test_get_d_n(self): put("get_d_n(n())", dn(n()))
-    def test_get_d_p(self): put("get_d_p(crp(n()))", dp(crp(n())))
+    def test_get_d_p(self): put("get_d_p(crp(n(), \"cet\"))", dp(crp(n(), "cet")))
     def test_get_h_n(self): put("get_h_n(n())", hn(n()))
-    def test_get_h_p(self): put("get_h_p(crp(n()))", hp(crp(n())))
+    def test_get_h_p(self): put("get_h_p(crp(n(), \"cet\"))", hp(crp(n(), "cet")))
     def test_get_m_n(self): put("get_m_n(n())", mn(n()))
-    def test_get_m_p(self): put("get_m_p(crp(n()))", mp(crp(n())))
+    def test_get_m_p(self): put("get_m_p(crp(n(), \"cet\"))", mp(crp(n(), "cet")))
     def test_get_mn_n(self): put("get_mn_n(n())", mnn(n()))
-    def test_get_mn_p(self): put("get_mn_p(crp(n()))", mnp(crp(n())))
+    def test_get_mn_p(self): put("get_mn_p(crp(n(), \"cet\"))", mnp(crp(n(), "cet")))
     def test_get_s_n(self): put("get_s_n(n())", sn(n()))
     def test_get_y_n(self): put("get_y_n(n())", yn(n()))
-    def test_get_y_p(self): put("get_y_p(crp(n()))", yp(crp(n())))
+    def test_get_y_p(self): put("get_y_p(crp(n(), \"cet\"))", yp(crp(n(), "cet")))
 
     def test_chk_y(self):
         self.assertFalse(cy("!@#"))
