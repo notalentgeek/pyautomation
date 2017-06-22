@@ -10,6 +10,7 @@
 * Create a function to recursively remove previous naming convention and its numbering. For example from "19900101-0000-gmt+2-project-log-1" into "19900101-0000-gmt+2".
 * Create a function to recursively rename things.
 * Create a function to take directory or file creation time.
+* Create a Python file to hold all ImageMagick related functions.
 * Make sure every file manipulation function happens in a sub - folder than root folder for the unit test.
 * Make sure to have successful assertion in the end of unit test.
 

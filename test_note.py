@@ -2,9 +2,9 @@ from sys import platform as p
 from unittest import TestCase as TC
 import getpass
 import unittest
-import warnings
 
 from dbg import print_ut as put
+from dbg import crt_img_dbg as cid
 from difi import crt as cr
 from difi import de as dele
 from note import apnd_md as am
@@ -40,7 +40,7 @@ import var
 
 # This unit test home directory.
 du = n("/home/{}").format(getpass.getuser()) # Unix.
-dw = "C:\\Users\\{}\\Documents".format(getpass.getuser()) # Windows.
+dw = "C:\\Users\\{}".format(getpass.getuser()) # Windows.
 
 d = du # The used directory.
 if p == "cygwin" or p == "win32": d = dw # Check if this program runs in Windows platform.
@@ -188,7 +188,7 @@ class unit_test(TC):
 
     def test_crt_nm_img(self):
         f = j(dm, "f.bmp")
-        cr(f, False)
+        cid(f)
         cni_ = cni(f)
         put("cni(f).ap_bak", cni_.ap_bak)
         put("cni(f).ap_cn", cni_.ap_cn)
@@ -197,7 +197,7 @@ class unit_test(TC):
         dele(f)
 
         f = j(dm, "f.jpeg")
-        cr(f, False)
+        cid(f)
         cni_ = cni(f)
         put("cni(f).ap_bak", cni_.ap_bak)
         put("cni(f).ap_cn", cni_.ap_cn)
@@ -206,7 +206,7 @@ class unit_test(TC):
         dele(f)
 
         f = j(dm, "f.jpg")
-        cr(f, False)
+        cid(f)
         cni_ = cni(f)
         put("cni(f).ap_bak", cni_.ap_bak)
         put("cni(f).ap_cn", cni_.ap_cn)
@@ -215,7 +215,7 @@ class unit_test(TC):
         dele(f)
 
         f = j(dm, "f.png")
-        cr(f, False)
+        cid(f)
         cni_ = cni(f)
         put("cni(f).ap_bak", cni_.ap_bak)
         put("cni(f).ap_cn", cni_.ap_cn)
@@ -251,7 +251,22 @@ class unit_test(TC):
 
     def test_crt_nm_md(self):
         f = j(dm, "f.bmp")
-        cr(f, False)
+        cid(f)
+        put("cnm(f)", cnm(f, True))
+        dele(f)
+
+        f = j(dm, "f.jpeg")
+        cid(f)
+        put("cnm(f)", cnm(f, True))
+        dele(f)
+
+        f = j(dm, "f.jpg")
+        cid(f)
+        put("cnm(f)", cnm(f, True))
+        dele(f)
+
+        f = j(dm, "f.png")
+        cid(f)
         put("cnm(f)", cnm(f, True))
         dele(f)
 
@@ -259,22 +274,6 @@ class unit_test(TC):
         cr(f, False)
         put("cnm(f)", cnm(f, False))
         dele(f)
-
-        f = j(dm, "f.jpeg")
-        cr(f, False)
-        put("cnm(f)", cnm(f, True))
-        dele(f)
-
-        f = j(dm, "f.jpg")
-        cr(f, False)
-        put("cnm(f)", cnm(f, True))
-        dele(f)
-
-        f = j(dm, "f.png")
-        cr(f, False)
-        put("cnm(f)", cnm(f, True))
-        dele(f)
-
 
         f = j(dm, "f")
         cr(f, False)
@@ -347,13 +346,13 @@ class unit_test(TC):
         d = j(dm, "d")
         cr(d, True)
         f1 = j(d, "f1.bmp")
-        cr(f1, False)
+        cid(f1)
         f2 = j(d, "f2.jpeg")
-        cr(f2, False)
+        cid(f2)
         f3 = j(d, "f3.jpg")
-        cr(f3, False)
+        cid(f3)
         f4 = j(d, "f4.png")
-        cr(f4, False)
+        cid(f4)
         f5 = j(d, "f5.fi")
         cr(f5, False)
         dn = i(d)

@@ -69,7 +69,7 @@ adjust while the `0` - ed parameter will adjust in proportion.
 PENDING: If later necessary please move this function into
 specific ImageMagick Python file.
 """
-def cnvrt_img_ip(_ap:str, _w:int=0, _h:int=0) -> bool:
+def cnvrt_img_ip(_ap:str, _w:int=0, _h:int=0) -> str:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
@@ -79,17 +79,22 @@ def cnvrt_img_ip(_ap:str, _w:int=0, _h:int=0) -> bool:
     _h = "" if _h <= 0 else _h
     nm_fi = crt_nm_img(_ap)
     difi.ren(_ap, nm_fi.nm_bak)
+    _ap = nm_fi.ap_bak
 
-    com = "convert \"{}[{}x{}]\" \"{}\"".format(nm_fi.ap_bak, _w, _h, nm_fi.ap_cn) # This is the terminal command to
-                                                                                   # convert image file with ImageMagick.
-    print("*"*50)
-    print(com)
-    print("*"*50)
-    subprocess.call([com], shell=True) # Execute the terminal command.
+    """ Convert `_ap` into `nm_fi.ap_cn`. The original `_ap` is retained. """
+    com = "convert \"{}\" -resize {}x{} \"{}\"".format(_ap, _w, _h, nm_fi.ap_cn)
+    subprocess.run(com, shell=True)
 
-    return True
+    """ CAUTION: Make sure to check if conversion failed (I created file with image
+    extension although it is not image file per se). I only use this for debugging purposes.
+    """
+    if not difi.chk_exst_fi(nm_fi.ap_cn): difi.ren(_ap, nm_fi.nm_cn)
+    else: difi.de(_ap) # Because ImageMagick's `convert` create a new copy of the converted
+                       # image, this program needs to delete the backup file.
 
-def cnvrt_img_ip_600(_ap:str) -> bool: cnvrt_img_ip(_ap, 600); return True;
+    return nm_fi.ap_cn
+
+def cnvrt_img_ip_600(_ap:str) -> str: return cnvrt_img_ip(_ap, 600)
 
 
 
@@ -227,7 +232,6 @@ def init(_ap:str) -> str:
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
 
     print("\n")
-    print(_ap)
 
     ap1 = pth.get_ap_1(_ap)
     innermst = fix_su(pth.get_ap_innermst(_ap))
@@ -239,33 +243,40 @@ def init(_ap:str) -> str:
     ap_di = pth.jo(ap1, nm_di)
     ap_fi = pth.jo(ap_di, nm_fi)
 
-    print(prefix)
-    print(innermst)
-    print(nm_di)
-    print(nm_fi)
-    print(ap_di)
-    print(ap_fi)
-    print(_ap)
+    """ Check prefix in the note folder. """
+    if not dttz.chk_prefix(innermst): difi.ren(_ap, nm_di); _ap = ap_di
+    """ Check if there is an .md file exists in the note folder. """
+    if not chk_exst_md(_ap): crt_md(ap_fi) # Create .md file.
 
-    if not dttz.chk_prefix(innermst):
-        print("the note folder is not properly named")
+    """ Get the .md file and check if the naming convention in the
+    .md file is correct.
+    """
+    md = get_md(_ap) # This variable could be filled with `ap_fi` as well.
+    mdi = pth.get_ap_innermst(md) # Get the .md file file name.
+    if not dttz.chk_prefix(mdi): difi.ren(md, nm_fi); md = ap_fi;
 
-        difi.ren(_ap, nm_di)
-        _ap = ap_di
-
-    if not chk_exst_md(_ap):
-        print("there is no .md file exists.")
-
-        crt_md(ap_fi)
-
-    md = get_md(_ap)
-    lsnmd = get_lst_n_md(_ap) # List of all files without the.md file.
-    print(md)
-    print(lsnmd)
-    for i in lsnmd:
+    inx = 1 # File index number.
+    nomd = get_lst_n_md(_ap) # All files that are not .md files.
+    for i in nomd:
         iap = pth.jo(_ap, i)
+
         if pth.get_ext(i) in var.img_ext:
-            cnvrt_img_ip_600(iap)
+            """ PENDING: I could make this into separate function. """
+            inew = "{}-{}.{}".format(prefix, inx, pth.get_ext(i)); inx = inx + 1; # Image file that will be converted and resized.
+            inewap = pth.jo(_ap, inew)
+            ianew = "{}-{}-{}".format(prefix, inx, i); inx = inx + 1; # Image file wihtout any conversion.
+            ianewap = pth.jo(_ap, ianew)
+            
+            difi.ren(iap, inew)
+            difi.cpy(inewap, ianewap)
+            
+            converted = cnvrt_img_ip_600(inewap)
+            print(converted)
+        else:
+            """ PENDING: I could make this into separate function. """
+            ianew = "{}-{}-{}".format(prefix, inx, i); inx = inx + 1;
+            ianewap = pth.jo(_ap, ianew)
+            difi.ren(iap, ianew)
 
     return _ap
 

@@ -122,9 +122,13 @@ def jo(_ap:str, _p:str) -> str:
 
 
 
-""" Function to normalize path according operating system's convention. """
+""" Function to normalize path according operating system's convention. Do not use
+`os.path.normcase()` in Windows as Windows is case insensitive.
+"""
 def ncnp(_ap:str) -> str:
-    return os.path.normcase(os.path.normpath(_ap))
+    if platform == "darwin" or platform == "linux" or platform == "linux2": return os.path.normcase(os.path.normpath(_ap))
+    elif platform == "cygwin" or platform == "win32": return os.path.normpath(_ap)
+    else: return os.path.normpath(_ap)
 
 
 
