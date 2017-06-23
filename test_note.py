@@ -168,9 +168,10 @@ class unit_test(TC):
 
     def test_crt_nm(self):
         cn_ = cn(dm)
-        put("cn(dm).di", cn_.di)
-        put("cn(dm).fi", cn_.fi)
-        put("cn(dm).nm", cn_.nm)
+        put("cn(dm).ap_di", cn_.ap_di)
+        put("cn(dm).ap_md", cn_.ap_md)
+        put("cn(dm).nm_di", cn_.nm_di)
+        put("cn(dm).nm_md", cn_.nm_md)
 
         d = j(dm, "d")
         cr(d, True)
@@ -357,6 +358,22 @@ class unit_test(TC):
         cr(f5, False)
         dn = i(d)
         self.assertNotEqual(d, dn)
+        dele(dn)
+
+        d = j(dm, "20000101-0000-cet-d")
+        cr(d, True)
+        f1 = j(d, "f1.bmp")
+        cid(f1)
+        f2 = j(d, "f2.jpeg")
+        cid(f2)
+        f3 = j(d, "f3.jpg")
+        cid(f3)
+        f4 = j(d, "f4.png")
+        cid(f4)
+        f5 = j(d, "f5.fi")
+        cr(f5, False)
+        dn = i(d)
+        self.assertEqual(d, dn)
         dele(dn)
 
         f1 = j(dm, "f1.md")

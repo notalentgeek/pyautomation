@@ -22,7 +22,7 @@ def aw_md_(_ap:str, _ls:list, _m:str) -> bool:
     if not _m in var.opn_mode: raise exc.ExceptionNotExistsOpenMode()
 
     md = open(_ap, _m)
-    for i in _ls: print(i, file=md)
+    for i in _ls: print(i, end="", file=md)
     md.close()
 
     return True
@@ -142,7 +142,7 @@ def crt_nm(_ap:str) -> object:
     di = pth.jo(pth.get_ap_1(_ap), nm) # Absolute path into the note folder.
     fi = pth.jo(di, "{}.{}".format(nm, "md")) # Absolute path into the .md file in the note folder.
 
-    return op.struct(fi=fi , di=di, nm=nm)
+    return op.struct(ap_di=di, ap_md=fi, nm_di=nm, nm_md=fi)
 
 
 
@@ -231,37 +231,38 @@ def init(_ap:str) -> str:
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
 
-    print("\n")
-
-    ap1 = pth.get_ap_1(_ap)
-    innermst = fix_su(pth.get_ap_innermst(_ap))
-    prefix = dttz.crt_prefix_n_ms("cet")
-
-    """ PENDING: Make a function to construct note directory and note .md file name. """
-    nm_di = "{}-{}".format(prefix, innermst)
-    nm_fi = "{}.{}".format(nm_di, "md")
-    ap_di = pth.jo(ap1, nm_di)
-    ap_fi = pth.jo(ap_di, nm_fi)
+    nm = crt_nm(_ap)
 
     """ Check prefix in the note folder. """
-    if not dttz.chk_prefix(innermst): difi.ren(_ap, nm_di); _ap = ap_di
+    if not dttz.chk_prefix(pth.get_ap_innermst(_ap)): difi.ren(_ap, nm.nm_di); _ap = nm.ap_di;
     """ Check if there is an .md file exists in the note folder. """
-    if not chk_exst_md(_ap): crt_md(ap_fi) # Create .md file.
+    if not chk_exst_md(_ap):
+        print("*"*50)
+        print(nm.ap_md)
+        print(pth.get_ap_1(nm.ap_md))
+        print(difi.chk_exst_di(pth.get_ap_1(nm.ap_md)))
+        print("*"*50)
+        crt_md(pth.jo(_ap, "{}.{}".format(pth.get_ap_innermst(_ap), "md"))) # Create .md file.
 
     """ Get the .md file and check if the naming convention in the
     .md file is correct.
     """
-    md = get_md(_ap) # This variable could be filled with `ap_fi` as well.
+    md = get_md(_ap) # This variable could be filled with `nm.ap_md` as well.
+    try:
+        difi.ren(md, nm.nm_md) # Make sure the name of the .md file and the note folder is the same.
+        md = get_md(_ap) # Re - assign the .md absolute path again.
+    except: pass
     mdi = pth.get_ap_innermst(md) # Get the .md file file name.
-    if not dttz.chk_prefix(mdi): difi.ren(md, nm_fi); md = ap_fi;
 
     inx = 1 # File index number.
+    lst = [] # List of all lines that will be pushed into initiated .md file.
     nomd = get_lst_n_md(_ap) # All files that are not .md files.
     for i in nomd:
         iap = pth.jo(_ap, i)
 
         if pth.get_ext(i) in var.img_ext:
             """ PENDING: I could make this into separate function. """
+            prefix = dttz.crt_prefix_n_ms("cet")
             inew = "{}-{}.{}".format(prefix, inx, pth.get_ext(i)); inx = inx + 1; # Image file that will be converted and resized.
             inewap = pth.jo(_ap, inew)
             ianew = "{}-{}-{}".format(prefix, inx, i); inx = inx + 1; # Image file wihtout any conversion.
@@ -270,13 +271,27 @@ def init(_ap:str) -> str:
             difi.ren(iap, inew)
             difi.cpy(inewap, ianewap)
             
-            converted = cnvrt_img_ip_600(inewap)
-            print(converted)
+            cnvrt_img_ip_600(inewap)
+
+            """ The first line break is for each line itself. The next three
+            line breaks are meant for empty space to write the notes.
+            """
+
+            lst.append("{}{}".format(crt_nm_md(inew, True), "\n\n\n\n"))
+            lst.append("{}{}".format(crt_nm_md(ianew, False), "\n\n\n\n"))
         else:
             """ PENDING: I could make this into separate function. """
+            prefix = dttz.crt_prefix_n_ms("cet")
             ianew = "{}-{}-{}".format(prefix, inx, i); inx = inx + 1;
             ianewap = pth.jo(_ap, ianew)
             difi.ren(iap, ianew)
+            lst.append("{}{}".format(crt_nm_md(ianew, False), "\n\n\n\n"))
+    
+    lst[len(lst) - 1] = lst[len(lst) - 1].rstrip() # Remove the last line line breaks.
+    wrt_md(md, lst)
+    
+    """ This line below is to debug and to show the .md file in Windows. """
+    #import os; os.system(md);
 
     return _ap
 
