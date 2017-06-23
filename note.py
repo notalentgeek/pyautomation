@@ -112,6 +112,60 @@ def chk_md_b(_ap:str):
 
 
 
+""" Function to make strings to attach file into the `.md` file. """
+def crt_apnm_attach(_ap:str, _prefix:str, _inx:str) -> object:
+    _ap = pth.ncnp(_ap)
+    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
+    if not bool(pth.get_ext(_ap)): raise exc.ExceptionNotExistsFileExtension()
+
+    nm = "{}-{}-{}".format(_prefix, _inx, pth.get_ap_innermst(_ap))
+    inx = _inx + 1
+
+    """ `pth.get_ap_1(_ap)` because the `_ap` refer to the file. The absolute path used
+    \in `return` should refer to the note directory.
+    """
+    return op.struct(ap=pth.jo(pth.get_ap_1(_ap), nm), nm=nm, inx=inx)
+
+
+
+""" Function to generate embed strings for file. At this point only images are allowed to be
+embedded in the .md note.
+"""
+def crt_apnm_embed(_ap:str, _prefix:str, _inx:str) -> object:
+    _ap = pth.ncnp(_ap)
+    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
+    if not bool(pth.get_ext(_ap)): raise exc.ExceptionNotExistsFileExtension()
+    if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
+
+    nm = "{}-{}.{}".format(_prefix, _inx, pth.get_ext(_ap))
+    inx = _inx + 1
+
+    """ `pth.get_ap_1(_ap)` because the `_ap` refer to the file. The absolute path used
+    \in `return` should refer to the note directory.
+    """
+    return op.struct(ap=pth.jo(pth.get_ap_1(_ap), nm), nm=nm, inx=inx)
+
+
+
+""" Function to both generate strings for embed then attach image file. """
+def crt_apnm_image(_ap:str, _prefix:str, _inx:str) -> object:
+    _ap = pth.ncnp(_ap)
+    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
+    if not bool(pth.get_ext(_ap)): raise exc.ExceptionNotExistsFileExtension()
+    if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
+
+    inx = _inx
+    em = crt_apnm_embed(_ap, _prefix, inx)
+    inx = em.inx
+    at = crt_apnm_attach(_ap, _prefix, inx)
+
+    return op.struct(apa=at.ap,  ape=em.ap,nma=at.nm, nme=em.nm, inx=at.inx)
+
+
+
 """ Function to create an .md file at `_ap`. There could be a check if the
 .md file is alredy exists or not.
 """
@@ -272,40 +326,34 @@ def init(_ap:str) -> str:
         iext = pth.get_ext(i)
 
         if pth.get_ext(i) in var.img_ext:
-            """ PENDING: I could make this into separate function. """
-            inew_nm = "{}-{}.{}".format(prefix, inx, iext) # Embed file (for image).
-            inx = inx + 1
-            inew_ap = pth.jo(_ap, inew_nm) # Absolute path to the embedded file.
-            ianew_nm = "{}-{}-{}".format(prefix, inx, i) # Attach file (for other than image).
-            inx = inx + 1
-            ianew_ap = pth.jo(_ap, ianew_nm) # Absolute path to the attached file.
-        
+            apnmi = crt_apnm_image(iap, prefix, inx)
+            inx = apnmi.inx
+
             """ Constructing sized image file for embedding and original file for attachment. """
-            difi.ren(iap, inew_nm) # Renaming file before converting.
-            difi.cpy(inew_ap, ianew_ap) # This is the original file. Copied before conversion.
+            difi.ren(iap, apnmi.nme) # Renaming file before converting.
+            difi.cpy(apnmi.ape, apnmi.apa) # This is the original file. Copied before conversion.
         
-            cnvrt_img_ip_600(ianew_ap) # Convert!
+            cnvrt_img_ip_600(apnmi.apa) # Convert!
 
             """ The first line break is for each line itself. The next three
             line breaks are meant for empty space to write the notes.
             """
 
             """ Put this file into the .md file in `md`. """
-            lst.append("{}{}".format(crt_nm_md(inew_nm, True), "\n\n\n\n"))
-            lst.append("{}{}".format(crt_nm_md(ianew_nm, False), "\n\n\n\n"))
+            lst.append("{}{}".format(crt_nm_md(apnmi.nme, True), "\n\n\n\n"))
+            lst.append("{}{}".format(crt_nm_md(apnmi.nma, False), "\n\n\n\n"))
         else:
-            """ PENDING: I could make this into separate function. """
-            ianew_nm = "{}-{}-{}".format(prefix, inx, i) # Attach file (for other than image).
-            inx = inx + 1
-            ianew_ap = pth.jo(_ap, ianew_nm) # Absolute path to the attached file.
+            apnma = crt_apnm_attach(iap, prefix, inx)
+            inx = apnma.inx
 
-            difi.ren(iap, ianew_ap) # Renaming file before converting.
-            lst.append("{}{}".format(crt_nm_md(ianew_nm, False), "\n\n\n\n")) # Put this file into .md file.
+            difi.ren(iap, apnma.nm) # Renaming file before converting.
+            lst.append("{}{}".format(crt_nm_md(apnma.nm, False), "\n\n\n\n")) # Put this file into .md file.
 
     lst[len(lst) - 1] = lst[len(lst) - 1].rstrip() # Remove the last line line breaks.
     wrt_md(md, lst) # Write the `lst` into `md`.
     
-    """ This line below is to debug and to show the .md file in Windows. """
+    """ This line below is to debug and to show the .md file in Linux and Windows. """
+    #import os; os.system("{} {}".format("xdg-open", md))
     #import os; os.system(md);
 
     return _ap
