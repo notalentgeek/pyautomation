@@ -134,13 +134,14 @@ def crt_nm(_ap:str) -> object:
     if difi.chk_exst_dnd(_ap): raise exc.ExceptionExistsDirectoryInDirectory()
 
     pre = dttz.crt_prefix_n_ms("cet") # Create prefix name without millisecond.
+    
     """ For the file name, make sure to have everything in lower letter and
     to replace space with the separator.
     """
     nm_fi = pth.get_ap_innermst(_ap).lower().replace(" ", var.note_sp)
     nm = "{}{}{}".format(pre, var.note_sp, nm_fi)
-    di = pth.jo(pth.get_ap_1(_ap), nm) # Absolute path into the note folder.
-    fi = pth.jo(di, "{}.{}".format(nm, "md")) # Absolute path into the .md file in the note folder.
+    di = pth.jo(pth.get_ap_1(_ap), nm) # Absolute path into the note directory.
+    fi = pth.jo(di, "{}.{}".format(nm, "md")) # Absolute path into the .md file in the note directory.
 
     return op.struct(ap_di=di, ap_md=fi, nm_di=nm, nm_md=fi)
 
@@ -220,10 +221,8 @@ def get_md(_ap:str) -> str:
     return ""
 
 
-""" PENDING: Function to initiate the note file.
-
-General note:
-* Check if an .md file is exists or not.
+""" This is a function to do not initialization if
+the .md file does not exists  or if .md file is blank.
 """
 def init(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
@@ -232,63 +231,79 @@ def init(_ap:str) -> str:
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
 
     nm = crt_nm(_ap)
+    org_di_nm = pth.get_ap_innermst(_ap)
+    org_md_nm = "{}.{}".format(org_di_nm, "md")
+    org_md_ap = pth.jo(_ap, org_md_nm)
 
-    """ Check prefix in the note folder. """
-    if not dttz.chk_prefix(pth.get_ap_innermst(_ap)): difi.ren(_ap, nm.nm_di); _ap = nm.ap_di;
-    """ Check if there is an .md file exists in the note folder. """
-    if not chk_exst_md(_ap):
-        print("*"*50)
-        print(nm.ap_md)
-        print(pth.get_ap_1(nm.ap_md))
-        print(difi.chk_exst_di(pth.get_ap_1(nm.ap_md)))
-        print("*"*50)
-        crt_md(pth.jo(_ap, "{}.{}".format(pth.get_ap_innermst(_ap), "md"))) # Create .md file.
+    """ Check if prefix is alredy in directory. """
+    if not dttz.chk_prefix(org_di_nm):
+        difi.ren(_ap, nm.nm_di)
 
-    """ Get the .md file and check if the naming convention in the
-    .md file is correct.
+        """ Set back some variables that used `_ap`. """
+        _ap = nm.ap_di
+        org_di_nm = pth.get_ap_innermst(_ap)
+        org_md_nm = "{}.{}".format(org_di_nm, "md")
+        org_md_ap = pth.jo(_ap, org_md_nm)
+
+    """ Check if an .md file is alredy exists in the note directory. """
+    if not chk_exst_md(_ap): crt_md(org_md_ap)
+
+    """ Get the .md file. """
+    md = get_md(_ap) # Absolute path to the .md file.
+    md_nm = pth.get_ap_innermst(md) # The name of the .md file with the extension.
+    md_nmnext = pth.rm_ext(md_nm, "md") # The name of the .md file without the extension.
+
+    """ The name of .md file should be the same with the note directory.
+    If the name is not the same then rename the .md file.
     """
-    md = get_md(_ap) # This variable could be filled with `nm.ap_md` as well.
-    try:
-        difi.ren(md, nm.nm_md) # Make sure the name of the .md file and the note folder is the same.
-        md = get_md(_ap) # Re - assign the .md absolute path again.
-    except: pass
-    mdi = pth.get_ap_innermst(md) # Get the .md file file name.
+    if not org_di_nm == md_nmnext:
+        difi.ren(md, nm.nm_md)
 
-    inx = 1 # File index number.
-    lst = [] # List of all lines that will be pushed into initiated .md file.
-    nomd = get_lst_n_md(_ap) # All files that are not .md files.
-    for i in nomd:
+        """ Set back every parameters that use `md`. """
+        md = nm.ap_md
+        md_nm = pth.get_ap_innermst(md) # The name of the .md file with the extension.
+        md_nmnext = pth.rm_ext(md_nm) # The name of the .md file without the extension.
+
+    inx = 1 # Index number for files.
+    lst = [] # List of strings that will be put into `md`.
+    prefix = dttz.crt_prefix_n_ms("cet")
+    for i in get_lst_n_md(_ap):
         iap = pth.jo(_ap, i)
+        iext = pth.get_ext(i)
 
         if pth.get_ext(i) in var.img_ext:
             """ PENDING: I could make this into separate function. """
-            prefix = dttz.crt_prefix_n_ms("cet")
-            inew = "{}-{}.{}".format(prefix, inx, pth.get_ext(i)); inx = inx + 1; # Image file that will be converted and resized.
-            inewap = pth.jo(_ap, inew)
-            ianew = "{}-{}-{}".format(prefix, inx, i); inx = inx + 1; # Image file wihtout any conversion.
-            ianewap = pth.jo(_ap, ianew)
-            
-            difi.ren(iap, inew)
-            difi.cpy(inewap, ianewap)
-            
-            cnvrt_img_ip_600(inewap)
+            inew_nm = "{}-{}.{}".format(prefix, inx, iext) # Embed file (for image).
+            inx = inx + 1
+            inew_ap = pth.jo(_ap, inew_nm) # Absolute path to the embedded file.
+            ianew_nm = "{}-{}-{}".format(prefix, inx, i) # Attach file (for other than image).
+            inx = inx + 1
+            ianew_ap = pth.jo(_ap, ianew_nm) # Absolute path to the attached file.
+        
+            """ Constructing sized image file for embedding and original file for attachment. """
+            difi.ren(iap, inew_nm) # Renaming file before converting.
+            difi.cpy(inew_ap, ianew_ap) # This is the original file. Copied before conversion.
+        
+            cnvrt_img_ip_600(ianew_ap) # Convert!
 
             """ The first line break is for each line itself. The next three
             line breaks are meant for empty space to write the notes.
             """
 
-            lst.append("{}{}".format(crt_nm_md(inew, True), "\n\n\n\n"))
-            lst.append("{}{}".format(crt_nm_md(ianew, False), "\n\n\n\n"))
+            """ Put this file into the .md file in `md`. """
+            lst.append("{}{}".format(crt_nm_md(inew_nm, True), "\n\n\n\n"))
+            lst.append("{}{}".format(crt_nm_md(ianew_nm, False), "\n\n\n\n"))
         else:
             """ PENDING: I could make this into separate function. """
-            prefix = dttz.crt_prefix_n_ms("cet")
-            ianew = "{}-{}-{}".format(prefix, inx, i); inx = inx + 1;
-            ianewap = pth.jo(_ap, ianew)
-            difi.ren(iap, ianew)
-            lst.append("{}{}".format(crt_nm_md(ianew, False), "\n\n\n\n"))
-    
+            ianew_nm = "{}-{}-{}".format(prefix, inx, i) # Attach file (for other than image).
+            inx = inx + 1
+            ianew_ap = pth.jo(_ap, ianew_nm) # Absolute path to the attached file.
+
+            difi.ren(iap, ianew_ap) # Renaming file before converting.
+            lst.append("{}{}".format(crt_nm_md(ianew_nm, False), "\n\n\n\n")) # Put this file into .md file.
+
     lst[len(lst) - 1] = lst[len(lst) - 1].rstrip() # Remove the last line line breaks.
-    wrt_md(md, lst)
+    wrt_md(md, lst) # Write the `lst` into `md`.
     
     """ This line below is to debug and to show the .md file in Windows. """
     #import os; os.system(md);
