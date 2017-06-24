@@ -58,6 +58,20 @@ def chk_exst_md(_ap:str, _m:bool=False) -> bool:
 
 
 
+""" Function to check if an .md file is blank/empty or not. """
+def chk_md_b(_ap:str):
+    _ap = pth.ncnp(_ap)
+    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
+    if not pth.get_ext(_ap) == "md": raise exc.ExceptionNotExistsMDFile()
+
+    """ The function of `rd_md()` is used to read all lines in `_ap`. If it
+    returns `0` it means the .md file in `_ap` has no line written in it.
+    """
+    return True if len(rd_md(_ap)) == 0 else False
+
+
+
 """ A function to convert image in place. The `ip` in this function name
 stands for in position.
 
@@ -77,7 +91,7 @@ def cnvrt_img_ip(_ap:str, _w:int=0, _h:int=0) -> str:
 
     _w = "" if _w <= 0 else _w
     _h = "" if _h <= 0 else _h
-    nm_fi = crt_nm_img(_ap)
+    nm_fi = crt_apnm_img_cnvrt(_ap)
     difi.ren(_ap, nm_fi.nm_bak)
     _ap = nm_fi.ap_bak
 
@@ -98,21 +112,9 @@ def cnvrt_img_ip_600(_ap:str) -> str: return cnvrt_img_ip(_ap, 600)
 
 
 
-""" Function to check if an .md file is blank/empty or not. """
-def chk_md_b(_ap:str):
-    _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
-    if not pth.get_ext(_ap) == "md": raise exc.ExceptionNotExistsMDFile()
-
-    """ The function of `rd_md()` is used to read all lines in `_ap`. If it
-    returns `0` it means the .md file in `_ap` has no line written in it.
-    """
-    return True if len(rd_md(_ap)) == 0 else False
-
-
-
-""" Function to make strings to attach file into the `.md` file. """
+""" Function to generate string for renaming for attaching and embedding
+image file in the note directory.
+"""
 def crt_apnm_attach(_ap:str, _prefix:str, _inx:str) -> object:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
@@ -129,8 +131,8 @@ def crt_apnm_attach(_ap:str, _prefix:str, _inx:str) -> object:
 
 
 
-""" Function to generate embed strings for file. At this point only images are allowed to be
-embedded in the .md note.
+""" Function to generate string for copying and renaming for embeddeding
+file in the note directory.
 """
 def crt_apnm_embed(_ap:str, _prefix:str, _inx:str) -> object:
     _ap = pth.ncnp(_ap)
@@ -149,8 +151,10 @@ def crt_apnm_embed(_ap:str, _prefix:str, _inx:str) -> object:
 
 
 
-""" Function to both generate strings for embed then attach image file. """
-def crt_apnm_image(_ap:str, _prefix:str, _inx:str) -> object:
+""" Function to generate string for copying and renaming for attaching
+file in the note directory.
+"""
+def crt_apnm_img(_ap:str, _prefix:str, _inx:str) -> object:
     _ap = pth.ncnp(_ap)
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
@@ -166,48 +170,11 @@ def crt_apnm_image(_ap:str, _prefix:str, _inx:str) -> object:
 
 
 
-""" Function to create an .md file at `_ap`. There could be a check if the
-.md file is alredy exists or not.
-"""
-def crt_md(_ap:str) -> bool:
-    _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not pth.get_ext(_ap) == "md": raise exc.ExceptionNotExistsMDFile()
-
-    return difi.crt(_ap, False)
-
-
-
-""" Function to create absolute path to the note, absolute path to
-the note directory, and the note's name.
-"""
-def crt_nm(_ap:str) -> object:
-    _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
-    if difi.chk_exst_dnd(_ap): raise exc.ExceptionExistsDirectoryInDirectory()
-
-    pre = dttz.crt_prefix_n_ms("cet") # Create prefix name without millisecond.
-    
-    """ For the file name, make sure to have everything in lower letter and
-    to replace space with the separator.
-    """
-    nm_fi = pth.get_ap_innermst(_ap).lower().replace(" ", var.note_sp)
-    nm = "{}{}{}".format(pre, var.note_sp, nm_fi)
-    di = pth.jo(pth.get_ap_1(_ap), nm) # Absolute path into the note directory.
-    fi = pth.jo(di, "{}.{}".format(nm, "md")) # Absolute path into the .md file in the note directory.
-
-    return op.struct(ap_di=di, ap_md=fi, nm_di=nm, nm_md=fi)
-
-
-
 """ Create naming convention for original, backup, and converted file name. With
 this note taking convention, the `_ap` provided here should be already be
 the renamed version of the file (with prefix).
-
-PENDING: This function is not yet unit tested.
 """
-def crt_nm_img(_ap:str) -> object:
+def crt_apnm_img_cnvrt(_ap:str) -> object:
     if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
@@ -230,14 +197,51 @@ def crt_nm_img(_ap:str) -> object:
 
 
 
-""" Function to create .md file embedded image string. The last
-parameter of `_img` is used to determine if the file is an image file.
+""" Function to generate string for copying and renaming for note directory. """
+def crt_apnm_note(_ap:str) -> object:
+    _ap = pth.ncnp(_ap)
+    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
+    if difi.chk_exst_dnd(_ap): raise exc.ExceptionExistsDirectoryInDirectory()
+
+    pre = dttz.crt_prefix_n_ms("cet") # Create prefix name without millisecond.
+    
+    """ For the file name, make sure to have everything in lower letter and
+    to replace space with the separator.
+    """
+    nm_fi = pth.get_ap_innermst(_ap).lower().replace(" ", var.note_sp)
+    nm = "{}{}{}".format(pre, var.note_sp, nm_fi)
+    di = pth.jo(pth.get_ap_1(_ap), nm) # Absolute path into the note directory.
+    fi = pth.jo(di, "{}.{}".format(nm, "md")) # Absolute path into the .md file in the note directory.
+
+    return op.struct(ap_di=di, ap_md=fi, nm_di=nm, nm_md=fi)
+
+
+
+""" Function to create an .md file at `_ap`. There could be a check if the
+.md file is alredy exists or not.
 """
-def crt_nm_md(_nm_fi:str, _img:bool) -> str:
+def crt_md(_ap:str) -> bool:
+    _ap = pth.ncnp(_ap)
+    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.get_ext(_ap) == "md": raise exc.ExceptionNotExistsMDFile()
+
+    return difi.crt(_ap, False)
+
+
+
+""" Function to generate string for embedding and attaching file into the .md note. """
+def crt_s_md(_nm_fi:str, _img:bool) -> str:
     if not bool(pth.get_ext(_nm_fi)): raise exc.ExceptionNotExistsFileExtension()
 
     if _img: return "![./{0}](./{0})".format(_nm_fi)
     else: return "[./{0}](./{0})".format(_nm_fi)
+
+
+
+""" Function to fix space and underscore in directory/file name. """
+def fix_su(_s:str) -> str:
+    return _s.replace(" ", "-").replace("_", "-")
 
 
 
@@ -275,6 +279,7 @@ def get_md(_ap:str) -> str:
     return ""
 
 
+
 """ This is a function to do not initialization if
 the .md file does not exists  or if .md file is blank.
 """
@@ -284,7 +289,7 @@ def init(_ap:str) -> str:
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
 
-    nm = crt_nm(_ap)
+    nm = crt_apnm_note(_ap)
     org_di_nm = pth.get_ap_innermst(_ap)
     org_md_nm = "{}.{}".format(org_di_nm, "md")
     org_md_ap = pth.jo(_ap, org_md_nm)
@@ -326,7 +331,7 @@ def init(_ap:str) -> str:
         iext = pth.get_ext(i)
 
         if pth.get_ext(i) in var.img_ext:
-            apnmi = crt_apnm_image(iap, prefix, inx)
+            apnmi = crt_apnm_img(iap, prefix, inx)
             inx = apnmi.inx
 
             """ Constructing sized image file for embedding and original file for attachment. """
@@ -340,14 +345,14 @@ def init(_ap:str) -> str:
             """
 
             """ Put this file into the .md file in `md`. """
-            lst.append("{}{}".format(crt_nm_md(apnmi.nme, True), "\n\n\n\n"))
-            lst.append("{}{}".format(crt_nm_md(apnmi.nma, False), "\n\n\n\n"))
+            lst.append("{}{}".format(crt_s_md(apnmi.nme, True), "\n\n\n\n"))
+            lst.append("{}{}".format(crt_s_md(apnmi.nma, False), "\n\n\n\n"))
         else:
             apnma = crt_apnm_attach(iap, prefix, inx)
             inx = apnma.inx
 
             difi.ren(iap, apnma.nm) # Renaming file before converting.
-            lst.append("{}{}".format(crt_nm_md(apnma.nm, False), "\n\n\n\n")) # Put this file into .md file.
+            lst.append("{}{}".format(crt_s_md(apnma.nm, False), "\n\n\n\n")) # Put this file into .md file.
 
     lst[len(lst) - 1] = lst[len(lst) - 1].rstrip() # Remove the last line line breaks.
     wrt_md(md, lst) # Write the `lst` into `md`.
@@ -357,12 +362,6 @@ def init(_ap:str) -> str:
     #import os; os.system(md);
 
     return _ap
-
-
-
-""" Function to fix space and underscore in directory/file name. """
-def fix_su(_s:str) -> str:
-    return _s.replace(" ", "-").replace("_", "-")
 
 
 

@@ -8,12 +8,19 @@ from dbg import crt_img_dbg as cid
 from difi import crt as cr
 from difi import de as dele
 from note import apnd_md as am
+from note import aw_md_ as awd
 from note import chk_exst_md as cm
 from note import chk_md_b as cmb
+from note import cnvrt_img_ip as cii
+from note import cnvrt_img_ip_600 as ci600
+from note import crt_apnm_attach as ca
+from note import crt_apnm_embed as ce
+from note import crt_apnm_img as ci
+from note import crt_apnm_img_cnvrt as cc
+from note import crt_apnm_note as cn
 from note import crt_md as crm
-from note import crt_nm as cn
-from note import crt_nm_img as cni
-from note import crt_nm_md as cnm
+from note import crt_s_md as csmd
+from note import fix_su as fs
 from note import get_lst_n_md as glnm
 from note import get_md as gm
 from note import init as i
@@ -82,26 +89,24 @@ class unit_test(TC):
         f = j(dm, "f.md")
         cr(f, False)
         lns = [1, "2", "3"]
-        with self.assertRaises(EX_LNAS):
-            am(f, lns)
+        with self.assertRaises(EX_LNAS): am(f, lns)
         dele(f)
 
         f = n("./f.f")
         ls = ["1", "2", "3"]
-        with self.assertRaises(EX_NAP):
-            am(f, ls)
+        with self.assertRaises(EX_NAP): am(f, ls)
 
         f = j(dm, "f.md")
         ls = ["1", "2", "3"]
-        with self.assertRaises(EX_NEF):
-            am(f, ls)
+        with self.assertRaises(EX_NEF): am(f, ls)
 
         f = j(dm, "f.f")
         ls = ["1", "2", "3"]
         cr(f, False)
-        with self.assertRaises(EX_NEMD):
-            am(f, ls)
+        with self.assertRaises(EX_NEMD): am(f, ls)
         dele(f)
+
+    def test_aw_md_(self): put("awd(...)", "PENDING: not yet unit tested")
 
     def test_chk_exst_md(self):
         self.assertFalse(cm(dm))
@@ -117,12 +122,10 @@ class unit_test(TC):
         dele(f)
 
         d = n("./")
-        with self.assertRaises(EX_NAP):
-            cm(d)
+        with self.assertRaises(EX_NAP): cm(d)
 
         d = j(dm, "d")
-        with self.assertRaises(EX_NED):
-            cm(d)
+        with self.assertRaises(EX_NED): cm(d)
 
     def test_chk_md_b(self):
         f = j(dm, "f.md")
@@ -138,35 +141,84 @@ class unit_test(TC):
         dele(f)
 
         f = n("./f.f")
-        with self.assertRaises(EX_NAP):
-            cmb(f)
+        with self.assertRaises(EX_NAP): cmb(f)
 
         f = j(dm, "f.md")
-        with self.assertRaises(EX_NEF):
-            cmb(f)
+        with self.assertRaises(EX_NEF): cmb(f)
 
         f = j(dm, "f.f")
         cr(f, False)
-        with self.assertRaises(EX_NEMD):
-            cmb(f)
+        with self.assertRaises(EX_NEMD): cmb(f)
         dele(f)
 
-    def test_crt_md(self):
-        f = j(dm, "f.md")
-        self.assertTrue(crm(f))
+    def test_cnvrt_img_ip(self):  put("cii(...)", "PENDING: not yet unit tested")
+
+    def test_cnvrt_img_ip_600(self):  put("ci600(...)", "PENDING: not yet unit tested")
+
+    def test_crt_apnm_attach(self): put("ca(...)", "PENDING: not yet unit tested")
+
+    def test_crt_apnm_embed(self): put("ce(...)", "PENDING: not yet unit tested")
+
+    def test_crt_apnm_img(self): put("ci(...)", "PENDING: not yet unit tested")
+
+    def test_crt_apnm_img_cnvrt(self):
+        f = j(dm, "f.bmp")
+        cid(f)
+        cni_ = cc(f)
+        put("cc(f).ap_bak", cni_.ap_bak)
+        put("cc(f).ap_cn", cni_.ap_cn)
+        put("cc(f).nm_bak", cni_.nm_bak)
+        put("cc(f).nm_cn", cni_.nm_cn)
         dele(f)
 
-        f = n("./f.md")
-        with self.assertRaises(EX_NAP):
-            crm(f)
+        f = j(dm, "f.jpeg")
+        cid(f)
+        cni_ = cc(f)
+        put("cc(f).ap_bak", cni_.ap_bak)
+        put("cc(f).ap_cn", cni_.ap_cn)
+        put("cc(f).nm_bak", cni_.nm_bak)
+        put("cc(f).nm_cn", cni_.nm_cn)
+        dele(f)
+
+        f = j(dm, "f.jpg")
+        cid(f)
+        cni_ = cc(f)
+        put("cc(f).ap_bak", cni_.ap_bak)
+        put("cc(f).ap_cn", cni_.ap_cn)
+        put("cc(f).nm_bak", cni_.nm_bak)
+        put("cc(f).nm_cn", cni_.nm_cn)
+        dele(f)
+
+        f = j(dm, "f.png")
+        cid(f)
+        cni_ = cc(f)
+        put("cc(f).ap_bak", cni_.ap_bak)
+        put("cc(f).ap_cn", cni_.ap_cn)
+        put("cc(f).nm_bak", cni_.nm_bak)
+        put("cc(f).nm_cn", cni_.nm_cn)
+        dele(f)
+
+        f = n("./f.f")
+        with self.assertRaises(EX_NAP): cc(f)
+
+        f = j(dm, "f.bmp")
+        with self.assertRaises(EX_NEF): cc(f)
+
+        f = j(dm, "f.jpeg")
+        with self.assertRaises(EX_NEF): cc(f)
+
+        f = j(dm, "f.jpg")
+        with self.assertRaises(EX_NEF): cc(f)
+
+        f = j(dm, "f.png")
+        with self.assertRaises(EX_NEF): cc(f)
 
         f = j(dm, "f.f")
         cr(f, False)
-        with self.assertRaises(EX_NEMD):
-            crm(f)
+        with self.assertRaises(EX_NIMG): cc(f)
         dele(f)
 
-    def test_crt_nm(self):
+    def test_crt_apnm_note(self):
         cn_ = cn(dm)
         put("cn(dm).ap_di", cn_.ap_di)
         put("cn(dm).ap_md", cn_.ap_md)
@@ -175,114 +227,62 @@ class unit_test(TC):
 
         d = j(dm, "d")
         cr(d, True)
-        with self.assertRaises(EX_DND):
-            cn(dm)
+        with self.assertRaises(EX_DND): cn(dm)
         dele(d)
 
         d = j(dm, "d")
-        with self.assertRaises(EX_NED):
-            cn(d)
+        with self.assertRaises(EX_NED): cn(d)
 
         d = n("./")
-        with self.assertRaises(EX_NAP):
-            cn(d)
+        with self.assertRaises(EX_NAP): cn(d)
 
-    def test_crt_nm_img(self):
-        f = j(dm, "f.bmp")
-        cid(f)
-        cni_ = cni(f)
-        put("cni(f).ap_bak", cni_.ap_bak)
-        put("cni(f).ap_cn", cni_.ap_cn)
-        put("cni(f).nm_bak", cni_.nm_bak)
-        put("cni(f).nm_cn", cni_.nm_cn)
+    def test_crt_md(self):
+        f = j(dm, "f.md")
+        self.assertTrue(crm(f))
         dele(f)
 
-        f = j(dm, "f.jpeg")
-        cid(f)
-        cni_ = cni(f)
-        put("cni(f).ap_bak", cni_.ap_bak)
-        put("cni(f).ap_cn", cni_.ap_cn)
-        put("cni(f).nm_bak", cni_.nm_bak)
-        put("cni(f).nm_cn", cni_.nm_cn)
-        dele(f)
-
-        f = j(dm, "f.jpg")
-        cid(f)
-        cni_ = cni(f)
-        put("cni(f).ap_bak", cni_.ap_bak)
-        put("cni(f).ap_cn", cni_.ap_cn)
-        put("cni(f).nm_bak", cni_.nm_bak)
-        put("cni(f).nm_cn", cni_.nm_cn)
-        dele(f)
-
-        f = j(dm, "f.png")
-        cid(f)
-        cni_ = cni(f)
-        put("cni(f).ap_bak", cni_.ap_bak)
-        put("cni(f).ap_cn", cni_.ap_cn)
-        put("cni(f).nm_bak", cni_.nm_bak)
-        put("cni(f).nm_cn", cni_.nm_cn)
-        dele(f)
-
-        f = n("./f.f")
-        with self.assertRaises(EX_NAP):
-            cni(f)
-
-        f = j(dm, "f.bmp")
-        with self.assertRaises(EX_NEF):
-            cni(f)
-
-        f = j(dm, "f.jpeg")
-        with self.assertRaises(EX_NEF):
-            cni(f)
-
-        f = j(dm, "f.jpg")
-        with self.assertRaises(EX_NEF):
-            cni(f)
-
-        f = j(dm, "f.png")
-        with self.assertRaises(EX_NEF):
-            cni(f)
+        f = n("./f.md")
+        with self.assertRaises(EX_NAP): crm(f)
 
         f = j(dm, "f.f")
         cr(f, False)
-        with self.assertRaises(EX_NIMG):
-            cni(f)
+        with self.assertRaises(EX_NEMD): crm(f)
         dele(f)
 
-    def test_crt_nm_md(self):
+    def test_crt_s_md(self):
         f = j(dm, "f.bmp")
         cid(f)
-        put("cnm(f)", cnm(f, True))
+        put("csmd(f)", csmd(f, True))
         dele(f)
 
         f = j(dm, "f.jpeg")
         cid(f)
-        put("cnm(f)", cnm(f, True))
+        put("csmd(f)", csmd(f, True))
         dele(f)
 
         f = j(dm, "f.jpg")
         cid(f)
-        put("cnm(f)", cnm(f, True))
+        put("csmd(f)", csmd(f, True))
         dele(f)
 
         f = j(dm, "f.png")
         cid(f)
-        put("cnm(f)", cnm(f, True))
+        put("csmd(f)", csmd(f, True))
         dele(f)
 
         f = j(dm, "f.f")
         cr(f, False)
-        put("cnm(f)", cnm(f, False))
+        put("csmd(f)", csmd(f, False))
         dele(f)
 
         f = j(dm, "f")
         cr(f, False)
-        with self.assertRaises(EX_NFE):
-            cnm(f, False)
+        with self.assertRaises(EX_NFE): csmd(f, False)
         dele(f)
 
-    def test_get_lst_n_md(self):
+    def test_fix_su(self): put("fs(...)", "PENDING: not yet unit tested")
+
+    def test_get_lst_n_md(self): 
         f1 = j(dm, "f1.md")
         cr(f1, False)
         f2 = j(dm, "f2.f")
@@ -296,26 +296,22 @@ class unit_test(TC):
 
         d = j(dm, "d")
         cr(d, True)
-        with self.assertRaises(EX_DND):
-            glnm(dm)
+        with self.assertRaises(EX_DND): glnm(dm)
         dele(d)
 
         f1 = j(dm, "f1.md")
         cr(f1, False)
         f2 = j(dm, "f2.md")
         cr(f2, False)
-        with self.assertRaises(EX_EMMD):
-            glnm(dm)
+        with self.assertRaises(EX_EMMD): glnm(dm)
         dele(f1)
         dele(f2)
 
         d = n("./")
-        with self.assertRaises(EX_NAP):
-            glnm(d)
+        with self.assertRaises(EX_NAP): glnm(d)
 
         d = j(dm, "d")
-        with self.assertRaises(EX_NED):
-            glnm(d)
+        with self.assertRaises(EX_NED): glnm(d)
 
     def test_get_md(self):
         f = j(dm, "f.md")
@@ -327,22 +323,18 @@ class unit_test(TC):
         f2 = j(dm, "f2.md")
         cr(f1, False)
         cr(f2, False)
-        with self.assertRaises(EX_EMMD):
-            gm(dm)
+        with self.assertRaises(EX_EMMD): gm(dm)
         dele(f1)
         dele(f2)
        
         d = n("./")
-        with self.assertRaises(EX_NAP):
-            gm(d)
+        with self.assertRaises(EX_NAP): gm(d)
 
         d = j(dm, "d")
-        with self.assertRaises(EX_NED):
-            gm(d)
+        with self.assertRaises(EX_NED): gm(d)
 
-        with self.assertRaises(EX_NEMD):
-            gm(dm)
-    
+        with self.assertRaises(EX_NEMD): gm(dm)
+
     def test_init(self):
         d = j(dm, "d")
         cr(d, True)
@@ -380,19 +372,16 @@ class unit_test(TC):
         cr(f1, False)
         f2 = j(dm, "f2.md")
         cr(f2, False)
-        with self.assertRaises(EX_EMMD):
-            i(dm)
+        with self.assertRaises(EX_EMMD): i(dm)
         dele(f1)
         dele(f2)
 
         d = n("./")
-        with self.assertRaises(EX_NAP):
-            i(d)
+        with self.assertRaises(EX_NAP): i(d)
 
         d = j(dm, "d")
-        with self.assertRaises(EX_NED):
-            i(d)
-    
+        with self.assertRaises(EX_NED): i(d)
+
     def test_rd_md(self):
         f = j(dm, "f.md")
         cr(f, False)
@@ -402,17 +391,14 @@ class unit_test(TC):
         dele(f)
 
         f = n("./f.f")
-        with self.assertRaises(EX_NAP):
-            r(f)
+        with self.assertRaises(EX_NAP): r(f)
 
         f = j(dm, "f.f")
-        with self.assertRaises(EX_NEF):
-            r(f)
+        with self.assertRaises(EX_NEF): r(f)
 
         f = j(dm, "f.f")
         cr(f, False)
-        with self.assertRaises(EX_NEMD):
-            r(f)
+        with self.assertRaises(EX_NEMD): r(f)
         dele(f)
 
     def test_wrt_md(self):
@@ -425,27 +411,23 @@ class unit_test(TC):
         f = j(dm, "f.md")
         cr(f, False)
         lns = [1, "2", "3"]
-        with self.assertRaises(EX_LNAS):
-            wm(f, lns)
+        with self.assertRaises(EX_LNAS): wm(f, lns)
         dele(f)
 
         f = n("./f.f")
         ls = ["1", "2", "3"]
-        with self.assertRaises(EX_NAP):
-            wm(f, ls)
+        with self.assertRaises(EX_NAP): wm(f, ls)
 
         f = j(dm, "f.md")
         ls = ["1", "2", "3"]
-        with self.assertRaises(EX_NEF):
-            wm(f, ls)
+        with self.assertRaises(EX_NEF): wm(f, ls)
 
         f = j(dm, "f.f")
         ls = ["1", "2", "3"]
         cr(f, False)
-        with self.assertRaises(EX_NEMD):
-            wm(f, ls)
+        with self.assertRaises(EX_NEMD): wm(f, ls)
         dele(f)
-    
+
     def test_wrt_md_b(self):
         f = j(dm, "f.md")
         cr(f, False)
@@ -453,17 +435,14 @@ class unit_test(TC):
         dele(f)
 
         f = n("./f.f")
-        with self.assertRaises(EX_NAP):
-            wbm(f)
+        with self.assertRaises(EX_NAP): wbm(f)
 
         f = j(dm, "f.md")
-        with self.assertRaises(EX_NEF):
-            wbm(f)
+        with self.assertRaises(EX_NEF): wbm(f)
 
         f = j(dm, "f.f")
         cr(f, False)
-        with self.assertRaises(EX_NEMD):
-            wbm(f)
+        with self.assertRaises(EX_NEMD): wbm(f)
         dele(f)
 
 if __name__ == "__main__": unittest.main()
