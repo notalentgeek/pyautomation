@@ -12,7 +12,7 @@ import var
 PENDING: I could may be put every ImageMagick specific functions into different Python file.
 """
 def crt_img_dbg(_ap:str) -> None:
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if difi.chk_exst_fi(_ap): raise exc.ExceptionExistsFile()
     if not pth.get_ext(_ap) in var.img_ext: raise ExceptionNotExistsImageFile()
 

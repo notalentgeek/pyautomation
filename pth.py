@@ -12,7 +12,7 @@ import var
 """ This is a function to check if a provided path is an absolute path or a
 relative path.
 """
-def chk_abs(_p:str) -> bool: return os.path.isabs(ncnp(_p))
+def chk_ap(_s:str) -> bool: return os.path.isabs(ncnp(_s))
 
 
 
@@ -29,7 +29,9 @@ def chk_ext_img(_s:str) -> bool:
 or not.
 """
 def chk_s_ap_1(_ap_1:str, _ap_2:str) -> bool:
-    if not chk_abs(_ap_1) or not chk_abs(_ap_2): raise exc.ExceptionNotAbsolutePath()
+    _ap_1 = ncnp(_ap_1)
+    _ap_2 = ncnp(_ap_2)
+    if not chk_ap(_ap_1) or not chk_ap(_ap_2): raise exc.ExceptionNotAbsolutePath()
     return ncnp(get_ap_1(_ap_1)) == ncnp(get_ap_1(_ap_2))
 
 
@@ -38,14 +40,17 @@ def chk_s_ap_1(_ap_1:str, _ap_2:str) -> bool:
 or not.
 """
 def chk_s_ap_x(_ap_1:str, _ap_2:str, _x:int) -> bool:
-    if not chk_abs(_ap_1) or not chk_abs(_ap_2): raise exc.ExceptionNotAbsolutePath()
+    _ap_1 = ncnp(_ap_1)
+    _ap_2 = ncnp(_ap_2)
+    if not chk_ap(_ap_1) or not chk_ap(_ap_2): raise exc.ExceptionNotAbsolutePath()
     return ncnp(get_ap_x(_ap_1, _x)) == ncnp(get_ap_x(_ap_2, _x))
 
 
 
 """ Get one upped path from the provided path. n"""
 def get_ap_1(_ap:str) -> str:
-    if not chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    _ap = ncnp(_ap)
+    if not chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
 
     if len(_ap) == 1: return get_sp() # If `_ap` is the root directory then return the separator.
 
@@ -64,7 +69,8 @@ def get_ap_x(
     _x:int,
     _c:int=0 # Counter parameter, but usually should never be provided and left 0.
 ) -> str:
-    if not chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    _ap = ncnp(_ap)
+    if not chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
 
     c = _c + 1
     di = get_ap_1(_ap)
@@ -80,7 +86,8 @@ def get_ap_x(
 
 """ Get the innermost directory or file from the provided path. """
 def get_ap_innermst(_ap:str) -> str:
-    if not chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    _ap = ncnp(_ap)
+    if not chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     return os.path.basename(_ap)
 
 
@@ -111,7 +118,8 @@ def get_sp() -> str:
 
 """ Function to join two paths. """
 def jo(_ap:str, _p:str) -> str:
-    if not chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    _ap = ncnp(_ap)
+    if not chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
 
     """ If there is a system separator as the first character then remove it.
     System separator at the first character ruins `os.path.join()`.
@@ -125,10 +133,10 @@ def jo(_ap:str, _p:str) -> str:
 """ Function to normalize path according operating system's convention. Do not use
 `os.path.normcase()` in Windows as Windows is case insensitive.
 """
-def ncnp(_ap:str) -> str:
-    if platform == "darwin" or platform == "linux" or platform == "linux2": return os.path.normcase(os.path.normpath(_ap))
-    elif platform == "cygwin" or platform == "win32": return os.path.normpath(_ap)
-    else: return os.path.normpath(_ap)
+def ncnp(_p:str) -> str:
+    if platform == "darwin" or platform == "linux" or platform == "linux2": return os.path.normcase(os.path.normpath(_p))
+    elif platform == "cygwin" or platform == "win32": return os.path.normpath(_p)
+    else: return os.path.normpath(_p)
 
 
 
@@ -149,6 +157,7 @@ def rm_ext_md(_s:str) -> str: return rm_ext(_s, "md")
 
 """ Remove the last appending system separator in a supplied path. """
 def rm_sp_fst(_ap:str) -> str:
+    _ap = ncnp(_ap)
     if _ap[:1] == get_sp() and len(_ap) > 1: return _ap[1:]
     else: return _ap
 
@@ -156,5 +165,6 @@ def rm_sp_fst(_ap:str) -> str:
 
 """ Remove the last appending system separator in a supplied path. """
 def rm_sp_lst(_ap:str) -> str:
+    _ap = ncnp(_ap)
     if _ap[-1:] == get_sp() and len(_ap) > 1: return _ap[:-1]
     else: return _ap

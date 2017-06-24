@@ -1,6 +1,6 @@
 def init(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
 

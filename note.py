@@ -1,8 +1,7 @@
-import subprocess
-
 import difi
 import dttz
 import exc
+import img
 import op
 import pth
 import var
@@ -15,7 +14,7 @@ import var
 """
 def aw_md_(_ap:str, _ls:list, _m:str) -> bool:
     _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not pth.get_ext(_ap) == "md": raise exc.ExceptionNotExistsMDFile()
     if not all(isinstance(i, str) for i in _ls): raise exc.ExceptionListNotAllString()
@@ -43,7 +42,7 @@ than one .md files (basically to check if there are multiple .md file).
 """
 def chk_exst_md(_ap:str, _m:bool=False) -> bool:
     _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
 
     m_cntr = 0 # Counter to check for multiple .md files in `_ap`.
@@ -61,7 +60,7 @@ def chk_exst_md(_ap:str, _m:bool=False) -> bool:
 """ Function to check if an .md file is blank/empty or not. """
 def chk_md_b(_ap:str):
     _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not pth.get_ext(_ap) == "md": raise exc.ExceptionNotExistsMDFile()
 
@@ -72,52 +71,12 @@ def chk_md_b(_ap:str):
 
 
 
-""" A function to convert image in place. The `ip` in this function name
-stands for in position.
-
-`_w` parameter is used to determine height.
-`_h` parameter is used to determine width.
-One of these parameter can be set to `0` and the other parameter will
-adjust while the `0` - ed parameter will adjust in proportion.
-
-PENDING: If later necessary please move this function into
-specific ImageMagick Python file.
-"""
-def cnvrt_img_ip(_ap:str, _w:int=0, _h:int=0) -> str:
-    _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
-    if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
-
-    _w = "" if _w <= 0 else _w
-    _h = "" if _h <= 0 else _h
-    nm_fi = crt_apnm_img_cnvrt(_ap)
-    difi.ren(_ap, nm_fi.nm_bak)
-    _ap = nm_fi.ap_bak
-
-    """ Convert `_ap` into `nm_fi.ap_cn`. The original `_ap` is retained. """
-    com = "convert \"{}\" -resize {}x{} \"{}\"".format(_ap, _w, _h, nm_fi.ap_cn)
-    subprocess.run(com, shell=True)
-
-    """ CAUTION: Make sure to check if conversion failed (I created file with image
-    extension although it is not image file per se). I only use this for debugging purposes.
-    """
-    if not difi.chk_exst_fi(nm_fi.ap_cn): difi.ren(_ap, nm_fi.nm_cn)
-    else: difi.de(_ap) # Because ImageMagick's `convert` create a new copy of the converted
-                       # image, this program needs to delete the backup file.
-
-    return nm_fi.ap_cn
-
-def cnvrt_img_ip_600(_ap:str) -> str: return cnvrt_img_ip(_ap, 600)
-
-
-
 """ Function to generate string for renaming for attaching and embedding
 image file in the note directory.
 """
 def crt_apnm_attach(_ap:str, _prefix:str, _inx:str) -> object:
     _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not bool(pth.get_ext(_ap)): raise exc.ExceptionNotExistsFileExtension()
 
@@ -136,7 +95,7 @@ file in the note directory.
 """
 def crt_apnm_embed(_ap:str, _prefix:str, _inx:str) -> object:
     _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not bool(pth.get_ext(_ap)): raise exc.ExceptionNotExistsFileExtension()
     if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
@@ -156,7 +115,7 @@ file in the note directory.
 """
 def crt_apnm_img(_ap:str, _prefix:str, _inx:str) -> object:
     _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not bool(pth.get_ext(_ap)): raise exc.ExceptionNotExistsFileExtension()
     if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
@@ -170,37 +129,10 @@ def crt_apnm_img(_ap:str, _prefix:str, _inx:str) -> object:
 
 
 
-""" Create naming convention for original, backup, and converted file name. With
-this note taking convention, the `_ap` provided here should be already be
-the renamed version of the file (with prefix).
-"""
-def crt_apnm_img_cnvrt(_ap:str) -> object:
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
-    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
-    if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
-
-    """ Original image file. """
-    org_ap1 = pth.get_ap_1(_ap)
-    org = pth.get_ap_innermst(_ap)
-    orge = pth.get_ext(org)
-    orgne = pth.rm_ext(org, orge)
-
-    """ Backup image file. """
-    bnm = "{}_{}.{}".format(orgne, var.bak, orge)
-    bnm_ap = pth.jo(org_ap1, bnm)
-
-    """ Converted image file. """
-    cnvrt = "{}.{}".format(orgne, "png")
-    cnvrt_ap = pth.jo(org_ap1, cnvrt)
-
-    return op.struct(ap_bak=bnm_ap, ap_cn=cnvrt_ap, nm_bak=bnm, nm_cn=cnvrt)
-
-
-
 """ Function to generate string for copying and renaming for note directory. """
 def crt_apnm_note(_ap:str) -> object:
     _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if difi.chk_exst_dnd(_ap): raise exc.ExceptionExistsDirectoryInDirectory()
 
@@ -223,7 +155,7 @@ def crt_apnm_note(_ap:str) -> object:
 """
 def crt_md(_ap:str) -> bool:
     _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not pth.get_ext(_ap) == "md": raise exc.ExceptionNotExistsMDFile()
 
     return difi.crt(_ap, False)
@@ -250,7 +182,7 @@ def fix_su(_s:str) -> str:
 """
 def get_lst_n_md(_ap:str) -> list:
     _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
     if difi.chk_exst_dnd(_ap): raise exc.ExceptionExistsDirectoryInDirectory()
@@ -268,7 +200,7 @@ def get_lst_n_md(_ap:str) -> list:
 """
 def get_md(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if not chk_exst_md(_ap): raise exc.ExceptionNotExistsMDFile()
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
@@ -285,7 +217,7 @@ the .md file does not exists  or if .md file is blank.
 """
 def init(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
 
@@ -338,7 +270,7 @@ def init(_ap:str) -> str:
             difi.ren(iap, apnmi.nme) # Renaming file before converting.
             difi.cpy(apnmi.ape, apnmi.apa) # This is the original file. Copied before conversion.
         
-            cnvrt_img_ip_600(apnmi.apa) # Convert!
+            img.cnvrt_img_ip_600(apnmi.apa) # Convert!
 
             """ The first line break is for each line itself. The next three
             line breaks are meant for empty space to write the notes.
@@ -368,7 +300,7 @@ def init(_ap:str) -> str:
 """ Function to read lines in an .md file. """
 def rd_md(_ap:str) -> list:
     _ap = pth.ncnp(_ap)
-    if not pth.chk_abs(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not pth.get_ext(_ap) == "md": raise exc.ExceptionNotExistsMDFile()
 

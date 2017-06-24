@@ -3,7 +3,8 @@ from unittest import TestCase as TC
 import os
 import unittest
 
-from pth import chk_abs as ca
+from dbg import print_ut as put
+from pth import chk_ap as ca
 from pth import chk_ext_img as cei
 from pth import chk_s_ap_1 as csp1
 from pth import chk_s_ap_x as cspx
@@ -13,6 +14,9 @@ from pth import get_ap_x as gpx
 from pth import get_ext as ge
 from pth import get_no_ext as gne
 from pth import get_sp as gsp
+from pth import rm_ext as re
+from pth import rm_ext_bak as reb
+from pth import rm_ext_md as rem
 from pth import jo as j
 from pth import ncnp as n
 from pth import rm_sp_lst as rsl
@@ -32,7 +36,7 @@ pr = n("pth1/pth2/pth3/pth4/pth5") # Relative path.
 prd = n("./pth1/pth2/pth3/pth4/pth5") # Relative path with singe dot.
 
 class unit_test(TC):
-    def test_chk_abs(self):
+    def test_chk_ap(self):
         self.assertFalse(ca(prd))
         self.assertTrue(ca(pa))
         self.assertTrue(ca(pa1))
@@ -158,6 +162,13 @@ class unit_test(TC):
         elif p == "cygwin" or p == "win32":
             self.assertTrue(n(paw1), "\\pth1\\pth2")
             self.assertTrue(n(paw2), "\\pth2")
+
+    def test_rm_ext(self): put("re(...)", "PENDING: not yet unit tested")
+
+    def test_rm_ext_md(self): put("reb(...)", "PENDING: not yet unit tested")
+
+    def test_rm_ext_bak(self): put("rem(...)", "PENDING: not yet unit tested")
+
 
     def test_rm_sp_fst(self):
         self.assertTrue(pa, rsl(pr))
