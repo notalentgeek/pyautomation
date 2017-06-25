@@ -17,6 +17,14 @@ smpl_md = [
     "[./f5.fi](./f5.fi)"
 ]
 
+smpl_md_prefix = [
+    "![./20010101-0000-cet-1.bmp](./20010101-0000-cet-1.bmp)\n\n\n\n",
+    "![./f2.jpeg](./f2.jpeg)\n\n\n\n",
+    "![./f3.jpg](./f3.jpg)\n\n\n\n",
+    "![./f4.png](./f4.png)\n\n\n\n",
+    "[./f5.fi](./f5.fi)"
+]
+
 smpl_txt = [
     "Aenean mollis ligula quis tellus lobortis, ac luctus odio porta. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam nisl magna, fringilla a faucibus quis, pretium ut arcu. Donec orci justo, dignissim eu viverra nec, tincidunt sed metus. Integer posuere luctus faucibus. Pellentesque consectetur dictum tristique. Vestibulum varius mi quis finibus egestas. Praesent tincidunt elit eget mollis eleifend. Vivamus vel maximus risus, ut sagittis ante. Ut sollicitudin maximus ante ac semper. Sed eros nibh, maximus non maximus vitae, ullamcorper eu ex. Proin sed bibendum orci. Sed dictum tortor nec euismod luctus. Morbi a dolor tortor. Vivamus congue, lacus quis malesuada malesuada, dolor ipsum semper mauris, condimentum dignissim mi urna eget quam. Cras placerat sem tellus, facilisis euismod felis hendrerit vitae.",
     "Aenean sed laoreet nulla. Vestibulum fringilla velit nunc. Sed aliquam nulla ut dolor porttitor, nec tincidunt mi vehicula. Maecenas nibh magna, interdum in metus vel, venenatis porta nisi. Fusce sit amet fringilla diam. Duis nec molestie diam, in ornare enim. Etiam eu ligula lectus. Nullam interdum sed urna porta finibus. Aliquam tristique scelerisque gravida. Nulla aliquam tincidunt ullamcorper. Vivamus nulla massa, fermentum quis orci et, rutrum placerat felis. Vestibulum finibus ultricies massa eget ullamcorper.",

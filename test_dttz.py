@@ -12,21 +12,22 @@ from dttz import chk_prefix as cp
 from dttz import chk_s as cs
 from dttz import chk_y as cy
 from dttz import crt_prefix as crp
+from dttz import crt_prefix as crp
+from dttz import crt_prefix_n_ms as crpnms
 from dttz import get_d_n as dn
 from dttz import get_d_p as dp
 from dttz import get_h_n as hn
 from dttz import get_h_p as hp
-from dttz import get_p_ as gp
 from dttz import get_m_n as mn
 from dttz import get_m_p as mp
 from dttz import get_mn_n as mnn
 from dttz import get_mn_p as mnp
 from dttz import get_now as n
 from dttz import get_now_n_ms as nnms
+from dttz import get_p_ as gp
+from dttz import get_prefix as gp
 from dttz import get_s_n as sn
 from dttz import get_tz as gtz
-from dttz import crt_prefix as crp
-from dttz import crt_prefix_n_ms as crpnms
 from dttz import get_tz_loc as gtlc
 from dttz import get_y_n as yn
 from dttz import get_y_p as yp
@@ -61,12 +62,12 @@ class unit_test(TC):
         self.assertFalse(ch("24"))
         self.assertTrue(ch("0"))
         self.assertTrue(ch(0))
-    
+
     def test_chk_mn(self):
         self.assertFalse(cmn("60"))
         self.assertTrue(cmn("0"))
         self.assertTrue(cmn(0))
-    
+
     def test_chk_s(self):
         self.assertFalse(cs("60"))
         self.assertTrue(cs("0"))
@@ -83,15 +84,15 @@ class unit_test(TC):
     def test_get_d_n(self): put("get_d_n(n())", dn(n()))
 
     def test_get_h_n(self): put("get_h_n(n())", hn(n()))
-    
+
     def test_get_m_n(self): put("get_m_n(n())", mn(n()))
-    
+
     def test_get_mn_n(self): put("get_mn_n(n())", mnn(n()))
-    
+
     def test_get_s_n(self): put("get_s_n(n())", sn(n()))
-    
+
     def test_get_y_n(self): put("get_y_n(n())", yn(n()))
-    
+
     def test_get_p_(self):  put("gp(...)", "PENDING: not yet unit tested")
 
     def test_create_prefix(self): put("crt_prefix(n())", crp(n(), "cet"))
@@ -115,5 +116,7 @@ class unit_test(TC):
     def test_crt_prefix(self):  put("crp(...)", "PENDING: not yet unit tested")
 
     def test_crt_prefix_n_ms(self):  put("crpnms(...)", "PENDING: not yet unit tested")
+
+    def test_get_prefix(self):  put("gp(...)", "PENDING: not yet unit tested")
 
 if __name__ == "__main__": unittest.main()

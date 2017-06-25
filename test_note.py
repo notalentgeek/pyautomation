@@ -11,12 +11,14 @@ from note import apnd_md as am
 from note import aw_md_ as awd
 from note import chk_exst_md as cm
 from note import chk_md_b as cmb
+from note import chk_s_md as csm
 from note import crt_apnm_attach as ca
 from note import crt_apnm_embed as ce
 from note import crt_apnm_note as cn
 from note import crt_md as crm
 from note import crt_s_md as csmd
 from note import fix_su as fs
+from note import get_fi_rp as gfr
 from note import get_lst_n_md as glnm
 from note import get_md as gm
 from note import init as i
@@ -149,6 +151,8 @@ class unit_test(TC):
         with self.assertRaises(EX_NEMD): cmb(f)
         de(f)
 
+    def test_chk_s_md(self): put("csm(...)", "PENDING: not yet unit tested")
+
     def test_crt_apnm_attach(self): put("ca(...)", "PENDING: not yet unit tested")
 
     def test_crt_apnm_embed(self): put("ce(...)", "PENDING: not yet unit tested")
@@ -219,7 +223,9 @@ class unit_test(TC):
 
     def test_fix_su(self): put("fs(...)", "PENDING: not yet unit tested")
 
-    def test_get_lst_n_md(self): 
+    def test_get_fi_rp(self): put("gfr(...)", "PENDING: not yet unit tested")
+
+    def test_get_lst_n_md(self):
         f1 = j(dm, "f1.md")
         cr(f1, False)
         f2 = j(dm, "f2.f")
@@ -263,7 +269,7 @@ class unit_test(TC):
         with self.assertRaises(EX_EMMD): gm(dm)
         de(f1)
         de(f2)
-       
+
         d = n("./")
         with self.assertRaises(EX_NAP): gm(d)
 
@@ -381,8 +387,8 @@ class unit_test(TC):
         cr(d, True)
         fm = j(d, "fm.md")
         cr(fm, False)
-        am(fm, var.smpl_md)
-        f1 = j(d, "f1.bmp")
+        am(fm, var.smpl_md_prefix)
+        f1 = j(d, "20010101-0000-cet-1.bmp")
         cid(f1)
         f2 = j(d, "f2.jpeg")
         cid(f2)

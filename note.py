@@ -1,3 +1,4 @@
+from enum import Enum
 import difi
 import dttz
 import exc
@@ -5,6 +6,8 @@ import img
 import op
 import pth
 import var
+
+class s_type(Enum): attach = 1; embed = 2; nothing = 3;
 
 """ A super function to append and write an .md file.
 
@@ -71,6 +74,14 @@ def chk_md_b(_ap:str):
 
 
 
+""" Function to check string for .md file attach or embed. """
+def chk_s_md(_s:str) -> s_type:
+    if _s[:4] == "![./": return s_type.embed
+    if _s[:3] == "[./": return s_type.attach
+    return s_type.nothing
+
+
+
 """ Function to generate string for renaming for attaching and embedding
 image file in the note directory.
 """
@@ -90,7 +101,7 @@ def crt_apnm_attach(_ap:str, _prefix:str, _inx:str) -> object:
 
 
 
-""" Function to generate string for copying and renaming for embeddeding
+""" Function to generate string for copying and renaming for embedding
 file in the note directory.
 """
 def crt_apnm_embed(_ap:str, _prefix:str, _inx:str) -> object:
@@ -137,7 +148,7 @@ def crt_apnm_note(_ap:str) -> object:
     if difi.chk_exst_dnd(_ap): raise exc.ExceptionExistsDirectoryInDirectory()
 
     pre = dttz.crt_prefix_n_ms("cet") # Create prefix name without millisecond.
-    
+
     """ For the file name, make sure to have everything in lower letter and
     to replace space with the separator.
     """
@@ -174,6 +185,13 @@ def crt_s_md(_nm_fi:str, _img:bool) -> str:
 """ Function to fix space and underscore in directory/file name. """
 def fix_su(_s:str) -> str:
     return _s.replace(" ", "-").replace("_", "-")
+
+
+
+""" Function to get file's relative position to the note folder from the
+attached/embedded string in the .md file.
+"""
+def get_fi_rp(_s:str) -> str: return _s.split("[")[1].split("]")[0][2:]
 
 
 
@@ -261,7 +279,7 @@ def init(_ap:str) -> str:
 
     inx = 1 # Index number for files.
     lst = [] # List of strings that will be put into `md`.
-    prefix = dttz.crt_prefix_n_ms("cet")
+    prefix = dttz.get_prefix(org_di_nm)
     for i in get_lst_n_md(_ap):
         iap = pth.jo(_ap, i)
         iext = pth.get_ext(i)
@@ -273,7 +291,7 @@ def init(_ap:str) -> str:
             """ Constructing sized image file for embedding and original file for attachment. """
             difi.ren(iap, apnmi.nme) # Renaming file before converting.
             difi.cpy(apnmi.ape, apnmi.apa) # This is the original file. Copied before conversion.
-        
+
             img.cnvrt_img_ip_600(apnmi.apa) # Convert!
 
             """ The first line break is for each line itself. The next three
@@ -292,7 +310,7 @@ def init(_ap:str) -> str:
 
     lst[len(lst) - 1] = lst[len(lst) - 1].rstrip() # Remove the last line line breaks.
     wrt_md(md, lst) # Write the `lst` into `md`.
-    
+
     """ This line below is to debug and to show the .md file in Linux and Windows. """
     #import os; os.system("{} {}".format("xdg-open", md))
     #import os; os.system(md);
@@ -330,34 +348,45 @@ def repair(_ap:str) -> str:
         if chk_md_b(get_md(_ap)): raise exc.ExceptionMDFileNoContent()
 
     ap_innermst = pth.get_ap_innermst(_ap)
-    ap_1 = pth.get_ap_1(_ap)
-
-    print("{}{}".format("\n", "*"*50))
-    print("{}: {}".format("_ap", _ap))
-    print("{}: {}".format("ap_1", ap_1))
-    print("{}: {}".format("ap_innermst", ap_innermst))
-    print("{}: {}".format("dttz.chk_prefix(ap_innermst)", dttz.chk_prefix(ap_innermst)))
 
     if not dttz.chk_prefix(ap_innermst):
-        nm_note = crt_apnm_note(_ap)
+        nm_note = crt_apnm_note(_ap) # Naming is generated here. Also for prefix.
         difi.ren(_ap, nm_note.nm_di)
-
         _ap = nm_note.ap_di
-        ap_innermst = pth.get_ap_innermst(_ap)
-        ap_1 = pth.get_ap_1(_ap)
 
-        print("{}: {}".format("nm_note.ap_di", nm_note.ap_di))
-        print("{}: {}".format("nm_note.ap_md", nm_note.ap_md))
-        print("{}: {}".format("nm_note.nm_di", nm_note.nm_di))
-        print("{}: {}".format("nm_note.nm_md", nm_note.nm_md))
+    ap_1 = pth.get_ap_1(_ap)
+    ap_innermst = pth.get_ap_innermst(_ap)
+    prefix = dttz.get_prefix(ap_innermst)
 
     md = get_md(_ap)
-    mdnm = "{}.{}".format(ap_innermst, "md")
-    difi.ren(md, mdnm)
-    md = pth.jo(_ap, mdnm)
+    nm_md = "{}.{}".format(ap_innermst, "md")
+    difi.ren(md, nm_md)
+    md = pth.jo(_ap, nm_md)
+    lines = rd_md(md) # Get all the lines from the .md file.
 
-    print("{}: {}".format("md", md))
-    print("{}: {}".format("difi.chk_exst_fi(md)", difi.chk_exst_fi(md)))
-    print("*"*50)
+    i = 0 # Index for looping.
+    inx = 1 # Index for image attaching/embedding file in .md file.
+    while i < len(lines):
+        if chk_s_md(lines[i]) == s_type.attach or chk_s_md(lines[i]) == s_type.embed:
+            nm_fi_org = get_fi_rp(lines[i]) # Original file name.
+            ap_fi_org = pth.jo(_ap, nm_fi_org) # Original file absolute path.
+
+            """ Check the existence of the file. """
+            if not difi.chk_exst_fi(ap_fi_org):
+                print(_ap); print(lines[i]);
+                raise exc.ExceptionNotExistsFile()
+
+            if dttz.chk_prefix(nm_fi_org):
+                prefix_org = dttz.get_prefix(nm_fi_org)
+
+                if not prefix == prefix_org:
+                    nm_fi_org = nm_fi_org.replace("{}-".format(prefix_org), "")
+                    nm_fi_org = "{}-{}".format(prefix, nm_fi_org)
+                    difi.ren(ap_fi_org, nm_fi_org)
+                    print(nm_fi_org)
+
+            else: pass
+
+        i = i + 1
 
     return _ap

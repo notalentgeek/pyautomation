@@ -16,7 +16,7 @@ def crt_img_dbg(_ap:str) -> None:
     if difi.chk_exst_fi(_ap): raise exc.ExceptionExistsFile()
     if not pth.get_ext(_ap) in var.img_ext: raise ExceptionNotExistsImageFile()
 
-    com = ["convert",  "-size", "32x32", "xc:black", "{}".format(_ap)]
+    com = "convert -size 32x32 xc:black {}".format(_ap)
     subprocess.call(com, shell=True)
 
 
