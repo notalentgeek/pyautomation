@@ -1,5 +1,6 @@
 """ All codes for image manipulations. """
 
+from PIL import Image
 import subprocess
 
 import difi
@@ -53,6 +54,7 @@ this note taking convention, the `_ap` provided here should be already be
 the renamed version of the file (with prefix).
 """
 def crt_apnm_img_cnvrt(_ap:str) -> object:
+    _ap = pth.ncnp(_ap)
     if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
@@ -72,3 +74,39 @@ def crt_apnm_img_cnvrt(_ap:str) -> object:
     cnvrt_ap = pth.jo(org_ap1, cnvrt)
 
     return op.struct(ap_bak=bnm_ap, ap_cn=cnvrt_ap, nm_bak=bnm, nm_cn=cnvrt)
+
+
+
+""" Function to get the width and height of an image file. """
+def get_img_dim(_ap:str) -> tuple:
+    _ap = pth.ncnp(_ap)
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
+    if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
+
+    with Image.open(_ap) as img: return img.size
+    return ()
+
+
+
+""" Function to get image height. """
+def get_img_dim_h(_ap:str) -> int:
+    _ap = pth.ncnp(_ap)
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
+    if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
+
+    with Image.open(_ap) as img: return img.size[1]
+    return 0
+
+
+
+""" Function to get image width. """
+def get_img_dim_w(_ap:str) -> int:
+    _ap = pth.ncnp(_ap)
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
+    if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
+
+    with Image.open(_ap) as img: return img.size[0]
+    return 0

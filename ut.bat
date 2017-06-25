@@ -1,6 +1,7 @@
 @echo off
 
 cls
+python3 -B C:\\Users\\mikael\\pyautomation\\test_dbg.py
 python3 -B C:\\Users\\mikael\\pyautomation\\test_difi.py
 python3 -B C:\\Users\\mikael\\pyautomation\\test_dttz.py
 python3 -B C:\\Users\\mikael\\pyautomation\\test_img.py

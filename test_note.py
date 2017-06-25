@@ -20,7 +20,8 @@ from note import fix_su as fs
 from note import get_lst_n_md as glnm
 from note import get_md as gm
 from note import init as i
-from note import rd_md as r
+from note import rd_md as rd
+from note import repair as r
 from note import wrt_md as wm
 from note import wrt_md_b as wbm
 from pth import chk_ext_img as cei
@@ -29,6 +30,8 @@ from pth import ncnp as n
 from exc import ExceptionExistMultipleMDFiles as EX_EMMD
 from exc import ExceptionExistsDirectoryInDirectory as EX_DND
 from exc import ExceptionListNotAllString as EX_LNAS
+from exc import ExceptionMDFileContent as EX_MDC
+from exc import ExceptionMDFileNoContent as EX_MDNC
 from exc import ExceptionNotAbsolutePath as EX_NAP
 from exc import ExceptionNotAbsolutePath as EX_NAP
 from exc import ExceptionNotExistsDirectory as EX_NED
@@ -36,6 +39,7 @@ from exc import ExceptionNotExistsFile as EX_NEF
 from exc import ExceptionNotExistsFileExtension as EX_NFE
 from exc import ExceptionNotExistsMDFile as EX_NEMD
 from exc import ExceptionNotExistsOpenMode as EX_NEOM
+import var
 
 """ It is important to have separate folder for each unit test Python file. """
 
@@ -309,6 +313,24 @@ class unit_test(TC):
         de(f1)
         de(f2)
 
+        d = j(dm, "d")
+        cr(d, True)
+        f = j(d, "f.md")
+        cr(f, False)
+        ls = ["1", "2", "3"]
+        am(f, ls)
+        with self.assertRaises(EX_MDC): i(d)
+        de(d)
+
+        d = j(dm, "20000101-0000-cet-d")
+        cr(d, True)
+        f = j(d, "f.md")
+        cr(f, False)
+        ls = ["1", "2", "3"]
+        am(f, ls)
+        with self.assertRaises(EX_MDC): i(d)
+        de(d)
+
         d = n("./")
         with self.assertRaises(EX_NAP): i(d)
 
@@ -320,19 +342,93 @@ class unit_test(TC):
         cr(f, False)
         ls = ["1", "2", "3"]
         am(f, ls)
-        put("r(f)", r(f))
+        put("rd(f)", rd(f))
         de(f)
 
         f = n("./f.f")
-        with self.assertRaises(EX_NAP): r(f)
+        with self.assertRaises(EX_NAP): rd(f)
 
         f = j(dm, "f.f")
-        with self.assertRaises(EX_NEF): r(f)
+        with self.assertRaises(EX_NEF): rd(f)
 
         f = j(dm, "f.f")
         cr(f, False)
-        with self.assertRaises(EX_NEMD): r(f)
+        with self.assertRaises(EX_NEMD): rd(f)
         de(f)
+
+    def test_repair(self):
+        d = j(dm, "d")
+        cr(d, True)
+        fm = j(d, "fm.md")
+        cr(fm, False)
+        am(fm, var.smpl_md)
+        f1 = j(d, "f1.bmp")
+        cid(f1)
+        f2 = j(d, "f2.jpeg")
+        cid(f2)
+        f3 = j(d, "f3.jpg")
+        cid(f3)
+        f4 = j(d, "f4.png")
+        cid(f4)
+        f5 = j(d, "f5.fi")
+        cr(f5, False)
+        dn = r(d)
+        put("r(d)", dn)
+        # PENDING: Test.
+        de(dn)
+
+        d = j(dm, "20000101-0000-cet-d")
+        cr(d, True)
+        fm = j(d, "fm.md")
+        cr(fm, False)
+        am(fm, var.smpl_md)
+        f1 = j(d, "f1.bmp")
+        cid(f1)
+        f2 = j(d, "f2.jpeg")
+        cid(f2)
+        f3 = j(d, "f3.jpg")
+        cid(f3)
+        f4 = j(d, "f4.png")
+        cid(f4)
+        f5 = j(d, "f5.fi")
+        cr(f5, False)
+        dn = r(d)
+        put("r(d)", dn)
+        # PENDING: Test.
+        de(dn)
+
+        f1 = j(dm, "f1.md")
+        cr(f1, False)
+        f2 = j(dm, "f2.md")
+        cr(f2, False)
+        with self.assertRaises(EX_EMMD): r(dm)
+        de(f1)
+        de(f2)
+
+        d = j(dm, "d")
+        cr(d, True)
+        f = j(d, "f.md")
+        cr(f, False)
+        with self.assertRaises(EX_MDNC): r(d)
+        de(d)
+
+        d = j(dm, "20000101-0000-cet-d")
+        cr(d, True)
+        f = j(d, "f.md")
+        cr(f, False)
+        with self.assertRaises(EX_MDNC): r(d)
+        de(d)
+
+        d = n("./")
+        with self.assertRaises(EX_NAP): r(d)
+
+        d = j(dm, "d")
+        with self.assertRaises(EX_NED): r(d)
+
+        d = j(dm, "d")
+        cr(dm, Trues)
+        with self.assertRaises(EX_NEMD): r(d)
+        de(dm)
 
     def test_wrt_md(self):
         f = j(dm, "f.md")

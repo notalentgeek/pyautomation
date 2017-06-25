@@ -1,6 +1,7 @@
 #!/bin/bash
 
 reset &&
+python3 -B /home/mikael/Downloads/pyautomation/test_dbg.py &&
 python3 -B /home/mikael/Downloads/pyautomation/test_difi.py &&
 python3 -B /home/mikael/Downloads/pyautomation/test_dttz.py &&
 python3 -B /home/mikael/Downloads/pyautomation/test_img.py &&

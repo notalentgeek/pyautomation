@@ -214,12 +214,16 @@ def get_md(_ap:str) -> str:
 
 """ This is a function to do not initialization if
 the .md file does not exists  or if .md file is blank.
+
+PENDING: Please add manual time zone input as a parameter.
 """
 def init(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
     if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
+    if chk_exst_md(_ap):
+        if not chk_md_b(get_md(_ap)): raise exc.ExceptionMDFileContent()
 
     nm = crt_apnm_note(_ap)
     org_di_nm = pth.get_ap_innermst(_ap)
@@ -277,7 +281,7 @@ def init(_ap:str) -> str:
             """
 
             """ Put this file into the .md file in `md`. """
-            lst.append("{}{}".format(crt_s_md(apnmi.nme, True), "\n\n\n\n"))
+            lst.append("{}{}".format(crt_s_md(apnmi.nme, True), "\n"))
             lst.append("{}{}".format(crt_s_md(apnmi.nma, False), "\n\n\n\n"))
         else:
             apnma = crt_apnm_attach(iap, prefix, inx)
@@ -309,3 +313,51 @@ def rd_md(_ap:str) -> list:
     md.close()
 
     return l
+
+
+
+""" Function to repair note by checking it lines.
+
+PENDING: Please add manual time zone input as a parameter.
+"""
+def repair(_ap:str) -> str:
+    _ap = pth.ncnp(_ap)
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
+    if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
+    if not chk_exst_md(_ap): raise exc.ExceptionNotExistsMDFile()
+    if chk_exst_md(_ap):
+        if chk_md_b(get_md(_ap)): raise exc.ExceptionMDFileNoContent()
+
+    ap_innermst = pth.get_ap_innermst(_ap)
+    ap_1 = pth.get_ap_1(_ap)
+    nm_note = crt_apnm_note(_ap)
+
+    print("{}{}".format("\n", "*"*50))
+    print("{}: {}".format("_ap", _ap))
+    print("{}: {}".format("ap_1", ap_1))
+    print("{}: {}".format("ap_innermst", ap_innermst))
+    print("{}: {}".format("dttz.chk_prefix(ap_innermst)", dttz.chk_prefix(ap_innermst)))
+
+    if not dttz.chk_prefix(ap_innermst):
+        difi.ren(_ap, nm_note.nm_di)
+
+        _ap = nm_note.ap_di
+        ap_innermst = pth.get_ap_innermst(_ap)
+        ap_1 = pth.get_ap_1(_ap)
+
+        print("{}: {}".format("nm_note.ap_di", nm_note.ap_di))
+        print("{}: {}".format("nm_note.ap_md", nm_note.ap_md))
+        print("{}: {}".format("nm_note.nm_di", nm_note.nm_di))
+        print("{}: {}".format("nm_note.nm_md", nm_note.nm_md))
+
+    md = get_md(_ap)
+    mdnm = "{}.{}".format(ap_innermst, "md")
+    difi.ren(md, mdnm)
+    md = pth.jo(_ap, mdnm)
+
+    print("{}: {}".format("md", md))
+    print("{}: {}".format("difi.chk_exst_fi(md)", difi.chk_exst_fi(md)))
+    print("*"*50)
+
+    return _ap

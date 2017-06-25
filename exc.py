@@ -4,6 +4,8 @@ class ExceptionExistsDirectoryInDirectory(Exception): pass
 class ExceptionExistsDirectoryOrFile(Exception): pass
 class ExceptionExistsFile(Exception): pass
 class ExceptionListNotAllString(Exception): pass
+class ExceptionMDFileContent(Exception): pass
+class ExceptionMDFileNoContent(Exception): pass
 class ExceptionNotAbsolutePath(Exception): pass
 class ExceptionNotExistsDirectory(Exception): pass
 class ExceptionNotExistsDirectoryOrFile(Exception): pass

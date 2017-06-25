@@ -10,6 +10,9 @@ from difi import de
 from img import cnvrt_img_ip as cni
 from img import cnvrt_img_ip_600 as cn6
 from img import crt_apnm_img_cnvrt as cc
+from img import get_img_dim as gid
+from img import get_img_dim_h as gidw
+from img import get_img_dim_w as gidh
 from pth import jo as j
 from pth import ncnp as n
 from exc import ExceptionNotAbsolutePath as EX_NAP
@@ -92,6 +95,102 @@ class unit_test(TC):
         f = j(dm, "f.f")
         cr(f, False)
         with self.assertRaises(EX_NIMG): cc(f)
+        de(f)
+
+    def test_get_img_dim(self):
+        f = j(dm, "f.bmp")
+        cid(f)
+        put("gid(f)", gid(f))
+        de(f)
+
+        f = j(dm, "f.jpeg")
+        cid(f)
+        put("gid(f)", gid(f))
+        de(f)
+
+        f = j(dm, "f.jpg")
+        cid(f)
+        put("gid(f)", gid(f))
+        de(f)
+
+        f = j(dm, "f.png")
+        cid(f)
+        put("gid(f)", gid(f))
+        de(f)
+
+        f = n("./f.f")
+        with self.assertRaises(EX_NAP): gid(f)
+
+        f = j(dm, "f.bmp")
+        with self.assertRaises(EX_NEF): gid(f)
+
+        f = j(dm, "f.f")
+        cr(f, False)
+        with self.assertRaises(EX_NIMG): gid(f)
+        de(f)
+
+    def test_get_img_dim_h(self):
+        f = j(dm, "f.bmp")
+        cid(f)
+        put("gidh(f)", gidh(f))
+        de(f)
+
+        f = j(dm, "f.jpeg")
+        cid(f)
+        put("gidh(f)", gidh(f))
+        de(f)
+
+        f = j(dm, "f.jpg")
+        cid(f)
+        put("gidh(f)", gidh(f))
+        de(f)
+
+        f = j(dm, "f.png")
+        cid(f)
+        put("gidh(f)", gidh(f))
+        de(f)
+
+        f = n("./f.f")
+        with self.assertRaises(EX_NAP): gidh(f)
+
+        f = j(dm, "f.bmp")
+        with self.assertRaises(EX_NEF): gidh(f)
+
+        f = j(dm, "f.f")
+        cr(f, False)
+        with self.assertRaises(EX_NIMG): gidh(f)
+        de(f)
+
+    def test_get_img_dim_w(self):
+        f = j(dm, "f.bmp")
+        cid(f)
+        put("gidw(f)", gidw(f))
+        de(f)
+
+        f = j(dm, "f.jpeg")
+        cid(f)
+        put("gidw(f)", gidw(f))
+        de(f)
+
+        f = j(dm, "f.jpg")
+        cid(f)
+        put("gidw(f)", gidw(f))
+        de(f)
+
+        f = j(dm, "f.png")
+        cid(f)
+        put("gidw(f)", gidw(f))
+        de(f)
+
+        f = n("./f.f")
+        with self.assertRaises(EX_NAP): gidw(f)
+
+        f = j(dm, "f.bmp")
+        with self.assertRaises(EX_NEF): gidw(f)
+
+        f = j(dm, "f.f")
+        cr(f, False)
+        with self.assertRaises(EX_NIMG): gidw(f)
         de(f)
 
 if __name__ == "__main__": unittest.main()
