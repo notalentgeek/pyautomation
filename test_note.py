@@ -426,9 +426,9 @@ class unit_test(TC):
         with self.assertRaises(EX_NED): r(d)
 
         d = j(dm, "d")
-        cr(dm, Trues)
+        cr(d, True)
         with self.assertRaises(EX_NEMD): r(d)
-        de(dm)
+        de(d)
 
     def test_wrt_md(self):
         f = j(dm, "f.md")

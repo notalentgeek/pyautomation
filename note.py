@@ -331,7 +331,6 @@ def repair(_ap:str) -> str:
 
     ap_innermst = pth.get_ap_innermst(_ap)
     ap_1 = pth.get_ap_1(_ap)
-    nm_note = crt_apnm_note(_ap)
 
     print("{}{}".format("\n", "*"*50))
     print("{}: {}".format("_ap", _ap))
@@ -340,6 +339,7 @@ def repair(_ap:str) -> str:
     print("{}: {}".format("dttz.chk_prefix(ap_innermst)", dttz.chk_prefix(ap_innermst)))
 
     if not dttz.chk_prefix(ap_innermst):
+        nm_note = crt_apnm_note(_ap)
         difi.ren(_ap, nm_note.nm_di)
 
         _ap = nm_note.ap_di
