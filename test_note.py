@@ -378,6 +378,8 @@ class unit_test(TC):
         cid(f4)
         f5 = j(d, "f5.fi")
         cr(f5, False)
+        f6 = j(d, "f6.fi")
+        cr(f6, False)
         dn = r(d)
         put("r(d)", dn)
         # PENDING: Test.
@@ -388,7 +390,7 @@ class unit_test(TC):
         fm = j(d, "fm.md")
         cr(fm, False)
         am(fm, var.smpl_md_prefix)
-        f1 = j(d, "20010101-0000-cet-1.bmp")
+        f1 = j(d, "20010101-0000-cet-f1.bmp")
         cid(f1)
         f2 = j(d, "f2.jpeg")
         cid(f2)
@@ -398,6 +400,8 @@ class unit_test(TC):
         cid(f4)
         f5 = j(d, "f5.fi")
         cr(f5, False)
+        f6 = j(d, "f6.fi")
+        cr(f6, False)
         dn = r(d)
         put("r(d)", dn)
         # PENDING: Test.

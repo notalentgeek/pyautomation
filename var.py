@@ -14,15 +14,17 @@ smpl_md = [
     "![./f2.jpeg](./f2.jpeg)\n\n\n\n",
     "![./f3.jpg](./f3.jpg)\n\n\n\n",
     "![./f4.png](./f4.png)\n\n\n\n",
-    "[./f5.fi](./f5.fi)"
+    "[./f5.fi](./f5.fi)\n\n\n\n",
+    "[./f6.fi](./f6.fi)"
 ]
 
 smpl_md_prefix = [
-    "![./20010101-0000-cet-1.bmp](./20010101-0000-cet-1.bmp)\n\n\n\n",
+    "![./20010101-0000-cet-f1.bmp](./20010101-0000-cet-f1.bmp)\n\n\n\n",
     "![./f2.jpeg](./f2.jpeg)\n\n\n\n",
     "![./f3.jpg](./f3.jpg)\n\n\n\n",
     "![./f4.png](./f4.png)\n\n\n\n",
-    "[./f5.fi](./f5.fi)"
+    "[./f5.fi](./f5.fi)\n\n\n\n",
+    "[./f6.fi](./f6.fi)"
 ]
 
 smpl_txt = [

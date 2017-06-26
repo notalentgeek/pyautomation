@@ -88,4 +88,18 @@ def crt_prefix(_n:str, _tz:str) -> str: return "{1}{2}{3}{0}{4}{5}{0}{6}".format
 def crt_prefix_n_ms(_tz:str) -> str: return crt_prefix(get_now_n_ms(), _tz)
 
 
-def get_prefix(_s:str) -> str: return _s.replace(_s.split("-")[3], "")[:-1]
+
+def get_prefix(_s:str) -> str:
+    l = _s.split(var.note_sp)
+
+    while len(l) > 3: l.pop()
+
+    return "{1}{0}{2}{0}{3}".format(var.note_sp, l[0], l[1], l[2])
+
+
+
+def rm_prefix(_s:str) -> str:
+    if not chk_prefix(_s): return _s
+    prefix = get_prefix(_s)
+    
+    return _s.replace("{}-".format(prefix), "")

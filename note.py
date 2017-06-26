@@ -91,7 +91,7 @@ def crt_apnm_attach(_ap:str, _prefix:str, _inx:str) -> object:
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not bool(pth.get_ext(_ap)): raise exc.ExceptionNotExistsFileExtension()
 
-    nm = "{}-{}-{}".format(_prefix, _inx, pth.get_ap_innermst(_ap))
+    nm = "{}-{}-{}".format(_prefix, _inx, dttz.rm_prefix(pth.get_ap_innermst(_ap)))
     inx = _inx + 1
 
     """ `pth.get_ap_1(_ap)` because the `_ap` refer to the file. The absolute path used
@@ -136,7 +136,7 @@ def crt_apnm_img(_ap:str, _prefix:str, _inx:str) -> object:
     inx = em.inx
     at = crt_apnm_attach(_ap, _prefix, inx)
 
-    return op.struct(apa=at.ap,  ape=em.ap,nma=at.nm, nme=em.nm, inx=at.inx)
+    return op.struct(apa=at.ap,  ape=em.ap, nma=at.nm, nme=em.nm, inx=at.inx)
 
 
 
@@ -292,14 +292,14 @@ def init(_ap:str) -> str:
             difi.ren(iap, apnmi.nme) # Renaming file before converting.
             difi.cpy(apnmi.ape, apnmi.apa) # This is the original file. Copied before conversion.
 
-            img.cnvrt_img_ip_600(apnmi.apa) # Convert!
+            cnvrt = img.cnvrt_img_ip_600(apnmi.ape) # Convert!
 
             """ The first line break is for each line itself. The next three
             line breaks are meant for empty space to write the notes.
             """
 
             """ Put this file into the .md file in `md`. """
-            lst.append("{}{}".format(crt_s_md(apnmi.nme, True), "\n"))
+            lst.append("{}{}".format(crt_s_md(pth.get_ap_innermst(cnvrt), True), "\n"))
             lst.append("{}{}".format(crt_s_md(apnmi.nma, False), "\n\n\n\n"))
         else:
             apnma = crt_apnm_attach(iap, prefix, inx)
@@ -313,7 +313,7 @@ def init(_ap:str) -> str:
 
     """ This line below is to debug and to show the .md file in Linux and Windows. """
     #import os; os.system("{} {}".format("xdg-open", md))
-    #import os; os.system(md);
+    import os; os.system(md);
 
     return _ap
 
@@ -368,25 +368,59 @@ def repair(_ap:str) -> str:
     inx = 1 # Index for image attaching/embedding file in .md file.
     while i < len(lines):
         if chk_s_md(lines[i]) == s_type.attach or chk_s_md(lines[i]) == s_type.embed:
-            nm_fi_org = get_fi_rp(lines[i]) # Original file name.
-            ap_fi_org = pth.jo(_ap, nm_fi_org) # Original file absolute path.
+            nm_fi = get_fi_rp(lines[i]) # Original file name.
+            ap_fi = pth.jo(_ap, nm_fi) # Original file absolute path.
 
             """ Check the existence of the file. """
-            if not difi.chk_exst_fi(ap_fi_org):
-                print(_ap); print(lines[i]);
+            if not difi.chk_exst_fi(ap_fi):
+                print(ap_fi); print(lines[i]);
                 raise exc.ExceptionNotExistsFile()
 
-            if dttz.chk_prefix(nm_fi_org):
-                prefix_org = dttz.get_prefix(nm_fi_org)
+            if dttz.chk_prefix(nm_fi):
+                prefix_org = dttz.get_prefix(nm_fi)
 
                 if not prefix == prefix_org:
-                    nm_fi_org = nm_fi_org.replace("{}-".format(prefix_org), "")
-                    nm_fi_org = "{}-{}".format(prefix, nm_fi_org)
-                    difi.ren(ap_fi_org, nm_fi_org)
-                    print(nm_fi_org)
+                    nm_fi = dttz.rm_prefix(nm_fi)
+                    nm_fi = "{}-{}".format(prefix, nm_fi)
+                    difi.ren(ap_fi, nm_fi)
+                    ap_fi = pth.jo(_ap, nm_fi)
+            else:
+                nm_fi = "{}-{}".format(prefix, nm_fi)
+                difi.ren(ap_fi, nm_fi)
+                ap_fi = pth.jo(_ap, nm_fi)
 
-            else: pass
+            if chk_s_md(lines[i]) == s_type.attach:
+                apnm_fi = crt_apnm_attach(ap_fi, prefix, inx)
+                lines[i] = "{}{}".format(crt_s_md(apnm_fi.nm, False), "\n")
+
+            elif chk_s_md(lines[i]) == s_type.embed:
+                if not img.get_img_dim_w(ap_fi) == 600 or not pth.get_ext(ap_fi) == "png":
+                    #print(ap_fi)
+                    #print(img.get_img_dim_w(ap_fi))
+
+                    apnm_img = crt_apnm_img(ap_fi, prefix, inx)
+                    inx = inx + 1
+
+                    """ Constructing sized image file for embedding and original file for attachment. """
+                    try: difi.ren(ap_fi, apnm_img.nme) # Renaming file before converting.
+                    except: pass # If the image file is already properly renamed.
+                    difi.cpy(apnm_img.ape, apnm_img.apa) # This is the original file. Copied before conversion.
+
+                    cnvrt = img.cnvrt_img_ip_600(apnm_img.ape) # Convert!
+
+                    lines[i] = "{}{}".format(crt_s_md(apnm_img.nma, False), "\n")
+                    lines.insert(i, "{}{}".format(crt_s_md(pth.get_ap_innermst(cnvrt), True), "\n"))
+                    i = i + 1
+
+            inx = inx + 1
 
         i = i + 1
+
+    lines[len(lines) - 1] = lines[len(lines) - 1].rstrip() # Remove the last line line breaks.
+    wrt_md(md, lines)
+
+    """ This line below is to debug and to show the .md file in Linux and Windows. """
+    #import os; os.system("{} {}".format("xdg-open", md))
+    #import os; os.system(md);
 
     return _ap

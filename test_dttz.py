@@ -31,6 +31,7 @@ from dttz import get_tz as gtz
 from dttz import get_tz_loc as gtlc
 from dttz import get_y_n as yn
 from dttz import get_y_p as yp
+from dttz import rm_prefix as rmp
 
 class unit_test(TC):
     def test_chk_y(self):
@@ -118,5 +119,7 @@ class unit_test(TC):
     def test_crt_prefix_n_ms(self):  put("crpnms(...)", "PENDING: not yet unit tested")
 
     def test_get_prefix(self):  put("gp(...)", "PENDING: not yet unit tested")
+
+    def test_rm_prefix(self): put("rmp(...)", "PENDING: not yet unit tested")
 
 if __name__ == "__main__": unittest.main()
