@@ -230,6 +230,20 @@ def get_md(_ap:str) -> str:
 
 
 
+""" Function to get file numbering. """
+def get_numbering(_s:str) -> int:
+    try: return int(_s.split("-")[3].split(".")[0])
+    except: return -1
+
+
+
+""" Function to get last name before last note separator in a file string. """
+def get_s_last(_s:str):
+    _s = pth.rm_ext(dttz.rm_prefix(_s), pth.get_ext(_s)) # No prefix.
+    return dttz.rm_prefix(_s).split("-")[0]
+
+
+
 """ This is a function to do not initialization if
 the .md file does not exists  or if .md file is blank.
 
@@ -313,7 +327,7 @@ def init(_ap:str) -> str:
 
     """ This line below is to debug and to show the .md file in Linux and Windows. """
     #import os; os.system("{} {}".format("xdg-open", md))
-    import os; os.system(md);
+    #import os; os.system(md);
 
     return _ap
 
@@ -360,7 +374,8 @@ def repair(_ap:str) -> str:
 
     md = get_md(_ap)
     nm_md = "{}.{}".format(ap_innermst, "md")
-    difi.ren(md, nm_md)
+    try: difi.ren(md, nm_md)
+    except: pass # If the .md file is already properly renamed.
     md = pth.jo(_ap, nm_md)
     lines = rd_md(md) # Get all the lines from the .md file.
 
@@ -370,47 +385,70 @@ def repair(_ap:str) -> str:
         if chk_s_md(lines[i]) == s_type.attach or chk_s_md(lines[i]) == s_type.embed:
             nm_fi = get_fi_rp(lines[i]) # Original file name.
             ap_fi = pth.jo(_ap, nm_fi) # Original file absolute path.
+            sl_fi = get_s_last(nm_fi)
 
-            """ Check the existence of the file. """
-            if not difi.chk_exst_fi(ap_fi):
-                print(ap_fi); print(lines[i]);
-                raise exc.ExceptionNotExistsFile()
+            is_attach = False
+            is_embed = False
+            is_img_600 = False
+            is_img_png = False
+            is_name_number = False
+            is_numbering = False
+            is_prefix = False
 
-            if dttz.chk_prefix(nm_fi):
-                prefix_org = dttz.get_prefix(nm_fi)
+            if chk_s_md(lines[i]) == s_type.attach: is_attach = True
+            if chk_s_md(lines[i]) == s_type.embed:
+                if pth.get_ext(nm_fi) in var.img_ext:
+                    is_embed = True
+                    if img.get_img_dim_w(ap_fi) == 600: is_img_600 = True
+                    if pth.get_ext(nm_fi) == "png": is_img_600 = True
+            if get_s_last(nm_fi).isnumeric(): is_name_number = True
+            if get_numbering(nm_fi) == inx: is_numbering = True 
+            if dttz.chk_prefix(nm_fi): is_prefix = True
 
-                if not prefix == prefix_org:
-                    nm_fi = dttz.rm_prefix(nm_fi)
-                    nm_fi = "{}-{}".format(prefix, nm_fi)
-                    difi.ren(ap_fi, nm_fi)
-                    ap_fi = pth.jo(_ap, nm_fi)
-            else:
-                nm_fi = "{}-{}".format(prefix, nm_fi)
+            if is_attach and (not is_numbering or not is_prefix):
+                if is_name_number: nm_fi = "{}-{}.{}".format(prefix, inx, pth.get_ext(nm_fi))
+                else: nm_fi ="{}-{}-{}".format(prefix, inx, dttz.rm_prefix(nm_fi))
+                
                 difi.ren(ap_fi, nm_fi)
                 ap_fi = pth.jo(_ap, nm_fi)
+                lines[i] = "{}{}".format(crt_s_md(nm_fi, False), "\n")
 
-            if chk_s_md(lines[i]) == s_type.attach:
-                apnm_fi = crt_apnm_attach(ap_fi, prefix, inx)
-                lines[i] = "{}{}".format(crt_s_md(apnm_fi.nm, False), "\n")
+            if is_embed and (not is_img_600 or not is_img_png or not is_numbering or not is_prefix):
+                inx = inx + 1
+                nm_fie = ""
+                if is_name_number: nm_fie = "{}-{}.{}".format(prefix, inx, pth.get_ext(nm_fi))
+                else: nm_fie ="{}-{}-{}".format(prefix, inx, dttz.rm_prefix(nm_fi))
+                inx = inx - 1
+                nm_fi = "{}-{}.{}".format(prefix, inx, pth.get_ext(nm_fi))
+                inx = inx + 1
 
-            elif chk_s_md(lines[i]) == s_type.embed:
-                if not img.get_img_dim_w(ap_fi) == 600 or not pth.get_ext(ap_fi) == "png":
-                    #print(ap_fi)
-                    #print(img.get_img_dim_w(ap_fi))
+                try: difi.ren(ap_fi, nm_fi)
+                except exc.ExceptionSamePath: pass
 
-                    apnm_img = crt_apnm_img(ap_fi, prefix, inx)
-                    inx = inx + 1
+                ap_fi = pth.jo(_ap, nm_fi)
+                ap_fie = pth.jo(_ap, nm_fie)
+                difi.cpy(ap_fi, ap_fie)
 
-                    """ Constructing sized image file for embedding and original file for attachment. """
-                    try: difi.ren(ap_fi, apnm_img.nme) # Renaming file before converting.
-                    except: pass # If the image file is already properly renamed.
-                    difi.cpy(apnm_img.ape, apnm_img.apa) # This is the original file. Copied before conversion.
+                ap_c = img.cnvrt_img_ip_600(ap_fi)
+                nm_c = pth.get_ap_innermst(ap_c)
 
-                    cnvrt = img.cnvrt_img_ip_600(apnm_img.ape) # Convert!
+                lines[i] = "{}{}".format(crt_s_md(nm_fie, False), "\n")
+                lines.insert(i, "{}{}".format(crt_s_md(nm_c, True), "\n"))
+                i = i + 1
 
-                    lines[i] = "{}{}".format(crt_s_md(apnm_img.nma, False), "\n")
-                    lines.insert(i, "{}{}".format(crt_s_md(pth.get_ap_innermst(cnvrt), True), "\n"))
-                    i = i + 1
+                print("*"*50)
+                print(nm_fi)
+                print(nm_fie)
+                print(nm_c)
+                print("*"*50)
+
+            print("{} is_attach: {}".format(nm_fi, is_attach))
+            print("{} is_embed: {}".format(nm_fi, is_embed))
+            print("{} is_img_600: {}".format(nm_fi, is_img_600))
+            print("{} is_img_png: {}".format(nm_fi, is_img_png))
+            print("{} is_name_number: {}".format(nm_fi, is_name_number))
+            print("{} is_numbering: {}".format(nm_fi, is_numbering))
+            print("{} is_prefix: {}".format(nm_fi, is_prefix))
 
             inx = inx + 1
 
@@ -419,8 +457,9 @@ def repair(_ap:str) -> str:
     lines[len(lines) - 1] = lines[len(lines) - 1].rstrip() # Remove the last line line breaks.
     wrt_md(md, lines)
 
+    #for i in lines: print(i)
     """ This line below is to debug and to show the .md file in Linux and Windows. """
     #import os; os.system("{} {}".format("xdg-open", md))
-    #import os; os.system(md);
+    import os; os.system(md);
 
     return _ap
