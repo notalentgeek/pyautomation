@@ -126,16 +126,14 @@ def mov(
 """ Rename a directory or a file. """
 def ren(
     _ap:str,
-    _nm:str,
-    _rep:bool=True # Replace (not merge) existing duplicate at target directory.
+    _nm:str
 ) -> bool:
     if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not chk_exst(_ap): raise exc.ExceptionNotExistsDirectoryOrFile()
-    ap_1 = pth.get_ap_1(_ap); ap_trg = pth.jo(ap_1, _nm)
-    if _ap == ap_trg: raise exc.ExceptionSamePath()
-    if _rep and chk_exst(ap_trg): de(ap_trg)
-    elif not _rep and chk_exst(ap_trg): return False
-
+    ap_1 = pth.get_ap_1(_ap); ap_trg = pth.jo(ap_1, _nm);
+    #if _ap == ap_trg: raise exc.ExceptionSamePath() # PENDING: Perhaps put warning instead as this line.
+    
+    if _ap == ap_trg: return False
     shutil.move(_ap, ap_trg)
 
     return True

@@ -230,15 +230,15 @@ def get_md(_ap:str) -> str:
 
 
 
-""" Function to get file numbering. """
-def get_numbering(_s:str) -> int:
+""" Function to get file index number in the .md file. """
+def get_s_inx(_s:str) -> int:
     try: return int(_s.split("-")[3].split(".")[0])
     except: return -1
 
 
 
 """ Function to get last name before last note separator in a file string. """
-def get_s_last(_s:str):
+def get_s_lst(_s:str):
     _s = pth.rm_ext(dttz.rm_prefix(_s), pth.get_ext(_s)) # No prefix.
     return dttz.rm_prefix(_s).split("-")[0]
 
@@ -246,8 +246,6 @@ def get_s_last(_s:str):
 
 """ This is a function to do not initialization if
 the .md file does not exists  or if .md file is blank.
-
-PENDING: Please add manual time zone input as a parameter.
 """
 def init(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
@@ -302,6 +300,7 @@ def init(_ap:str) -> str:
             apnmi = crt_apnm_img(iap, prefix, inx)
             inx = apnmi.inx
 
+
             """ Constructing sized image file for embedding and original file for attachment. """
             difi.ren(iap, apnmi.nme) # Renaming file before converting.
             difi.cpy(apnmi.ape, apnmi.apa) # This is the original file. Copied before conversion.
@@ -348,10 +347,7 @@ def rd_md(_ap:str) -> list:
 
 
 
-""" Function to repair note by checking it lines.
-
-PENDING: Please add manual time zone input as a parameter.
-"""
+""" Function to repair note by checking each of its lines. """
 def repair(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
     if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
@@ -361,105 +357,127 @@ def repair(_ap:str) -> str:
     if chk_exst_md(_ap):
         if chk_md_b(get_md(_ap)): raise exc.ExceptionMDFileNoContent()
 
-    ap_innermst = pth.get_ap_innermst(_ap)
+    nm_note_folder = pth.get_ap_innermst(_ap)
 
-    if not dttz.chk_prefix(ap_innermst):
-        nm_note = crt_apnm_note(_ap) # Naming is generated here. Also for prefix.
-        difi.ren(_ap, nm_note.nm_di)
-        _ap = nm_note.ap_di
+    """ Check if there is prefix in the note's folder. """
+    if not dttz.chk_prefix(nm_note_folder):
+        st_note_folder = crt_apnm_note(_ap) # Struct name.
 
-    ap_1 = pth.get_ap_1(_ap)
-    ap_innermst = pth.get_ap_innermst(_ap)
-    prefix = dttz.get_prefix(ap_innermst)
+        """ Change the name of the note's folder. """
+        difi.ren(_ap, st_note_folder.nm_di)
 
-    md = get_md(_ap)
-    nm_md = "{}.{}".format(ap_innermst, "md")
-    try: difi.ren(md, nm_md)
-    except: pass # If the .md file is already properly renamed.
-    md = pth.jo(_ap, nm_md)
-    lines = rd_md(md) # Get all the lines from the .md file.
+        """ Set back all variables that use `_ap`. """
+        _ap = st_note_folder.ap_di
+        nm_note_folder = pth.get_ap_innermst(_ap)
+
+    prefix_note_folder = dttz.get_prefix(nm_note_folder)
+    ap_md = get_md(_ap)
+    nm_md = "{}.{}".format(nm_note_folder, "md") # .md file name. Taken
+                                                 # from the note's folder.
+
+    """ Rename the .md file directly. If the name is already
+    proper then this proces goes to `except`.
+    """
+    try:
+        difi.ren(ap_md, nm_md)
+        ap_md = pth.jo(_ap, nm_md) # Get the .md file back.
+    except exc.ExceptionSamePath: pass
+
+    line_md = rd_md(ap_md) # Read the content of the .md file.
 
     i = 0 # Index for looping.
-    inx = 1 # Index for image attaching/embedding file in .md file.
-    while i < len(lines):
-        if chk_s_md(lines[i]) == s_type.attach or chk_s_md(lines[i]) == s_type.embed:
-            nm_fi = get_fi_rp(lines[i]) # Original file name.
-            ap_fi = pth.jo(_ap, nm_fi) # Original file absolute path.
-            sl_fi = get_s_last(nm_fi)
+    inx = 1 # Index for attaching and embedding file in .md file.
 
-            is_attach = False
-            is_embed = False
-            is_img_600 = False
-            is_img_png = False
-            is_name_number = False
-            is_numbering = False
-            is_prefix = False
+    while i < len(line_md):
+        if chk_s_md(line_md[i]) == s_type.attach or\
+        chk_s_md(line_md[i]) == s_type.embed:
+            nm_fi = get_fi_rp(line_md[i]) # File name.
+            ap_fi = pth.jo(_ap, nm_fi) # Absolute path to the file.
 
-            if chk_s_md(lines[i]) == s_type.attach: is_attach = True
-            if chk_s_md(lines[i]) == s_type.embed:
+            """ Flags. """
+            fl_attach = False
+            fl_embed = False
+            fl_img = False
+            fl_img_600 = False # If image file is 600 pixels width.
+            fl_img_png = False # If image file is .png.
+            fl_inx = False # If file has a proper index.
+            fl_nm_number = False # If file named as a number (for example, 1.jpg, 1.pdf, ...).
+            fl_prefix = False # If file has a prefix.
+
+            """ Set up flags. """
+            if chk_s_md(line_md[i]) == s_type.attach: fl_attach = True
+            if chk_s_md(line_md[i]) == s_type.embed:
+                fl_embed = True
                 if pth.get_ext(nm_fi) in var.img_ext:
-                    is_embed = True
-                    if img.get_img_dim_w(ap_fi) == 600: is_img_600 = True
-                    if pth.get_ext(nm_fi) == "png": is_img_600 = True
-            if get_s_last(nm_fi).isnumeric(): is_name_number = True
-            if get_numbering(nm_fi) == inx: is_numbering = True 
-            if dttz.chk_prefix(nm_fi): is_prefix = True
+                    fl_img = True
+                    if img.get_img_dim_w(ap_fi) == 600: fl_img_600 = True
+                    if pth.get_ext(nm_fi) == "png": fl_img_png = True
+            if get_s_inx(nm_fi) == inx: fl_inx = True
+            if get_s_lst(nm_fi).isnumeric(): fl_nm_number = True
+            if dttz.chk_prefix(nm_fi): fl_prefix = True
 
-            if is_attach and (not is_numbering or not is_prefix):
-                if is_name_number: nm_fi = "{}-{}.{}".format(prefix, inx, pth.get_ext(nm_fi))
-                else: nm_fi ="{}-{}-{}".format(prefix, inx, dttz.rm_prefix(nm_fi))
-                
+            if nm_fi == "20010101-0000-cet-3.png":
+                print(img.get_img_dim(ap_fi))
+
+            if fl_attach and (not fl_inx or not fl_nm_number or not fl_prefix):
+                """ If the file name is a number then display the index number. """
+                if fl_nm_number: nm_fi = "{}-{}.{}".format(prefix_note_folder, inx, pth.get_ext(nm_fi))
+                else: nm_fi = "{}-{}-{}".format(prefix_note_folder, inx, dttz.rm_prefix(nm_fi))
+            
+                """ Rename the file with proper proper index number and prefix. """
                 difi.ren(ap_fi, nm_fi)
                 ap_fi = pth.jo(_ap, nm_fi)
-                lines[i] = "{}{}".format(crt_s_md(nm_fi, False), "\n")
 
-            if is_embed and (not is_img_600 or not is_img_png or not is_numbering or not is_prefix):
-                inx = inx + 1
-                nm_fie = ""
-                if is_name_number: nm_fie = "{}-{}.{}".format(prefix, inx, pth.get_ext(nm_fi))
-                else: nm_fie ="{}-{}-{}".format(prefix, inx, dttz.rm_prefix(nm_fi))
+                """ Make this lines back into the main list to be inputted
+                to the opened .md file.
+                """
+                line_md[i] = "{}{}".format(crt_s_md(nm_fi, False), "\n")
+
+            elif fl_embed and (
+                not fl_img_600 or\
+                not fl_img_png or\
+                not fl_inx or\
+                not fl_nm_number or\
+                not fl_prefix
+            ):
+                inx = inx + 1 # Attach string actually appeared after embed string.
+                              # Hence the index need to be added by one. Before reducing
+                              # back when processing embed string.
+                nm_fi_attach = ""
+                if fl_nm_number: nm_fi_attach = "{}-{}.{}".format(prefix_note_folder, inx, pth.get_ext(nm_fi))
+                else: nm_fi_attach = "{}-{}-{}".format(prefix_note_folder, inx, dttz.rm_prefix(nm_fi))
+
+                """ Constructing attach string for file name. """
                 inx = inx - 1
-                nm_fi = "{}-{}.{}".format(prefix, inx, pth.get_ext(nm_fi))
+                nm_fi = "{}-{}.{}".format(prefix_note_folder, inx, pth.get_ext(nm_fi))
                 inx = inx + 1
 
-                try: difi.ren(ap_fi, nm_fi)
-                except exc.ExceptionSamePath: pass
-
+                """ Rename the file with proper proper index number and prefix. """
+                difi.ren(ap_fi, nm_fi)
                 ap_fi = pth.jo(_ap, nm_fi)
-                ap_fie = pth.jo(_ap, nm_fie)
-                difi.cpy(ap_fi, ap_fie)
+                ap_fi_attach = pth.jo(_ap, nm_fi_attach)
+                difi.cpy(ap_fi, ap_fi_attach) # Copy into the attachment file.
 
-                ap_c = img.cnvrt_img_ip_600(ap_fi)
-                nm_c = pth.get_ap_innermst(ap_c)
+                """ Convert into .png with 600 pixels width. """
+                ap_fi_convert = img.cnvrt_img_ip_600(ap_fi)
+                nm_fi_convert = pth.get_ap_innermst(ap_fi_convert)
 
-                lines[i] = "{}{}".format(crt_s_md(nm_fie, False), "\n")
-                lines.insert(i, "{}{}".format(crt_s_md(nm_c, True), "\n"))
+                """ Put back to the lines. """
+                line_md[i] = "{}{}".format(crt_s_md(nm_fi_attach, False), "\n")
+                line_md.insert(i, "{}{}".format(crt_s_md(nm_fi_convert, True), "\n"))
                 i = i + 1
-
-                print("*"*50)
-                print(nm_fi)
-                print(nm_fie)
-                print(nm_c)
-                print("*"*50)
-
-            print("{} is_attach: {}".format(nm_fi, is_attach))
-            print("{} is_embed: {}".format(nm_fi, is_embed))
-            print("{} is_img_600: {}".format(nm_fi, is_img_600))
-            print("{} is_img_png: {}".format(nm_fi, is_img_png))
-            print("{} is_name_number: {}".format(nm_fi, is_name_number))
-            print("{} is_numbering: {}".format(nm_fi, is_numbering))
-            print("{} is_prefix: {}".format(nm_fi, is_prefix))
 
             inx = inx + 1
 
         i = i + 1
 
-    lines[len(lines) - 1] = lines[len(lines) - 1].rstrip() # Remove the last line line breaks.
-    wrt_md(md, lines)
+    line_md[len(line_md) - 1] = line_md[len(line_md) - 1].rstrip() # Remove the last line line breaks.
+    wrt_md(ap_md, line_md)
 
-    #for i in lines: print(i)
     """ This line below is to debug and to show the .md file in Linux and Windows. """
-    #import os; os.system("{} {}".format("xdg-open", md))
-    import os; os.system(md);
+    #if nm_note_folder == "20010101-0000-cet-d": import os; os.system("{} {}".format("xdg-open", ap_md))
+    #if nm_note_folder == "20010101-0000-cet-d": import os; os.system(ap_md)
+    #import os; os.system("{} {}".format("xdg-open", ap_md))
+    #import os; os.system(ap_md);
 
     return _ap

@@ -21,6 +21,8 @@ from note import fix_su as fs
 from note import get_fi_rp as gfr
 from note import get_lst_n_md as glnm
 from note import get_md as gm
+from note import get_s_inx as gsi
+from note import get_s_lst as gsl
 from note import init as i
 from note import rd_md as rd
 from note import repair as r
@@ -278,6 +280,10 @@ class unit_test(TC):
 
         with self.assertRaises(EX_NEMD): gm(dm)
 
+    def test_get_s_inx(self): put("gsi(...)", "PENDING: not yet unit tested")
+
+    def test_get_s_lst(self): put("gsl(...)", "PENDING: not yet unit tested")
+
     def test_init(self):
         d = j(dm, "d")
         cr(d, True)
@@ -291,6 +297,10 @@ class unit_test(TC):
         cid(f4)
         f5 = j(d, "f5.fi")
         cr(f5, False)
+        f6 = j(d, "f6.fi")
+        cr(f6, False)
+        f7 = j(d, "8.fi")
+        cr(f7, False)
         dn = i(d)
         self.assertNotEqual(d, dn)
         de(dn)
@@ -307,6 +317,30 @@ class unit_test(TC):
         cid(f4)
         f5 = j(d, "f5.fi")
         cr(f5, False)
+        f6 = j(d, "f6.fi")
+        cr(f6, False)
+        f7 = j(d, "8.fi")
+        cr(f7, False)
+        dn = i(d)
+        self.assertEqual(d, dn)
+        de(dn)
+
+        d = j(dm, "20010101-0000-cet-d")
+        cr(d, True)
+        fm = j(d, "20010101-0000-cet-d.md")
+        cr(fm, False)
+        f1 = j(d, "20010101-0000-cet-1.png")
+        cid(f1)
+        f2 = j(d, "20010101-0000-cet-2.png")
+        cid(f2)
+        f3 = j(d, "20010101-0000-cet-3.png")
+        cid(f3)
+        f4 = j(d, "20010101-0000-cet-4.png")
+        cid(f4)
+        f5 = j(d, "20010101-0000-cet-5-test.pdf")
+        cr(f5, False)
+        f6 = j(d, "20010101-0000-cet-6-test.pdf")
+        cr(f6, False)
         dn = i(d)
         self.assertEqual(d, dn)
         de(dn)
@@ -383,8 +417,7 @@ class unit_test(TC):
         f7 = j(d, "8.fi")
         cr(f7, False)
         dn = r(d)
-        put("r(d)", dn)
-        # PENDING: Test.
+        self.assertNotEqual(d, dn)
         de(dn)
 
         d = j(dm, "20000101-0000-cet-d")
@@ -407,8 +440,7 @@ class unit_test(TC):
         f7 = j(d, "8.fi")
         cr(f7, False)
         dn = r(d)
-        put("r(d)", dn)
-        # PENDING: Test.
+        self.assertEqual(d, dn)
         de(dn)
 
         d = j(dm, "20010101-0000-cet-d")
@@ -429,8 +461,7 @@ class unit_test(TC):
         f6 = j(d, "20010101-0000-cet-6-test.pdf")
         cr(f6, False)
         dn = r(d)
-        put("r(d)", dn)
-        # PENDING: Test.
+        self.assertEqual(d, dn)
         de(dn)
 
         f1 = j(dm, "f1.md")

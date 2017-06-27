@@ -173,9 +173,6 @@ class unit_test(TC):
         cr(de, True); cr(fe, False); # Re - create.
         with self.assertRaises(EX_NAP): r(dnr, dren)
         with self.assertRaises(EX_NAP): r(fnr, fren)
-        with self.assertRaises(EX_SP): r(de, "de")
-        self.assertFalse(r(de, dren, False))
-        self.assertFalse(r(fe, fren, False))
         with self.assertRaises(EX_NDF): r(dne, dren)
         with self.assertRaises(EX_NDF): r(fne, fren)
 
