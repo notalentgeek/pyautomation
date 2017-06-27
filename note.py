@@ -287,7 +287,7 @@ def init(_ap:str) -> str:
         """ Set back every parameters that use `md`. """
         md = nm.ap_md
         md_nm = pth.get_ap_innermst(md) # The name of the .md file with the extension.
-        md_nmnext = pth.rm_ext(md_nm) # The name of the .md file without the extension.
+        md_nmnext = pth.rm_ext(md_nm, "md") # The name of the .md file without the extension.
 
     inx = 1 # Index number for files.
     lst = [] # List of strings that will be put into `md`.
