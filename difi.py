@@ -6,6 +6,7 @@ import unittest
 
 import exc
 import pth
+import var
 
 """ `ap` refers to absolute path. """
 
@@ -163,7 +164,7 @@ def ren(
     if not chk_exst(_ap): raise exc.ExceptionNotExistsDirectoryOrFile()
     ap_1 = pth.get_ap_1(_ap); ap_trg = pth.jo(ap_1, _nm);
     #if _ap == ap_trg: raise exc.ExceptionSamePath() # PENDING: Perhaps put warning instead as this line.
-    
+
     if _ap == ap_trg: return False
     shutil.move(_ap, ap_trg)
 
@@ -189,6 +190,11 @@ def ren_recr(_ap:str, _s:str, _s_new:str) -> bool:
         lst_el = lst.pop()
         lst_el_innermst = pth.get_ap_innermst(lst_el)
         lst_el_innermst_new = lst_el_innermst.replace(_s, _s_new)
+
+        if lst_el_innermst_new[-1:] == var.note_sp:
+            lst_el_innermst_new = lst_el_innermst_new[:-1]
+        lst_el_innermst_new = lst_el_innermst_new.replace("--", "-")
+
         ren(lst_el, lst_el_innermst_new)
 
     return True
