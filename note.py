@@ -86,13 +86,13 @@ def chk_s_md(_s:str) -> s_type:
 """ Function to generate string for renaming for attaching and embedding
 image file in the note directory.
 """
-def crt_apnm_attach(_ap:str, _prefix:str, _inx:str) -> object:
+def crt_apnm_attach(_ap:str, _nm_note:str, _inx:str) -> object:
     _ap = pth.ncnp(_ap)
     if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not bool(pth.get_ext(_ap)): raise exc.ExceptionNotExistsFileExtension()
 
-    nm = "{}-{}-{}".format(_prefix, _inx, dttz.rm_prefix(pth.get_ap_innermst(_ap)))
+    nm = "{}-{}-{}".format(_nm_note, _inx, dttz.rm_prefix(pth.get_ap_innermst(_ap)))
     inx = _inx + 1
 
     """ `pth.get_ap_1(_ap)` because the `_ap` refer to the file. The absolute path used
@@ -105,14 +105,14 @@ def crt_apnm_attach(_ap:str, _prefix:str, _inx:str) -> object:
 """ Function to generate string for copying and renaming for embedding
 file in the note directory.
 """
-def crt_apnm_embed(_ap:str, _prefix:str, _inx:str) -> object:
+def crt_apnm_embed(_ap:str, _nm_note:str, _inx:str) -> object:
     _ap = pth.ncnp(_ap)
     if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not bool(pth.get_ext(_ap)): raise exc.ExceptionNotExistsFileExtension()
     if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
 
-    nm = "{}-{}.{}".format(_prefix, _inx, pth.get_ext(_ap))
+    nm = "{}-{}.{}".format(_nm_note, _inx, pth.get_ext(_ap))
     inx = _inx + 1
 
     """ `pth.get_ap_1(_ap)` because the `_ap` refer to the file. The absolute path used
@@ -125,19 +125,21 @@ def crt_apnm_embed(_ap:str, _prefix:str, _inx:str) -> object:
 """ Function to generate string for copying and renaming for attaching
 file in the note directory.
 """
-def crt_apnm_img(_ap:str, _prefix:str, _inx:str) -> object:
+def crt_apnm_img(_ap:str, _nm_note:str, _inx:str) -> object:
     _ap = pth.ncnp(_ap)
     if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not bool(pth.get_ext(_ap)): raise exc.ExceptionNotExistsFileExtension()
     if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
 
-    inx = _inx
-    em = crt_apnm_embed(_ap, _prefix, inx)
-    inx = em.inx
-    at = crt_apnm_attach(_ap, _prefix, inx)
+    nm_fi = pth.get_ap_innermst(_ap)
 
-    return op.struct(apa=at.ap,  ape=em.ap, nma=at.nm, nme=em.nm, inx=at.inx)
+    em = crt_apnm_embed(_ap, _nm_note, _inx)
+    at = ""
+    if get_s_lst(nm_fi).isnumeric(): at = "{}-{}-{}.{}".format(_nm_note, _inx, var.bak, pth.get_ext(nm_fi))
+    else: at = "{}-{}-{}-{}.{}".format(_nm_note, _inx, pth.rm_ext(dttz.rm_prefix(nm_fi), pth.get_ext(nm_fi)), var.bak, pth.get_ext(nm_fi))
+
+    return op.struct(apa=pth.jo(pth.get_ap_1(_ap), at),  ape=em.ap, nma=at, nme=em.nm, inx=_inx)
 
 
 
@@ -156,9 +158,10 @@ def crt_apnm_note(_ap:str) -> object:
     nm_fi = pth.get_ap_innermst(_ap).lower().replace(" ", var.note_sp)
     nm = "{}{}{}".format(pre, var.note_sp, nm_fi)
     di = pth.jo(pth.get_ap_1(_ap), nm) # Absolute path into the note directory.
-    fi = pth.jo(di, "{}.{}".format(nm, "md")) # Absolute path into the .md file in the note directory.
+    nm_fi = "{}.{}".format(nm, "md") # PENDING: `nm` is actually the folder name. Fix later please.
+    fi = pth.jo(di, nm_fi) # Absolute path into the .md file in the note directory.
 
-    return op.struct(ap_di=di, ap_md=fi, nm_di=nm, nm_md=fi)
+    return op.struct(ap_di=di, ap_md=fi, nm_di=nm, nm_md=nm_fi)
 
 
 
@@ -241,7 +244,10 @@ def get_s_inx(_s:str) -> int:
 """ Function to get last name before last note separator in a file string. """
 def get_s_lst(_s:str):
     _s = pth.rm_ext(dttz.rm_prefix(_s), pth.get_ext(_s)) # No prefix.
-    return dttz.rm_prefix(_s).split("-")[0]
+    sl = dttz.rm_prefix(_s).split("-")
+    sl = sl[len(sl) - 1]
+    print("{} ===== {}".format(_s, sl))
+    return sl
 
 
 
@@ -250,6 +256,9 @@ the .md file does not exists  or if .md file is blank.
 """
 def init(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
+
+    print(_ap)
+
     if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
@@ -258,35 +267,47 @@ def init(_ap:str) -> str:
 
     nm = crt_apnm_note(_ap)
     org_di_nm = pth.get_ap_innermst(_ap)
+    print("+"*50)
+    print(_ap)
+    print(org_di_nm)
+    print("+"*50)
     org_md_nm = "{}.{}".format(org_di_nm, "md")
     org_md_ap = pth.jo(_ap, org_md_nm)
 
-    """ Check if prefix is alredy in directory. """
+    """ Check if prefix is already in directory. """
     if not dttz.chk_prefix(org_di_nm):
+        print("asd"*100)
         difi.ren(_ap, nm.nm_di)
 
         """ Set back some variables that used `_ap`. """
-        _ap = nm.ap_di
+        _ap = pth.jo(pth.get_ap_1(_ap), nm.nm_di)
         org_di_nm = pth.get_ap_innermst(_ap)
         org_md_nm = "{}.{}".format(org_di_nm, "md")
         org_md_ap = pth.jo(_ap, org_md_nm)
 
-    """ Check if an .md file is alredy exists in the note directory. """
+    """ Check if an .md file is already exists in the note directory. """
     if not chk_exst_md(_ap): crt_md(org_md_ap)
 
     """ Get the .md file. """
     md = get_md(_ap) # Absolute path to the .md file.
     md_nm = pth.get_ap_innermst(md) # The name of the .md file with the extension.
-    md_nmnext = pth.rm_ext(md_nm, "md") # The name of the .md file without the extension.
+    md_nmnext = pth.rm_ext(md_nm, pth.get_ext(md_nm)) # The name of the .md file without the extension.
 
     """ The name of .md file should be the same with the note directory.
     If the name is not the same then rename the .md file.
     """
     if not org_di_nm == md_nmnext:
-        difi.ren(md, nm.nm_md)
+        difi.ren(md, "{}.md".format(org_di_nm))
 
         """ Set back every parameters that use `md`. """
-        md = nm.ap_md
+        print("="*50)
+        print(md)
+        print(_ap)
+        print(nm.ap_md) # PENDING: All went wrong in this function.
+        print(nm.nm_md) # PENDING: All went wrong in this function.
+        md = pth.jo(_ap, "{}.md".format(org_di_nm))
+        print(md)
+        print("="*50)
         md_nm = pth.get_ap_innermst(md) # The name of the .md file with the extension.
         md_nmnext = pth.rm_ext(md_nm, "md") # The name of the .md file without the extension.
 
@@ -298,9 +319,8 @@ def init(_ap:str) -> str:
         iext = pth.get_ext(i)
 
         if pth.get_ext(i) in var.img_ext:
-            apnmi = crt_apnm_img(iap, prefix, inx)
-            inx = apnmi.inx
-
+            apnmi = crt_apnm_img(iap, org_di_nm, inx)
+            inx = apnmi.inx + 1 # PENDING: Put this into `crt_...()` function.
 
             """ Constructing sized image file for embedding and original file for attachment. """
             difi.ren(iap, apnmi.nme) # Renaming file before converting.
@@ -316,7 +336,7 @@ def init(_ap:str) -> str:
             lst.append("{}{}".format(crt_s_md(pth.get_ap_innermst(cnvrt), True), "\n\n"))
             lst.append("{}{}".format(crt_s_md(apnmi.nma, False), "\n\n\n\n"))
         else:
-            apnma = crt_apnm_attach(iap, prefix, inx)
+            apnma = crt_apnm_attach(iap, org_di_nm, inx)
             inx = apnma.inx
 
             difi.ren(iap, apnma.nm) # Renaming file before converting.
@@ -351,6 +371,9 @@ def rd_md(_ap:str) -> list:
 """ Function to repair note by checking each of its lines. """
 def repair(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
+
+    print(_ap)
+
     if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
     if chk_exst_md(_ap, True): raise exc.ExceptionExistMultipleMDFiles()
@@ -406,10 +429,7 @@ def repair(_ap:str) -> str:
             fl_img = False
             fl_img_600 = False # If image file is 600 pixels width.
             fl_img_png = False # If image file is .png.
-            fl_inx = False # If file has a proper index.
-            fl_nm_note_folder = False
             fl_nm_number = False # If file named as a number (for example, 1.jpg, 1.pdf, ...).
-            fl_prefix = False # If file has a prefix.
 
             """ Set up flags. """
             if chk_s_md(line_md[i]) == s_type.attach: fl_attach = True
@@ -419,31 +439,16 @@ def repair(_ap:str) -> str:
                     fl_img = True
                     if img.get_img_dim_w(ap_fi) == 600: fl_img_600 = True
                     if pth.get_ext(nm_fi) == "png": fl_img_png = True
-            if get_s_inx(nm_fi) == inx: fl_inx = True
             if get_s_lst(nm_fi).isnumeric(): fl_nm_number = True
-            if dttz.chk_prefix(nm_fi):
-                prefix_fi = dttz.get_prefix(nm_fi)
-                if dttz.rm_prefix(nm_note_folder) in nm_fi: fl_nm_note_folder = True
-                if prefix_note_folder == prefix_fi: fl_prefix = True
 
-            print("*"*50)
-            print(nm_fi)
-            print("fl_attach: {}".format(fl_attach))
-            print("fl_embed: {}".format(fl_embed))
-            print("fl_img: {}".format(fl_img))
-            print("fl_img_600: {}".format(fl_img_600))
-            print("fl_img_png: {}".format(fl_img_png))
-            print("fl_inx: {}".format(fl_inx))
-            #print("fl_nm_note_folder: {}".format(fl_nm_note_folder))
-            #print("fl_nm_number: {}".format(fl_nm_number))
-            print(dttz.get_prefix(nm_note_folder))
-            print("fl_prefix: {}".format(fl_prefix))
-            print("*"*50)
-
-            if fl_attach and (not fl_inx or not fl_nm_number or not fl_prefix):
+            if fl_attach and not fl_nm_number:
                 """ If the file name is a number then display the index number. """
-                if fl_nm_number: nm_fi = "{}-{}.{}".format(prefix_note_folder, inx, pth.get_ext(nm_fi))
-                else: nm_fi = "{}-{}-{}".format(prefix_note_folder, inx, dttz.rm_prefix(nm_fi))
+                if fl_nm_number: nm_fi_attach = "{}-{}.{}".format(nm_note_folder, inx, pth.get_ext(nm_fi))
+                else: nm_fi_attach = "{}-{}-{}".format(nm_note_folder, inx, dttz.rm_prefix(nm_fi))
+
+                """ PENDING: Stopped increasing index on back up file, because I am afraid of file
+                conflict with the next file in this iteration in case the name is the same.
+                """
 
                 """ Rename the file with proper proper index number and prefix. """
                 difi.ren(ap_fi, nm_fi)
@@ -457,31 +462,27 @@ def repair(_ap:str) -> str:
             elif fl_embed and (
                 not fl_img_600 or\
                 not fl_img_png or\
-                not fl_inx or\
-                not fl_nm_number or\
-                not fl_prefix
+                not fl_nm_number
             ):
                 """ Only embed image file. """
-                if not fl_img: raise exc.ExceptionNotExistsImageFile()
+                if not fl_img:
+                    print(ap_fi)
+                    raise exc.ExceptionNotExistsImageFile()
 
                 if not fl_img_600 or not fl_img_png:
-                    inx = inx + 1 # Attach string actually appeared after embed string.
-                                  # Hence the index need to be added by one. Before reducing
-                                  # back when processing embed string.
                     nm_fi_attach = ""
-                    if fl_nm_number: nm_fi_attach = "{}-{}-{}.{}".format(prefix_note_folder, nm_note_folder, inx, pth.get_ext(nm_fi))
-                    else: nm_fi_attach = "{}-{}-{}-{}".format(prefix_note_folder, nm_note_folder, inx, dttz.rm_prefix(nm_fi))
+                    if fl_nm_number: nm_fi_attach = "{}-{}-{}.{}".format(nm_note_folder, inx, var.bak, pth.get_ext(nm_fi))
+                    else: nm_fi_attach = "{}-{}-{}-{}.{}".format(nm_note_folder, inx, pth.rm_ext(dttz.rm_prefix(nm_fi), pth.get_ext(nm_fi)), var.bak, pth.get_ext(nm_fi))
 
                 """ Constructing attach string for file name. """
-                if not fl_img_600 or not fl_img_png: inx = inx - 1
-                nm_fi = "{}-{}-{}.{}".format(prefix_note_folder, nm_note_folder, inx, pth.get_ext(nm_fi))
+                nm_fi = "{}-{}.{}".format(nm_note_folder, inx, pth.get_ext(nm_fi))
                 if not fl_img_600 or not fl_img_png: inx = inx + 1
 
                 """ Rename the file with proper proper index number and prefix. """
                 difi.ren(ap_fi, nm_fi)
+                ap_fi = pth.jo(_ap, nm_fi)
 
                 if not fl_img_600 or not fl_img_png:
-                    ap_fi = pth.jo(_ap, nm_fi)
                     ap_fi_attach = pth.jo(_ap, nm_fi_attach)
                     difi.cpy(ap_fi, ap_fi_attach) # Copy into the attachment file.
 

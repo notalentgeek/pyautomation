@@ -26,7 +26,9 @@ def aut(_ap:str) -> bool:
     lst = difi.wlk_get_note(_ap)
 
     for i in lst:
-        if note.chk_exst_md(i, True): raise exc.ExceptionExistMultipleMDFiles()
+        if note.chk_exst_md(i, True):
+            print(i)
+            raise exc.ExceptionExistMultipleMDFiles()
         if note.chk_exst_md(i):
             md = note.get_md(i)
             if note.chk_md_b(md): note.init(i)
@@ -53,7 +55,7 @@ if __name__ == "__main__":
         nm_bk = "{}_{}".format(nm_di, var.bak)
         ap_bk = pth.jo(ap_1_di, nm_bk)
         difi.cpy(ap, ap_bk)
-        
+
     if frmt: difi.frmt_mkdocs(ap)
     if automate: aut(ap)
     if rr: difi.ren_recr(ap, s, snew)
