@@ -1,5 +1,7 @@
 # To - Do List
 * [DONE] Manage exceptions and warnings.
+* Change `"cet"` as a parameter look for it in note.py.
+* Change `ren_recr()`'s `_snew` parameter to be in array.
 * Create a function to automatically rename directories and files automatically.
 * Create a function to check .md file and automatically resize images.
 * Create a function to confirm the availability of time zone in `dttz.py`.
@@ -11,6 +13,9 @@
 * Create a function to recursively rename things.
 * Create a function to take directory or file creation time.
 * Create a Python file to hold all ImageMagick related functions.
+* Create function to check if there are less/more attachment/embedded files in the .md file than in the notes folder.
+* Create function to shorten name.
+* Create function to to check missing link.
 * Make sure every file manipulation function happens in a sub - folder than root folder for the unit test.
 * Make sure to have successful assertion in the end of unit test.
 

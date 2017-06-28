@@ -1,4 +1,5 @@
 from enum import Enum
+
 import difi
 import dttz
 import exc
@@ -312,7 +313,7 @@ def init(_ap:str) -> str:
             """
 
             """ Put this file into the .md file in `md`. """
-            lst.append("{}{}".format(crt_s_md(pth.get_ap_innermst(cnvrt), True), "\n"))
+            lst.append("{}{}".format(crt_s_md(pth.get_ap_innermst(cnvrt), True), "\n\n"))
             lst.append("{}{}".format(crt_s_md(apnmi.nma, False), "\n\n\n\n"))
         else:
             apnma = crt_apnm_attach(iap, prefix, inx)
@@ -394,6 +395,11 @@ def repair(_ap:str) -> str:
             nm_fi = get_fi_rp(line_md[i]) # File name.
             ap_fi = pth.jo(_ap, nm_fi) # Absolute path to the file.
 
+            if not difi.chk_exst(ap_fi):
+                print("note folder: {}".format(_ap))
+                print("file: {}".format(ap_fi))
+                raise exc.ExceptionNotExistsDirectoryOrFile()
+
             """ Flags. """
             fl_attach = False
             fl_embed = False
@@ -401,6 +407,7 @@ def repair(_ap:str) -> str:
             fl_img_600 = False # If image file is 600 pixels width.
             fl_img_png = False # If image file is .png.
             fl_inx = False # If file has a proper index.
+            fl_nm_note_folder = False
             fl_nm_number = False # If file named as a number (for example, 1.jpg, 1.pdf, ...).
             fl_prefix = False # If file has a prefix.
 
@@ -414,16 +421,30 @@ def repair(_ap:str) -> str:
                     if pth.get_ext(nm_fi) == "png": fl_img_png = True
             if get_s_inx(nm_fi) == inx: fl_inx = True
             if get_s_lst(nm_fi).isnumeric(): fl_nm_number = True
-            if dttz.chk_prefix(nm_fi): fl_prefix = True
+            if dttz.chk_prefix(nm_fi):
+                prefix_fi = dttz.get_prefix(nm_fi)
+                if dttz.rm_prefix(nm_note_folder) in nm_fi: fl_nm_note_folder = True
+                if prefix_note_folder == prefix_fi: fl_prefix = True
 
-            if nm_fi == "20010101-0000-cet-3.png":
-                print(img.get_img_dim(ap_fi))
+            print("*"*50)
+            print(nm_fi)
+            print("fl_attach: {}".format(fl_attach))
+            print("fl_embed: {}".format(fl_embed))
+            print("fl_img: {}".format(fl_img))
+            print("fl_img_600: {}".format(fl_img_600))
+            print("fl_img_png: {}".format(fl_img_png))
+            print("fl_inx: {}".format(fl_inx))
+            #print("fl_nm_note_folder: {}".format(fl_nm_note_folder))
+            #print("fl_nm_number: {}".format(fl_nm_number))
+            print(dttz.get_prefix(nm_note_folder))
+            print("fl_prefix: {}".format(fl_prefix))
+            print("*"*50)
 
             if fl_attach and (not fl_inx or not fl_nm_number or not fl_prefix):
                 """ If the file name is a number then display the index number. """
                 if fl_nm_number: nm_fi = "{}-{}.{}".format(prefix_note_folder, inx, pth.get_ext(nm_fi))
                 else: nm_fi = "{}-{}-{}".format(prefix_note_folder, inx, dttz.rm_prefix(nm_fi))
-            
+
                 """ Rename the file with proper proper index number and prefix. """
                 difi.ren(ap_fi, nm_fi)
                 ap_fi = pth.jo(_ap, nm_fi)
@@ -440,32 +461,39 @@ def repair(_ap:str) -> str:
                 not fl_nm_number or\
                 not fl_prefix
             ):
-                inx = inx + 1 # Attach string actually appeared after embed string.
-                              # Hence the index need to be added by one. Before reducing
-                              # back when processing embed string.
-                nm_fi_attach = ""
-                if fl_nm_number: nm_fi_attach = "{}-{}.{}".format(prefix_note_folder, inx, pth.get_ext(nm_fi))
-                else: nm_fi_attach = "{}-{}-{}".format(prefix_note_folder, inx, dttz.rm_prefix(nm_fi))
+                """ Only embed image file. """
+                if not fl_img: raise exc.ExceptionNotExistsImageFile()
+
+                if not fl_img_600 or not fl_img_png:
+                    inx = inx + 1 # Attach string actually appeared after embed string.
+                                  # Hence the index need to be added by one. Before reducing
+                                  # back when processing embed string.
+                    nm_fi_attach = ""
+                    if fl_nm_number: nm_fi_attach = "{}-{}-{}.{}".format(prefix_note_folder, nm_note_folder, inx, pth.get_ext(nm_fi))
+                    else: nm_fi_attach = "{}-{}-{}-{}".format(prefix_note_folder, nm_note_folder, inx, dttz.rm_prefix(nm_fi))
 
                 """ Constructing attach string for file name. """
-                inx = inx - 1
-                nm_fi = "{}-{}.{}".format(prefix_note_folder, inx, pth.get_ext(nm_fi))
-                inx = inx + 1
+                if not fl_img_600 or not fl_img_png: inx = inx - 1
+                nm_fi = "{}-{}-{}.{}".format(prefix_note_folder, nm_note_folder, inx, pth.get_ext(nm_fi))
+                if not fl_img_600 or not fl_img_png: inx = inx + 1
 
                 """ Rename the file with proper proper index number and prefix. """
                 difi.ren(ap_fi, nm_fi)
-                ap_fi = pth.jo(_ap, nm_fi)
-                ap_fi_attach = pth.jo(_ap, nm_fi_attach)
-                difi.cpy(ap_fi, ap_fi_attach) # Copy into the attachment file.
 
-                """ Convert into .png with 600 pixels width. """
-                ap_fi_convert = img.cnvrt_img_ip_600(ap_fi)
-                nm_fi_convert = pth.get_ap_innermst(ap_fi_convert)
+                if not fl_img_600 or not fl_img_png:
+                    ap_fi = pth.jo(_ap, nm_fi)
+                    ap_fi_attach = pth.jo(_ap, nm_fi_attach)
+                    difi.cpy(ap_fi, ap_fi_attach) # Copy into the attachment file.
 
-                """ Put back to the lines. """
-                line_md[i] = "{}{}".format(crt_s_md(nm_fi_attach, False), "\n")
-                line_md.insert(i, "{}{}".format(crt_s_md(nm_fi_convert, True), "\n"))
-                i = i + 1
+                    """ Convert into .png with 600 pixels width. """
+                    ap_fi_convert = img.cnvrt_img_ip_600(ap_fi)
+                    nm_fi_convert = pth.get_ap_innermst(ap_fi_convert)
+
+                    """ Put back to the lines. """
+                    line_md[i] = "{}{}".format(crt_s_md(nm_fi_attach, False), "\n")
+                    line_md.insert(i, "{}{}".format(crt_s_md(nm_fi_convert, True), "\n\n"))
+                    i = i + 1
+                else: line_md[i] = "{}{}".format(crt_s_md(nm_fi, True), "\n")
 
             inx = inx + 1
 

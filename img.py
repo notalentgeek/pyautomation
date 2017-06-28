@@ -96,7 +96,13 @@ def get_img_dim_h(_ap:str) -> int:
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
 
-    with Image.open(_ap) as img: return img.size[1]
+    try:
+        with Image.open(_ap) as img: return img.size[1]
+    except ValueError:
+        try:
+            comm = subprocess.check_output(["convert \"{}\" -ping -format \"%h\" info:".format(_ap)], shell=True)
+            return int(str(comm).split("'")[1])
+        except subprocess.CalledProcessError: pass
     return 0
 
 
@@ -108,5 +114,11 @@ def get_img_dim_w(_ap:str) -> int:
     if not difi.chk_exst_fi(_ap): raise exc.ExceptionNotExistsFile()
     if not pth.get_ext(_ap) in var.img_ext: raise exc.ExceptionNotExistsImageFile()
 
-    with Image.open(_ap) as img: return img.size[0]
+    try:
+        with Image.open(_ap) as img: return img.size[0]
+    except ValueError:
+        try:
+            comm = subprocess.check_output(["convert \"{}\" -ping -format \"%w\" info:".format(_ap)], shell=True)
+            return int(str(comm).split("'")[1])
+        except subprocess.CalledProcessError: pass
     return 0

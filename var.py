@@ -6,7 +6,7 @@ note_sp = "-" # Separator for note.
 d_sp = "-" # Separator for date from `datetime.datetime.now()`.
 t_sp = ":" # Separator for time from `datetime.datetime.now()`.
 
-img_ext = ["bmp", "gif", "jpeg", "jpg", "png"]
+img_ext = ["bmp", "jpeg", "jpg", "png"]
 opn_mode = ["a", "r+", "w"]
 
 smpl_md = [
