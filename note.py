@@ -256,7 +256,7 @@ the .md file does not exists  or if .md file is blank.
 def init(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
 
-    print(_ap)
+    print("init {}".format(_ap))
 
     if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
@@ -363,7 +363,7 @@ def rd_md(_ap:str) -> list:
 def repair(_ap:str) -> str:
     _ap = pth.ncnp(_ap)
 
-    print(_ap)
+    print("repair {}".format(_ap))
 
     if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not difi.chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
@@ -432,10 +432,10 @@ def repair(_ap:str) -> str:
                     if pth.get_ext(nm_fi) == "png": fl_img_png = True
             if get_s_lst(nm_fi).isnumeric(): fl_nm_number = True
 
-            if fl_attach and not fl_nm_number:
+            if fl_attach:
                 """ If the file name is a number then display the index number. """
-                if fl_nm_number: nm_fi_attach = "{}-{}.{}".format(nm_note_folder, inx, pth.get_ext(nm_fi))
-                else: nm_fi_attach = "{}-{}-{}".format(nm_note_folder, inx, dttz.rm_prefix(nm_fi))
+                if fl_nm_number: nm_fi = "{}-{}.{}".format(nm_note_folder, inx, pth.get_ext(nm_fi))
+                else: nm_fi = "{}-{}-{}".format(nm_note_folder, inx, dttz.rm_prefix(nm_fi))
 
                 """ PENDING: Stopped increasing index on back up file, because I am afraid of file
                 conflict with the next file in this iteration in case the name is the same.

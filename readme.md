@@ -43,6 +43,7 @@ Example of MKDocs directories structure.
 * Create a function to get directory or file creation time.
 * Create a function to list all available images in the note directory.
 * Create a function to list all available non - images files in the note directory.
+* Create a function to make a backup folder with date and time.
 * Create a function to shorten file name.
 * Make sure every file manipulations in unit test happen in sub - folder.
 * Make sure to have every successful assertion happen in the end of a unit test.

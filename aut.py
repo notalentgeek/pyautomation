@@ -33,7 +33,7 @@ def aut(_ap:str) -> bool:
             md = note.get_md(i)
             if note.chk_md_b(md): note.init(i)
             else: note.repair(i)
-        else: note.repair(i)
+        else: note.init(i)
 
     return True
 

@@ -1,12 +1,12 @@
-python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "bookmark" "" &&
-python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "brp" "" &&
-python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "document" "" &&
-python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "link" "" &&
-python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "list" "" &&
-python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "project-log-personal" "" &&
-python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "project-log" "" &&
-python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "summary" "" &&
-python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "youtube" "" &&
-python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "gmt+2" "cet" &&
-python3 -B aut.py aut "/home/mikael/Downloads/notalentgeek-wiki" &&
-python3 -B aut.py aut "/home/mikael/Downloads/notalentgeek-wiki"
+cd ~/pyautomation &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki-private" "brp" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki-private" "document" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki-private" "link" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki-private" "list" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki-private" "project-log-personal" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki-private" "project-log" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki-private" "summary" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki-private" "youtube" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki-private" "gmt+2" "cet" &&
+python3 -B aut.py aut "/home/mikael/Downloads/notalentgeek-wiki-private" &&
+python3 -B aut.py aut "/home/mikael/Downloads/notalentgeek-wiki-private"
