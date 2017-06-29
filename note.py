@@ -246,7 +246,6 @@ def get_s_lst(_s:str):
     _s = pth.rm_ext(dttz.rm_prefix(_s), pth.get_ext(_s)) # No prefix.
     sl = dttz.rm_prefix(_s).split("-")
     sl = sl[len(sl) - 1]
-    print("{} ===== {}".format(_s, sl))
     return sl
 
 
@@ -276,7 +275,6 @@ def init(_ap:str) -> str:
 
     """ Check if prefix is already in directory. """
     if not dttz.chk_prefix(org_di_nm):
-        print("asd"*100)
         difi.ren(_ap, nm.nm_di)
 
         """ Set back some variables that used `_ap`. """
@@ -300,14 +298,7 @@ def init(_ap:str) -> str:
         difi.ren(md, "{}.md".format(org_di_nm))
 
         """ Set back every parameters that use `md`. """
-        print("="*50)
-        print(md)
-        print(_ap)
-        print(nm.ap_md) # PENDING: All went wrong in this function.
-        print(nm.nm_md) # PENDING: All went wrong in this function.
         md = pth.jo(_ap, "{}.md".format(org_di_nm))
-        print(md)
-        print("="*50)
         md_nm = pth.get_ap_innermst(md) # The name of the .md file with the extension.
         md_nmnext = pth.rm_ext(md_nm, "md") # The name of the .md file without the extension.
 
@@ -459,11 +450,7 @@ def repair(_ap:str) -> str:
                 """
                 line_md[i] = "{}{}".format(crt_s_md(nm_fi, False), "\n")
 
-            elif fl_embed and (
-                not fl_img_600 or\
-                not fl_img_png or\
-                not fl_nm_number
-            ):
+            elif fl_embed: # PENDING: Please check this `if`.
                 """ Only embed image file. """
                 if not fl_img:
                     print(ap_fi)
