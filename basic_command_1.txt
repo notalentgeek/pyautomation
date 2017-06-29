@@ -1,0 +1,12 @@
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "bookmark" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "brp" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "document" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "link" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "list" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "project-log-personal" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "project-log" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "summary" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "youtube" "" &&
+python3 -B aut.py rr "/home/mikael/Downloads/notalentgeek-wiki" "gmt+2" "cet" &&
+python3 -B aut.py aut "/home/mikael/Downloads/notalentgeek-wiki" &&
+python3 -B aut.py aut "/home/mikael/Downloads/notalentgeek-wiki"

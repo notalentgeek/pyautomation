@@ -7,6 +7,7 @@
 * Create a function to confirm the availability of time zone in `dttz.py`.
 * Create a function to generate absolute path and naming for both note directory and note .md file in `note.py`.
 * Create a function to initiate note if there is no .md exists.
+* Please re - factor note.py.
 * Create a function to know if directory or file has time zone on its name.
 * Create a function to recursively format the whole directories into MkDocs structured directories.
 * Create a function to recursively remove previous naming convention and its numbering. For example from "19900101-0000-gmt+2-project-log-1" into "19900101-0000-gmt+2".
