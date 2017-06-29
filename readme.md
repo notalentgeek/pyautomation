@@ -1,30 +1,40 @@
-# To - Do List
+# To - Do List.
+* Change `"cet"` to become a parameter for `init()` or `repair()` functions.
+    * [20170629-0239-NTG] At this point the time zone is inputted as default to `"cet"`. I want that the time zone inputted manually but as a parameter in both `init()` and `repair()`.
+* Change `_snew` in `ren_recr()` to be inputted as a string or a list (or perhaps a matching dictionary or tuple).
+* Create a function to check if there are less/more file between those attached/embedded in the .md file and those who are exist in the same directory with the .md file.
+* Create a function to check missing attached/embedded link (recursively, but make a function to check a single folder first).
+* Create a function to do indexing of all image files.
+    * [20170729-0322-NTG] This method is inside `init()` and `repair()` please make it as a separate function.
+* Create a function to get directory or file creation time.
+* Create a function to list all available images in the note directory.
+* Create a function to list all available non - images files in the note directory.
+* Create a function to shorten file name.
+* Make sure every file manipulations in unit test happen in sub - folder.
+* Make sure to have every successful assertion happen in the end of a unit test.
+* Re - factor `ren_recr()` to make it more agnostic and not only for this note naming format (please check the `....replace("--", "-")` function).
+* Re - factor dttz.py and make sure to have all `chk_...()` (check function) `crt_...()` (create function) `get_...()` for all variables returned (year, month, day, ...).
+* Re - factor every unit test. But, perhaps keep the pending unit test as it is.
+* Re - factor note.py.
+* [DONE] Create a Python file to hold all ImageMagicks related functions.
+    * [20170729-0314-NTG] The file mentioned here is img.py. This file is mentioned for all image operations (although, there is one function to create debug image in dbg.py).
+* [DONE] Create a function to automatically rename directories and files automatically.
+* [DONE] Create a function to check .md file and automatically resize any attached and embedded files mentioned in that .md file.
+* [DONE] Create a function to check if a directory or a file has a timezone pattern on its name.
+* [DONE] Create a function to confirm the availability of time zone in `dttz.py`.
+* [DONE] Create a function to generate absolute path and file name for both note directory and the .md file in `note.py`.
+    * [20170629-0317-NTG] This need to be re - factored and make clear in regard to the format and all possible combinations.
+* [DONE] Create a function to initiate an .md file with all file in the same directory if there is no .md file exists nor there is an .md file but is blank.
+    * [20170629-0318-NTG] The function is `init()`. This function needs to be re - factored.
+* [DONE] Create a function to recursively format the whole notes directories into MKDocs structured directories.
+    * [20170629-0318-NTG] The function is `frmt_mkdocs()` in difi.py.
+* [DONE] Create a function to recursively rename folder. For example from "19900101-0000-gmt+2-project-log-1" into "19900101-0000-gmt+2".
+    * [20170629-0318-NTG] The function is `ren_recr()` in difi.py. Although this function are very specific to the name format (due to `....replace("--", "-")`).
 * [DONE] Manage exceptions and warnings.
-* Change `"cet"` as a parameter look for it in note.py.
-* Change `ren_recr()`'s `_snew` parameter to be in array.
-* Create a function to automatically rename directories and files automatically.
-* Create a function to check .md file and automatically resize images.
-* Create a function to confirm the availability of time zone in `dttz.py`.
-* Create a function to generate absolute path and naming for both note directory and note .md file in `note.py`.
-* Create a function to initiate note if there is no .md exists.
-* Please re - factor note.py.
-* Create a function to know if directory or file has time zone on its name.
-* Create a function to recursively format the whole directories into MkDocs structured directories.
-* Create a function to recursively remove previous naming convention and its numbering. For example from "19900101-0000-gmt+2-project-log-1" into "19900101-0000-gmt+2".
-* Create a function to recursively rename things.
-* Create a function to take directory or file creation time.
-* Create a Python file to hold all ImageMagick related functions.
-* Create function to check if there are less/more attachment/embedded files in the .md file than in the notes folder.
-* Create function to shorten name.
-* Create function to to check missing link.
-* Make sure every file manipulation function happens in a sub - folder than root folder for the unit test.
-* Make sure to have successful assertion in the end of unit test.
+    * [20170629-0239-NTG] I have done it temporarily with removing all warnings and use all exceptions. It is not the best idea, but for now I will keep it that way.
 
-## Create function to initiate note if there is no .md exists.
-* [DONE] Create a function to check if there are .md files exists.
-* [DONE] Create a function to check if there is .md file exists.
+## [DONE] Create a function to initiate an .md file with all file in the same directory if there is no .md file exists nor there is an .md file but is blank.
+* [DONE] Create a function to check if .md file exists in a directory.
+* [DONE] Create a function to check if there are multiple .md files in a directory.
 * [DONE] Create a function to make and format date and time.
 * [DONE] Create a function to write `![]()` and `[]()`.
-* Create a function to do indexing of the image files.
-* Create a function to list all available images in a folder.
-* Create a function to list all available non images in a folder.
