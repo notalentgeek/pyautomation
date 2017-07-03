@@ -47,7 +47,9 @@ Example of MKDocs directories structure.
 * Create a function to shorten file name.
 * Make sure every file manipulations in unit test happen in sub - folder.
 * Make sure to have every successful assertion happen in the end of a unit test.
+* Make sure the formatting function used for MKDocs has a parameter stated if the user wants to exclude 50 MB note (Github limitation).
 * Re - factor `ren_recr()` to make it more agnostic and not only for this note naming format (please check the `....replace("--", "-")` function).
+* Re - factor difi.py.
 * Re - factor dttz.py and make sure to have all `chk_...()` (check function) `crt_...()` (create function) `get_...()` for all variables returned (year, month, day, ...).
 * Re - factor every unit test. But, perhaps keep the pending unit test as it is.
 * Re - factor note.py.
