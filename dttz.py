@@ -101,5 +101,5 @@ def get_prefix(_s:str) -> str:
 def rm_prefix(_s:str) -> str:
     if not chk_prefix(_s): return _s
     prefix = get_prefix(_s)
-    
+
     return _s.replace("{}-".format(prefix), "")

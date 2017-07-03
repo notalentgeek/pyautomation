@@ -266,10 +266,6 @@ def init(_ap:str) -> str:
 
     nm = crt_apnm_note(_ap)
     org_di_nm = pth.get_ap_innermst(_ap)
-    print("+"*50)
-    print(_ap)
-    print(org_di_nm)
-    print("+"*50)
     org_md_nm = "{}.{}".format(org_di_nm, "md")
     org_md_ap = pth.jo(_ap, org_md_nm)
 
@@ -434,8 +430,57 @@ def repair(_ap:str) -> str:
 
             if fl_attach:
                 """ If the file name is a number then display the index number. """
+                nm_fi = "{}-{}.{}".format(nm_note_folder, inx, pth.get_ext(nm_fi))
+                """
                 if fl_nm_number: nm_fi = "{}-{}.{}".format(nm_note_folder, inx, pth.get_ext(nm_fi))
-                else: nm_fi = "{}-{}-{}".format(nm_note_folder, inx, dttz.rm_prefix(nm_fi))
+                else:
+                    Cleaning.
+
+                    PENDING: Please move this into separate function later on.
+                    PENDING: There is also a problem if the file initiated as a image attachment and at the second `repair()`
+                             the index will be grow again. There is no error shown yet though.
+
+                    print("="*50)
+                    print(nm_note_folder)
+                    print(nm_fi)
+                    separate_note_folder = nm_note_folder.split("-")
+                    print(separate_note_folder)
+                    test = nm_fi
+                    for asd in separate_note_folder:
+                        test = test.replace(asd, "")
+                    test = test.split("-")
+                    index = len(test) - 1
+                    while index > 0:
+                        if not test[index].isnumeric() and not test[index] == "":
+                            print(test[index])
+                        index = index - 1
+                    print(test)
+                    print("="*50)
+                    get_name = nm_fi.replace(nm_note_folder, "")
+                    get_name = get_name.replace("--", "")
+                    get_name = get_name[1:]
+                    get_name = get_name.split("-")
+                    index_temp = 0
+                    new_string = ""
+                    while index_temp < len(get_name):
+                        if index_temp == 0 and get_name[index_temp].isnumeric():
+                            index_temp = index_temp + 1
+                            continue
+                        if new_string == "": new_string = get_name[index_temp]
+                        else: new_string = "{}-{}".format(new_string, get_name[index_temp])
+                        index_temp = index_temp + 1
+                    nm_fi = "{}-{}-{}".format(nm_note_folder, inx, new_string)
+
+                print("_ap = {}".format(_ap))
+                print("="*50)
+                print("nm_note_folder = {}".format(nm_note_folder))
+                print("inx = {}".format(inx))
+                print("pth.get_ext(nm_fi) = {}".format(pth.get_ext(nm_fi)))
+                print("dttz.rm_prefix(nm_fi) = {}".format(dttz.rm_prefix(nm_fi)))
+                print("nm_fi = {}".format(nm_fi))
+                print("="*50)
+                print("*"*50)
+                """
 
                 """ PENDING: Stopped increasing index on back up file, because I am afraid of file
                 conflict with the next file in this iteration in case the name is the same.
@@ -456,14 +501,18 @@ def repair(_ap:str) -> str:
                     print(ap_fi)
                     raise exc.ExceptionNotExistsImageFile()
 
+                """ PENDING: Backup image identifier is now missing. But that is okay I guess. """
+
                 if not fl_img_600 or not fl_img_png:
-                    nm_fi_attach = ""
-                    if fl_nm_number: nm_fi_attach = "{}-{}-{}.{}".format(nm_note_folder, inx, var.bak, pth.get_ext(nm_fi))
-                    else: nm_fi_attach = "{}-{}-{}-{}.{}".format(nm_note_folder, inx, pth.rm_ext(dttz.rm_prefix(nm_fi), pth.get_ext(nm_fi)), var.bak, pth.get_ext(nm_fi))
+                    inx = inx + 1
+                    nm_fi_attach = "{}-{}.{}".format(nm_note_folder, inx, pth.get_ext(nm_fi))
+                    inx = inx - 1
+                    #if fl_nm_number: nm_fi_attach = "{}-{}-{}.{}".format(nm_note_folder, inx, var.bak, pth.get_ext(nm_fi))
+                    #else: nm_fi_attach = "{}-{}-{}.{}".format(nm_note_folder, inx, pth.rm_ext(dttz.rm_prefix(nm_fi), var.bak, pth.get_ext(nm_fi)))
 
                 """ Constructing attach string for file name. """
                 nm_fi = "{}-{}.{}".format(nm_note_folder, inx, pth.get_ext(nm_fi))
-                if not fl_img_600 or not fl_img_png: inx = inx + 1
+                if not fl_img_600 or not fl_img_png: inx = inx + 2
 
                 """ Rename the file with proper proper index number and prefix. """
                 difi.ren(ap_fi, nm_fi)
