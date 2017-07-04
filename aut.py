@@ -56,6 +56,6 @@ if __name__ == "__main__":
         ap_bk = pth.jo(ap_1_di, nm_bk)
         difi.cpy(ap, ap_bk)
 
-    if frmt: difi.frmt_mkdocs(ap)
+    if frmt: difi.frmt_mkdocs(ap_bk) # For format please format the backup folder.
     if automate: aut(ap)
     if rr: difi.ren_recr(ap, s, snew)
