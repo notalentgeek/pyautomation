@@ -45,7 +45,9 @@ Example of MKDocs directories structure.
 * Create a function to list all available non - images files in the note directory.
 * Create a function to make a backup folder with date and time.
 * Create a function to shorten file name.
+* Create a separate backup function.
 * Make sure every file manipulations in unit test happen in sub - folder.
+* Make sure to have backup option before doing formatting and automation.
 * Make sure to have every successful assertion happen in the end of a unit test.
 * Re - factor `ren_recr()` to make it more agnostic and not only for this note naming format (please check the `....replace("--", "-")` function).
 * Re - factor dttz.py and make sure to have all `chk_...()` (check function) `crt_...()` (create function) `get_...()` for all variables returned (year, month, day, ...).

@@ -48,7 +48,8 @@ if __name__ == "__main__":
     s = doc["<s>"]
     snew = doc["<snew>"]
 
-    if automate or frmt or rr:
+    """ Create a backup directory or file for automating and renaming. """
+    if automate or rr:
         """ Make a backup copy first. """
         nm_di = pth.get_ap_innermst(ap)
         ap_1_di = pth.get_ap_1(ap)
@@ -56,6 +57,17 @@ if __name__ == "__main__":
         ap_bk = pth.jo(ap_1_di, nm_bk)
         difi.cpy(ap, ap_bk)
 
-    if frmt: difi.frmt_mkdocs(ap_bk) # For format please format the backup folder.
+    """ Creating backup directory or file for formating file
+    structures into MKDocs.
+    """
+    if frmt:
+        """ Make a backup copy first. """
+        nm_di = pth.get_ap_innermst(ap)
+        ap_1_di = pth.get_ap_1(ap)
+        nm_bk = "{}_{}".format(nm_di, "note")
+        ap_note = pth.jo(ap_1_di, nm_bk)
+        difi.cpy(ap, ap_note)
+
+    if frmt: difi.frmt_mkdocs(ap_note) # For format please format the backup folder.
     if automate: aut(ap)
     if rr: difi.ren_recr(ap, s, snew)
