@@ -106,32 +106,56 @@ def get_lst(_ap:str) -> list:
 
 
 
-""" Function to format my personal note folder into MKDocs formatted file structures. """
-def frmt_mkdocs(_ap:str) -> bool:
+""" Function to format into MKDocs directories structures. The last parameter (`_50MB`) is meant
+if the formatting excluding note folder with size larger than 50 MB or not.
+"""
+def frmt_mkdocs(_ap:str, _50mb:bool=False) -> bool:
     _ap = pth.ncnp(_ap)
     if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
 
-
     lst = wlk_get_note(_ap)
 
-    """ Need to do this from last index. Because if the upper directories changed
-    first it won't be found in the next loops.
+    """ This program need to do this from the last index. Because, if the
+    upper directories changed first, the latter directories that reference
+    that upper directory will not be found in the next loop.
     """
     while len(lst) > 0:
-        lst_el = lst.pop()
-        lst_el_ap_1 = pth.get_ap_1(lst_el)
-        content = get_lst(lst_el)
+        lst_el = lst.pop() # The list element contains an absolute path
+                           # to note folder.
 
-        for i in content:
-            ap_i = pth.jo(lst_el, i)
-            ap_i_trg = pth.jo(lst_el_ap_1, i)
-            if not chk_exst(ap_i): print(i)
-            mov(ap_i, ap_i_trg)
+        if _50mb:
+            if get_size(lst_el) >= 50000000:
+                de(lst_el) # Delete the folder.
+                continue # Continue to next note folder.
+
+        lst_el_ap1 = pth.get_ap_1(lst_el)
+        content = get_lst(lst_el_ap1)
+
+        for i in content: # Move back all files into one directory up.
+            ap_i = pth.jo(lst_el, i) # File's original location.
+            ap_itrg = pth.jo(lst_el_ap1, i) # File's target copy location.
+            mov(ap_i, ap_itrg)
 
         de(lst_el)
 
     return True
+
+
+
+""" Function to get size of a directory and a sub - directories. """
+def get_size(_ap:str) -> int:
+    _ap = pth.ncnp(_ap)
+    if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
+    if not chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
+
+    tot = 0
+    for i, j, k in os.walk(_ap):
+        for l in k:
+            apl = pth.jo(i, l)
+            tot = tot + os.path.getsize(apl)
+
+    return tot
 
 
 
