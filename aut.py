@@ -56,7 +56,7 @@ if __name__ == "__main__":
         """ Make a backup copy first. """
         nm_di = pth.get_ap_innermst(ap)
         ap_1_di = pth.get_ap_1(ap)
-        nm_bk = "{}_{}_{}".format(nm_di, dttz.get_now_n_ms(), var.bak)
+        nm_bk = "{}_{}_{}".format(nm_di, dttz.crt_prefix_cpy(dttz.get_now_n_ms()), var.bak)
         ap_bk = pth.jo(ap_1_di, nm_bk)
         difi.cpy(ap, ap_bk)
 
@@ -67,7 +67,7 @@ if __name__ == "__main__":
         """ Make a backup copy first. """
         nm_di = pth.get_ap_innermst(ap)
         ap_1_di = pth.get_ap_1(ap)
-        nm_bk = "{}_{}_{}".format(nm_di, dttz.get_now_n_ms(), "note")
+        nm_bk = "{}_{}_{}".format(nm_di, dttz.crt_prefix_cpy(dttz.get_now_n_ms()), "note")
         ap_note = pth.jo(ap_1_di, nm_bk)
         difi.cpy(ap, ap_note)
 

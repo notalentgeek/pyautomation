@@ -109,7 +109,7 @@ def get_lst(_ap:str) -> list:
 """ Function to format into MKDocs directories structures. The last parameter (`_50MB`) is meant
 if the formatting excluding note folder with size larger than 50 MB or not.
 """
-def frmt_mkdocs(_ap:str, _50mb:bool=False) -> bool:
+def frmt_mkdocs(_ap:str, _50mb:bool=True) -> bool:
     _ap = pth.ncnp(_ap)
     if not pth.chk_ap(_ap): raise exc.ExceptionNotAbsolutePath()
     if not chk_exst_di(_ap): raise exc.ExceptionNotExistsDirectory()
@@ -130,7 +130,7 @@ def frmt_mkdocs(_ap:str, _50mb:bool=False) -> bool:
                 continue # Continue to next note folder.
 
         lst_el_ap1 = pth.get_ap_1(lst_el)
-        content = get_lst(lst_el_ap1)
+        content = get_lst(lst_el)
 
         for i in content: # Move back all files into one directory up.
             ap_i = pth.jo(lst_el, i) # File's original location.

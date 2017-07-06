@@ -83,6 +83,8 @@ def chk_prefix(_s:str) -> bool:
     return True
 
 
+""" PENDING. """
+def crt_prefix_cpy(_n:str) -> str: return "{}{}{}{}{}".format(get_y_n(_n), get_m_n(_n), get_d_n(_n), get_h_n(_n), get_mn_n(_n))
 
 def crt_prefix(_n:str, _tz:str) -> str: return "{1}{2}{3}{0}{4}{5}{0}{6}".format(var.note_sp, get_y_n(_n), get_m_n(_n), get_d_n(_n), get_h_n(_n), get_mn_n(_n), _tz)
 def crt_prefix_n_ms(_tz:str) -> str: return crt_prefix(get_now_n_ms(), _tz)
