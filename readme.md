@@ -53,6 +53,7 @@ Example of MKDocs directories structure.
 * Re - factor dttz.py and make sure to have all `chk_...()` (check function) `crt_...()` (create function) `get_...()` for all variables returned (year, month, day, ...).
 * Re - factor every unit test. But, perhaps keep the pending unit test as it is.
 * Re - factor note.py.
+* [CAUTION] File will be replaced if there is the same file name exists during repair (for example, there are 20000101-0000-cet-1.png exists but the file is not actually index 1, then the original 20000101-0000-cet-1.png will be deleted)
 * [DONE] Create a Python file to hold all ImageMagicks related functions.
     * [20170729-0314-NTG] The file mentioned here is img.py. This file is mentioned for all image operations (although, there is one function to create debug image in dbg.py).
 * [DONE] Create a function to automatically rename directories and files automatically.
